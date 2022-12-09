@@ -9,9 +9,7 @@ export default function Home() {
   if (session) {
     return (
       <div className={styles.container}>
-        Welcome user
-        <br />
-        <button onClick={() => signOut()}>Sign out</button>
+        Welcome, user! <button onClick={() => signOut()}>Sign out</button>
       </div>
     );
   }
