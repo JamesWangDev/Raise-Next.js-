@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-import '../styles/globals.css'
-
-function MyApp({ Component, pageProps }) {
-  return <Component {...pageProps} />
-}
-
-export default MyApp
-=======
 import "../styles/globals.css";
 
 //import { AppProps } from "next/app";
@@ -22,4 +13,3 @@ function App({ Component, pageProps: { session, ...pageProps } }) {
 }
 
 export default App;
->>>>>>> master
