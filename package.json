@@ -9,10 +9,25 @@
     "lint": "next lint"
   },
   "dependencies": {
+<<<<<<< HEAD
     "eslint": "8.28.0",
     "eslint-config-next": "13.0.6",
     "next": "13.0.6",
     "react": "18.2.0",
     "react-dom": "18.2.0"
+=======
+    "@next-auth/supabase-adapter": "^0.2.0",
+    "@supabase/supabase-js": "^2.1.3",
+    "eslint": "8.28.0",
+    "eslint-config-next": "13.0.6",
+    "jsonwebtoken": "^8.5.1",
+    "next": "^13.0.6",
+    "prettier": "^2.8.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "eslint-config-prettier": "^8.5.0"
+>>>>>>> master
   }
 }
