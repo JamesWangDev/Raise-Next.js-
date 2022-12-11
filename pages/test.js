@@ -20,7 +20,7 @@ export default function SingleQueryView({ rows }) {
   );
 }
 
-export const getStaticProps = async () => {
+export const getServerSideProps = async () => {
   const { data: rows, error } = await supabase.from("testTable").select();
   return { props: { rows } };
 };
