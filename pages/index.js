@@ -7,28 +7,33 @@ import supabase from "../utils/supabase";
 import { DataGrid, GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
 import Box from "@mui/material/Box";
 
-var columns = [
-  { field: "id", headerName: "id", width: 70 },
-  { field: "created_at", headerName: "created_at", width: 130 },
-  { field: "text", headerName: "text", width: 130 },
-];
-
 export default function Dashboard({ rows }) {
   const { data: session, status } = useSession();
+
+  rows = rows.map((row) => ({ id: row["Receipt ID"], ...row }));
+
+  var columns = Object.keys(rows[0]).map((columnName) => ({
+    field: columnName,
+    headerName: columnName,
+    width: 70,
+  }));
 
   if (session) {
     return (
       <div className="container">
         <h1>Dashboard</h1>
         {/* Welcome, {session.user.name} */}
-        <Box sx={{ height: 400, width: "100%" }}>
+
+        <Box sx={{ height: 600, width: "100%" }}>
           <DataGrid
             rows={rows}
             columns={columns}
-            pageSize={5}
-            rowsPerPageOptions={[5]}
+            pageSize={100}
+            rowsPerPageOptions={[100]}
             checkboxSelection
             sx={{
+              my: 2,
+              fontFamily: "Inter",
               "& .MuiDataGrid-columnHeader .MuiDataGrid-columnSeparator": {
                 display: "none",
               },
@@ -60,6 +65,6 @@ export default function Dashboard({ rows }) {
 }
 
 export const getServerSideProps = async () => {
-  const { data: rows, error } = await supabase.from("testTable").select();
+  const { data: rows, error } = await supabase.from("donations").select();
   return { props: { rows } };
 };
