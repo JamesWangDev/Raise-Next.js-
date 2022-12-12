@@ -65,6 +65,9 @@ export default function Dashboard({ rows }) {
 }
 
 export const getServerSideProps = async () => {
-  const { data: rows, error } = await supabase.from("donations").select();
+  const { data: rows, error } = await supabase
+    .from("donations")
+    .select()
+    .limit(50);
   return { props: { rows } };
 };
