@@ -18,7 +18,7 @@ export default function Dashboard({ rows }) {
     width: 70,
   }));
 
-  if (session) {
+  if (true) {
     return (
       <div className="container">
         <h1>Dashboard</h1>
@@ -46,22 +46,22 @@ export default function Dashboard({ rows }) {
       </div>
     );
   }
-  if (!session) {
-    return (
-      <div className="container">
-        <h1>Login</h1>
-        Click to sign into your user account <br />
-        <button
-          type="button"
-          className="btn btn-blue"
-          onClick={() => signIn("google")}
-        >
-          <Image src="/google.svg" height="15" width="15" className="mr-2" />
-          Sign in
-        </button>
-      </div>
-    );
-  }
+  // if (!session) {
+  //   return (
+  //     <div className="container">
+  //       <h1>Login</h1>
+  //       Click to sign into your user account <br />
+  //       <button
+  //         type="button"
+  //         className="btn btn-blue"
+  //         onClick={() => signIn("google")}
+  //       >
+  //         <Image src="/google.svg" height="15" width="15" className="mr-2" />
+  //         Sign in
+  //       </button>
+  //     </div>
+  //   );
+  // }
 }
 
 export const getServerSideProps = async () => {
