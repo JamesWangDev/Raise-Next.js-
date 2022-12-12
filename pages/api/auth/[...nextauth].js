@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
-export default NextAuth({
+export const authOptions = {
   // https://next-auth.js.org/configuration/providers
   providers: [
     GoogleProvider({
@@ -44,4 +44,6 @@ export default NextAuth({
     },
   },
   // ...
-});
+};
+
+export default NextAuth(authOptions);

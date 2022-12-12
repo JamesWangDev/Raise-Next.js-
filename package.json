@@ -6,13 +6,19 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "@fortawesome/fontawesome-svg-core": "^6.2.1",
+    "@fortawesome/free-solid-svg-icons": "^6.2.1",
+    "@fortawesome/react-fontawesome": "^0.2.0",
     "@headlessui/react": "^1.7.5",
     "@heroicons/react": "^2.0.13",
+    "@mui/icons-material": "^5.10.16",
+    "@mui/material": "^5.10.17",
+    "@mui/x-data-grid": "^5.17.14",
     "@next-auth/supabase-adapter": "^0.2.0",
     "@supabase/supabase-js": "^2.1.3",
     "autoprefixer": "^10.4.13",
@@ -28,14 +34,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.5",
-    "@storybook/addon-actions": "^6.5.14",
-    "@storybook/addon-essentials": "^6.4.22",
-    "@storybook/addon-interactions": "^6.5.14",
-    "@storybook/addon-links": "^6.5.14",
-    "@storybook/builder-webpack4": "^6.5.14",
-    "@storybook/manager-webpack4": "^6.5.14",
-    "@storybook/react": "^6.1.21",
-    "@storybook/testing-library": "^0.0.13",
+    "@tailwindcss/typography": "^0.5.8",
     "babel-loader": "^8.3.0",
     "eslint-config-prettier": "^8.5.0"
   }
