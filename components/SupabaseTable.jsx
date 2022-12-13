@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import supabase from "../utils/supabase";
 import { DataGrid, GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
 
-export default function SupabaseTable({ table }) {
+export default function SupabaseTable({ table, query = "*" }) {
   const [data, setData] = useState(null);
   const [isLoading, setLoading] = useState(false);
   var rowCount = 0;
@@ -22,8 +22,7 @@ export default function SupabaseTable({ table }) {
 
     supabase
       .from(table)
-      .select()
-      // .limit(50)
+      .select(query)
       .range(page * 10, (page + 1) * 10)
       .then((data) => {
         setData(data.data);
@@ -39,7 +38,12 @@ export default function SupabaseTable({ table }) {
   // if (isLoading) return <p>Loading...</p>;
   // if (!data) return <p>No profile data</p>;
 
-  var rows = data ? data.map((row) => ({ id: row["Receipt ID"], ...row })) : [];
+  var rows = data
+    ? "id" in data[0]
+      ? data
+      : data.map((row) => ({ id: row[Object.keys(row)[0]], ...row }))
+    : [];
+  //var rows = data ? data : [];
 
   var columns = data
     ? Object.keys(rows[0]).map((columnName) => ({

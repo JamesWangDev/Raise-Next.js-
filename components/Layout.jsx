@@ -212,8 +212,8 @@ const Layout = ({ children }) => {
                       href={item.href}
                       className={classNames(
                         item.current
-                          ? "bg-gray-200 text-gray-900"
-                          : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
+                          ? "text-gray-900 ring-1 ring-black ring-opacity-5 bg-gray-100"
+                          : "text-gray-600 hover:bg-gray-100 hover:text-gray-900",
                         "group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                       )}
                     >
@@ -302,7 +302,7 @@ const Layout = ({ children }) => {
                         </Menu.Button>
                       </div> */}
 
-                      <Menu.Button className="my-1 mx-2 group flex rounded-md bg-gray-100 px-3 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-100">
+                      <Menu.Button className="ring-1 ring-black ring-opacity-10 my-1 mx-2 group flex rounded-md bg-gray-100 px-3 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-100">
                         <span className="flex w-full items-center justify-between">
                           <span className="flex min-w-0 items-center justify-between space-x-3">
                             <Image
@@ -337,7 +337,7 @@ const Layout = ({ children }) => {
                         leaveFrom="transform opacity-100 scale-100"
                         leaveTo="transform opacity-0 scale-95"
                       >
-                        <Menu.Items className="absolute right-0 z-10 mt-2 w-100 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        <Menu.Items className="absolute right-3 z-10 mt-2 w-100 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                           {userNavigation.map((item) => (
                             <Menu.Item key={item.name}>
                               {({ active }) => (

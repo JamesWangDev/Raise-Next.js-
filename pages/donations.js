@@ -11,7 +11,7 @@ export default function Dashboard() {
         <h1 className="text-2xl font-semibold text-gray-900">Donations</h1>
       </div>
       <div className="mx-auto max-w-7xl px-2  ">
-        <SupabaseTable table="donations" />
+        <SupabaseTable table="donations_for_user_display" />
       </div>
     </div>
   );
