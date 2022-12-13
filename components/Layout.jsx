@@ -213,7 +213,7 @@ const Layout = ({ children }) => {
                       className={classNames(
                         item.current
                           ? "text-gray-900 bg-gray-200 shadow"
-                          : "text-gray-600 hover:bg-gray-100 hover:text-gray-900 hover:shadow",
+                          : "text-gray-600 hover:bg-gray-100 hover:text-gray-900",
                         "group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                       )}
                     >
@@ -302,7 +302,7 @@ const Layout = ({ children }) => {
                         </Menu.Button>
                       </div> */}
 
-                      <Menu.Button className="ring-1 ring-black ring-opacity-5 shadow my-1 mx-2 group flex rounded-md bg-gray-100 px-3 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-100">
+                      <Menu.Button className="shadow my-1 mx-2 group flex rounded-md bg-gray-100 px-3 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-100">
                         <span className="flex w-full items-center justify-between">
                           <span className="flex min-w-0 items-center justify-between space-x-3">
                             <Image
