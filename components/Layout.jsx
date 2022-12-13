@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { Fragment, useState } from "react";
 import { Dialog, Menu, Transition } from "@headlessui/react";
+import { Bars3CenterLeftIcon, Bars4Icon } from "@heroicons/react/24/outline";
 import {
   Bars3BottomLeftIcon,
   BellIcon,
@@ -24,6 +25,8 @@ import {
   ChevronDoubleRightIcon,
   UserPlusIcon,
   Cog6ToothIcon,
+  ChevronUpDownIcon,
+  ChevronDownIcon,
 } from "@heroicons/react/24/outline";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 
@@ -63,7 +66,7 @@ const navigation = [
 
 const userNavigation = [
   { name: "Settings", href: "#" },
-  { name: "Sign out", href: "#" },
+  { name: "Sign out", href: "#", onClick: signOut },
 ];
 
 function classNames(...classes) {
@@ -94,15 +97,16 @@ const Layout = ({ children }) => {
   // Set the right page as active link using router
   const router = useRouter();
   navigation.forEach((page, i) => (navigation[i].current = false));
-  const activeIndex = navigation.findIndex(
-    (element) => element.href == router.pathname
-  );
-  if (activeIndex && activeIndex in navigation)
-    navigation[activeIndex].current = true;
+  const activeIndex =
+    router.pathname == "/"
+      ? 0
+      : navigation.findIndex((element) => element.href == router.pathname);
+
+  if (activeIndex in navigation) navigation[activeIndex].current = true;
 
   return (
     <>
-      <div>
+      <Menu>
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
             as="div"
@@ -196,8 +200,9 @@ const Layout = ({ children }) => {
         {/* Static sidebar for desktop */}
         <div className="hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
           {/* Sidebar component, swap this element with another sidebar if you like */}
-          <div className="flex flex-grow flex-col overflow-y-auto border-r border-gray-200 bg-white pt-5">
+          <div className="pt-6 flex flex-grow flex-col overflow-y-auto border-r border-gray-200 bg-gray-50">
             <Brand />
+
             <div className="mt-5 flex flex-grow flex-col">
               <nav className="flex-1 space-y-1 px-2 pb-4">
                 {navigation.map((item) => (
@@ -207,7 +212,7 @@ const Layout = ({ children }) => {
                       href={item.href}
                       className={classNames(
                         item.current
-                          ? "bg-gray-100 text-gray-900"
+                          ? "bg-gray-200 text-gray-900"
                           : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
                         "group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                       )}
@@ -224,7 +229,9 @@ const Layout = ({ children }) => {
                       {item.name}
                     </Link>
                     {["Make Calls", "Donations"].includes(item.name) ? (
-                      <div className="flex-grow border-t border-gray-200"></div>
+                      <div className="py-2">
+                        <div className="flex-grow border-t border-gray-200"></div>
+                      </div>
                     ) : (
                       ""
                     )}
@@ -270,14 +277,6 @@ const Layout = ({ children }) => {
 
               {session ? (
                 <>
-                  <button
-                    type="button"
-                    className="block btn"
-                    onClick={() => signOut()}
-                  >
-                    Sign out
-                  </button>
-
                   <div className="ml-4 flex items-center md:ml-6">
                     <button
                       type="button"
@@ -290,7 +289,7 @@ const Layout = ({ children }) => {
                     {/* Profile dropdown */}
 
                     <Menu as="div" className="relative ml-3">
-                      <div>
+                      {/* <div>
                         <Menu.Button className="flex max-w-xs items-center rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                           <span className="sr-only">Open user menu</span>
 
@@ -301,7 +300,34 @@ const Layout = ({ children }) => {
                             className="h-8 w-8 rounded-full inline align-text-top"
                           />
                         </Menu.Button>
-                      </div>
+                      </div> */}
+
+                      <Menu.Button className="my-1 mx-2 group flex rounded-md bg-gray-100 px-3 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-100">
+                        <span className="flex w-full items-center justify-between">
+                          <span className="flex min-w-0 items-center justify-between space-x-3">
+                            <Image
+                              className="h-8 w-8 flex-shrink-0 rounded-full bg-gray-300"
+                              height="30"
+                              width="30"
+                              src={session.user.image}
+                              alt=""
+                            />
+
+                            <span className="flex min-w-0 flex-1 flex-col">
+                              <span className="truncate text-sm font-medium text-gray-900">
+                                {session.user.name}
+                              </span>
+                              <span className="truncate text-sm text-gray-500">
+                                Obama for Congress
+                              </span>
+                            </span>
+                          </span>
+                          <ChevronDownIcon
+                            className="ml-3 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+                            aria-hidden="true"
+                          />
+                        </span>
+                      </Menu.Button>
                       <Transition
                         as={Fragment}
                         enter="transition ease-out duration-100"
@@ -311,12 +337,13 @@ const Layout = ({ children }) => {
                         leaveFrom="transform opacity-100 scale-100"
                         leaveTo="transform opacity-0 scale-95"
                       >
-                        <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        <Menu.Items className="absolute right-0 z-10 mt-2 w-100 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                           {userNavigation.map((item) => (
                             <Menu.Item key={item.name}>
                               {({ active }) => (
                                 <Link
                                   href={item.href}
+                                  onClick={item.onClick}
                                   className={classNames(
                                     active ? "bg-gray-100" : "",
                                     "block px-4 py-2 text-sm text-gray-700"
@@ -342,7 +369,7 @@ const Layout = ({ children }) => {
             <div className="py-6">{session ? children : <PleaseLogin />}</div>
           </main>
         </div>
-      </div>
+      </Menu>
     </>
   );
 };

@@ -32,7 +32,7 @@ export default function SupabaseTable({ table }) {
 
     supabase
       .from(table)
-      .select("*", { count: "exact" })
+      .select("*", { count: "exact", head: true })
       .then((data) => setRowCountState(data.count));
   }, [page, setPage]);
 
