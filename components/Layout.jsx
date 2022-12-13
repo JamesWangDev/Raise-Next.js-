@@ -97,7 +97,8 @@ const Layout = ({ children }) => {
   const activeIndex = navigation.findIndex(
     (element) => element.href == router.pathname
   );
-  navigation[activeIndex].current = true;
+  if (activeIndex && activeIndex in navigation)
+    navigation[activeIndex].current = true;
 
   return (
     <>
@@ -130,7 +131,7 @@ const Layout = ({ children }) => {
                 leaveFrom="translate-x-0"
                 leaveTo="-translate-x-full"
               >
-                <Dialog.Panel className="relative flex w-full max-w-xs flex-1 flex-col bg-gray-600 pt-5 pb-4">
+                <Dialog.Panel className="relative flex w-full max-w-xs flex-1 flex-col bg-gray-200 pt-5 pb-4">
                   <Transition.Child
                     as={Fragment}
                     enter="ease-in-out duration-300"
@@ -159,6 +160,7 @@ const Layout = ({ children }) => {
                     <nav className="space-y-1 px-2">
                       {navigation.map((item) => (
                         <Link
+                          onClick={() => setSidebarOpen(false)}
                           key={item.name}
                           href={item.href}
                           className={classNames(
