@@ -6,10 +6,11 @@ import Layout from "../components/Layout";
 import { SessionProvider } from "next-auth/react";
 
 function App({ Component, pageProps: { session, ...pageProps } }) {
+  // console.log("pageProps", Object.keys(pageProps));
   return (
     <SessionProvider session={session}>
       <Layout>
-        <Component {...pageProps} />{" "}
+        <Component {...pageProps} />
       </Layout>
     </SessionProvider>
   );

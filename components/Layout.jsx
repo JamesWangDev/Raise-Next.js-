@@ -1,20 +1,9 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-/*
-  This example requires some changes to your config:
-  
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ],
-  }
-  ```
-*/
+import PleaseLogin from "../components/PleaseLogin";
+import { useRouter } from "next/router";
+import { useSession, signIn, signOut } from "next-auth/react";
 import { Fragment, useState } from "react";
 import { Dialog, Menu, Transition } from "@headlessui/react";
 import {
@@ -39,24 +28,39 @@ import {
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 
 const navigation = [
-  { name: "Dashboard", href: "#", icon: HomeIcon, current: true },
-  // { name: "Team", href: "#", icon: UsersIcon, current: false },
-  // { name: "Projects", href: "#", icon: FolderIcon, current: false },
-  // { name: "Calendar", href: "#", icon: CalendarIcon, current: false },
-  // { name: "Documents", href: "#", icon: InboxIcon, current: false },
-  // { name: "Reports", href: "#", icon: ChartBarIcon, current: false },
-
-  { name: "People", href: "#", icon: UsersIcon, current: false },
-  { name: "Saved Lists", href: "#", icon: FolderIcon, current: false },
-  { name: "Make Calls", href: "#", icon: PhoneIcon, current: false },
-  { name: "Contact History", href: "#", icon: ClockIcon, current: false },
-  { name: "Pledges", href: "#", icon: HandRaisedIcon, current: false },
-  { name: "Donations", href: "#", icon: CheckCircleIcon, current: false },
-  { name: "Reports", href: "#", icon: EnvelopeIcon, current: false },
-  { name: "Import", href: "#", icon: ChevronDoubleRightIcon, current: false },
-  { name: "Users", href: "#", icon: UserPlusIcon, current: false },
-  { name: "Settings", href: "#", icon: Cog6ToothIcon, current: false },
+  { name: "Dashboard", href: "/", icon: HomeIcon, current: true },
+  { name: "People", href: "/people", icon: UsersIcon, current: false },
+  {
+    name: "Saved Lists",
+    href: "/savedlists",
+    icon: FolderIcon,
+    current: false,
+  },
+  { name: "Make Calls", href: "/makecalls", icon: PhoneIcon, current: false },
+  {
+    name: "Contact History",
+    href: "/contacthistory",
+    icon: ClockIcon,
+    current: false,
+  },
+  { name: "Pledges", href: "/pledges", icon: HandRaisedIcon, current: false },
+  {
+    name: "Donations",
+    href: "/donations",
+    icon: CheckCircleIcon,
+    current: false,
+  },
+  { name: "Reports", href: "/reports", icon: EnvelopeIcon, current: false },
+  {
+    name: "Import",
+    href: "/import",
+    icon: ChevronDoubleRightIcon,
+    current: false,
+  },
+  { name: "Users", href: "/users", icon: UserPlusIcon, current: false },
+  { name: "Settings", href: "/settings", icon: Cog6ToothIcon, current: false },
 ];
+
 const userNavigation = [
   { name: "Settings", href: "#" },
   { name: "Sign out", href: "#" },
@@ -65,10 +69,6 @@ const userNavigation = [
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
-
-////////
-
-import { useSession, signIn, signOut } from "next-auth/react";
 
 const Brand = () => {
   const { data: session } = useSession();
@@ -90,16 +90,17 @@ const Brand = () => {
 const Layout = ({ children }) => {
   const { data: session } = useSession();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Set the right page as active link using router
+  const router = useRouter();
+  navigation.forEach((page, i) => (navigation[i].current = false));
+  const activeIndex = navigation.findIndex(
+    (element) => element.href == router.pathname
+  );
+  navigation[activeIndex].current = true;
+
   return (
     <>
-      {/*
-      This example requires updating your template:
-
-      ```
-      <html class="h-full bg-gray-100">
-      <body class="h-full">
-      ```
-    */}
       <div>
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
@@ -129,7 +130,7 @@ const Layout = ({ children }) => {
                 leaveFrom="translate-x-0"
                 leaveTo="-translate-x-full"
               >
-                <Dialog.Panel className="relative flex w-full max-w-xs flex-1 flex-col bg-white pt-5 pb-4">
+                <Dialog.Panel className="relative flex w-full max-w-xs flex-1 flex-col bg-gray-600 pt-5 pb-4">
                   <Transition.Child
                     as={Fragment}
                     enter="ease-in-out duration-300"
@@ -157,7 +158,7 @@ const Layout = ({ children }) => {
                   <div className="mt-5 h-0 flex-1 overflow-y-auto">
                     <nav className="space-y-1 px-2">
                       {navigation.map((item) => (
-                        <a
+                        <Link
                           key={item.name}
                           href={item.href}
                           className={classNames(
@@ -177,7 +178,7 @@ const Layout = ({ children }) => {
                             aria-hidden="true"
                           />
                           {item.name}
-                        </a>
+                        </Link>
                       ))}
                     </nav>
                   </div>
@@ -198,27 +199,34 @@ const Layout = ({ children }) => {
             <div className="mt-5 flex flex-grow flex-col">
               <nav className="flex-1 space-y-1 px-2 pb-4">
                 {navigation.map((item) => (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    className={classNames(
-                      item.current
-                        ? "bg-gray-100 text-gray-900"
-                        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900",
-                      "group flex items-center px-2 py-2 text-sm font-medium rounded-md"
-                    )}
-                  >
-                    <item.icon
+                  <>
+                    <Link
+                      key={item.name}
+                      href={item.href}
                       className={classNames(
                         item.current
-                          ? "text-gray-500"
-                          : "text-gray-400 group-hover:text-gray-500",
-                        "mr-3 flex-shrink-0 h-6 w-6"
+                          ? "bg-gray-100 text-gray-900"
+                          : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
+                        "group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                       )}
-                      aria-hidden="true"
-                    />
-                    {item.name}
-                  </a>
+                    >
+                      <item.icon
+                        className={classNames(
+                          item.current
+                            ? "text-gray-500"
+                            : "text-gray-400 group-hover:text-gray-500",
+                          "mr-3 flex-shrink-0 h-6 w-6"
+                        )}
+                        aria-hidden="true"
+                      />
+                      {item.name}
+                    </Link>
+                    {["Make Calls", "Donations"].includes(item.name) ? (
+                      <div className="flex-grow border-t border-gray-200"></div>
+                    ) : (
+                      ""
+                    )}
+                  </>
                 ))}
               </nav>
             </div>
@@ -305,7 +313,7 @@ const Layout = ({ children }) => {
                           {userNavigation.map((item) => (
                             <Menu.Item key={item.name}>
                               {({ active }) => (
-                                <a
+                                <Link
                                   href={item.href}
                                   className={classNames(
                                     active ? "bg-gray-100" : "",
@@ -313,7 +321,7 @@ const Layout = ({ children }) => {
                                   )}
                                 >
                                   {item.name}
-                                </a>
+                                </Link>
                               )}
                             </Menu.Item>
                           ))}
@@ -329,19 +337,7 @@ const Layout = ({ children }) => {
           </div>
 
           <main className="flex-1">
-            <div className="py-6">
-              {children}
-              {/* <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
-                <h1 className="text-2xl font-semibold text-gray-900">
-                  Dashboard
-                </h1>
-              </div>
-              <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
-                <div className="py-4">
-                  <div className="h-96 rounded-lg border-4 border-dashed border-gray-200" />
-                </div>
-              </div> */}
-            </div>
+            <div className="py-6">{session ? children : <PleaseLogin />}</div>
           </main>
         </div>
       </div>
