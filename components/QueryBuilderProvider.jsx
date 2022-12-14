@@ -2,27 +2,40 @@ import { QueryBuilderBootstrap } from "@react-querybuilder/bootstrap";
 import { useState, useEffect } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 
+import SupabaseTable from "../components/SupabaseTable";
+
 import { formatQuery, QueryBuilder } from "react-querybuilder";
 
-const fields = [
-  { name: "firstName", label: "First Name" },
-  { name: "lastName", label: "Last Name" },
-];
+let fields = [];
 
 const initialQuery = {
-  combinator: "and",
+  combinator: "or",
   rules: [
-    { field: "firstName", operator: "beginsWith", value: "Stev" },
-    { field: "lastName", operator: "in", value: "Vai,Vaughan" },
+    // { field: "firstName", operator: "beginsWith", value: "Stev" },
+    // { field: "lastName", operator: "in", value: "Vai,Vaughan" },
   ],
 };
 
-export default function QueryBuilderProvider({ children }) {
+export default function QueryBuilderProvider({ table, children }) {
   const [query, setQuery] = useState(initialQuery);
+  const [filterColumns, setFilterColumns] = useState([]);
+
+  var formatted = formatQuery(query, { format: "sql", parseNumbers: true });
+
+  fields = filterColumns.map((a) => ({ name: a, label: a }));
 
   return (
     <>
       <div class="qbp">
+        <pre>
+          <code>
+            Query:{" "}
+            {formatted == "(1 = 1)"
+              ? "No filters applied, returning all results"
+              : formatted}
+          </code>
+        </pre>
+
         <QueryBuilderBootstrap>
           <QueryBuilder
             showCombinatorsBetweenRules
@@ -31,15 +44,12 @@ export default function QueryBuilderProvider({ children }) {
             onQueryChange={(q) => setQuery(q)}
           />
         </QueryBuilderBootstrap>
-
-        <h4 className="font-semibold mt-3">Query</h4>
-        <pre>
-          <code>
-            {formatQuery(query, { format: "sql", parseNumbers: true })}
-          </code>
-        </pre>
       </div>
-      {children}
+      <SupabaseTable
+        setFilterColumns={setFilterColumns}
+        table={table}
+        currentQuery={query}
+      />
     </>
   );
 }

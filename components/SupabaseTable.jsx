@@ -4,7 +4,12 @@ import Box from "@mui/material/Box";
 import supabase from "../utils/supabase";
 import { DataGrid, GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
 
-export default function SupabaseTable({ table, query = "*" }) {
+export default function SupabaseTable({
+  table,
+  query = "*",
+  currentQuery,
+  setFilterColumns,
+}) {
   const [data, setData] = useState(null);
   const [isLoading, setLoading] = useState(false);
   var rowCount = 0;
@@ -20,20 +25,29 @@ export default function SupabaseTable({ table, query = "*" }) {
   useEffect(() => {
     setLoading(true);
 
-    supabase
-      .from(table)
-      .select(query)
-      .range(page * 10, (page + 1) * 10)
-      .then((data) => {
-        setData(data.data);
-        setLoading(false);
-      });
+    var query_ref = supabase.from(table).select(query);
+
+    if (currentQuery && currentQuery.rules && currentQuery.rules[0]) {
+      console.log("current rules", currentQuery.rules[0]);
+
+      query_ref = query_ref.filter(
+        currentQuery.rules[0].field,
+        "eq",
+        currentQuery.rules[0].value
+      );
+    }
+
+    query_ref.range(page * 10, (page + 1) * 10).then((data) => {
+      setFilterColumns(Object.keys(data.data[0]));
+      setData(data.data);
+      setLoading(false);
+    });
 
     supabase
       .from(table)
       .select("*", { count: "exact", head: true })
       .then((data) => setRowCountState(data.count));
-  }, [page, setPage]);
+  }, [page, setPage, currentQuery]);
 
   // if (isLoading) return <p>Loading...</p>;
   // if (!data) return <p>No profile data</p>;
@@ -55,7 +69,7 @@ export default function SupabaseTable({ table, query = "*" }) {
 
   return (
     <>
-      <Box sx={{ height: "75vh", width: "100%" }}>
+      <Box sx={{ height: "60vh", width: "100%" }}>
         <DataGrid
           paginationMode="server"
           rowCount={rowCountState}
