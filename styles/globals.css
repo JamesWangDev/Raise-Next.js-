@@ -29,12 +29,10 @@ h1 {
   @apply text-3xl font-bold leading-tight tracking-tight text-gray-900 mb-3;
 }
 
-.queryBuilder {
-  .form-control,
-  .form-select {
-    display: inline-block;
-    width: auto;
-  }
+.queryBuilder .form-control,
+.queryBuilder .form-select {
+  display: inline-block;
+  width: auto;
 }
 
 .qbp input,
