@@ -1,17 +1,8 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import SupabaseTable from "../components/SupabaseTable";
 import QueryBuilderProvider from "../components/QueryBuilderProvider";
 import { useState, useEffect } from "react";
-import Orizzonte, {
-  Choices,
-  Dropdown,
-  FullText,
-  Group,
-  Select,
-  Toggle,
-} from "orizzonte";
 
 export default function Dashboard() {
   return (

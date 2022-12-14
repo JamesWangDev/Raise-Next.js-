@@ -9,7 +9,7 @@ import { formatQuery, QueryBuilder } from "react-querybuilder";
 let fields = [];
 
 const initialQuery = {
-  combinator: "or",
+  combinator: "and",
   rules: [
     // { field: "firstName", operator: "beginsWith", value: "Stev" },
     // { field: "lastName", operator: "in", value: "Vai,Vaughan" },
@@ -38,10 +38,17 @@ export default function QueryBuilderProvider({ table, children }) {
 
         <QueryBuilderBootstrap>
           <QueryBuilder
-            showCombinatorsBetweenRules
+            resetOnFieldChange="false"
+            resetOnOperatorChange="false"
+            debugMode
+            // showCombinatorsBetweenRules
             fields={fields}
             query={query}
             onQueryChange={(q) => setQuery(q)}
+            // Prevent new groups/hide group+ button
+            controlElements={{
+              addGroupAction: () => null,
+            }}
           />
         </QueryBuilderBootstrap>
       </div>

@@ -29,6 +29,10 @@ h1 {
   @apply text-3xl font-bold leading-tight tracking-tight text-gray-900 mb-3;
 }
 
+h2 {
+  @apply font-semibold leading-tight tracking-tight text-gray-900 mb-3;
+}
+
 .queryBuilder .form-control,
 .queryBuilder .form-select {
   display: inline-block;
@@ -50,4 +54,12 @@ code {
 
 .ruleGroup .ruleGroup {
   @apply shadow ring-1 ring-black ring-opacity-5 rounded m-3 p-3;
+}
+
+.filepond--credits {
+  display: none !important;
+}
+
+.filepond--wrapper {
+  @apply my-3;
 }

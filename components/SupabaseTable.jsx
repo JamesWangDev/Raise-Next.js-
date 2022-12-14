@@ -8,7 +8,7 @@ export default function SupabaseTable({
   table,
   query = "*",
   currentQuery,
-  setFilterColumns,
+  setFilterColumns = function () {},
 }) {
   const [data, setData] = useState(null);
   const [isLoading, setLoading] = useState(false);
@@ -104,7 +104,7 @@ export default function SupabaseTable({
       ? Object.keys(rows[0]).map((columnName) => ({
           field: columnName,
           headerName: columnName,
-          width: 70,
+          width: 120,
         }))
       : [];
   else var columns = [];
