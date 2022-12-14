@@ -27,18 +27,56 @@ export default function SupabaseTable({
 
     var query_ref = supabase.from(table).select(query);
 
+    const convert_sql_operators_to_postgrest = {
+      // sql: "postgrest",
+      "=": "eq",
+      ">": "gt",
+      ">=": "gte",
+      "<": "lt",
+      "<=": "lte",
+      "<>": "or",
+      "!=": "neq",
+      LIKE: "like",
+      ILIKE: "ilike",
+      IN: "in",
+      IS: "is",
+      "@@": "fts",
+      "@@": "plfts",
+      "@@": "phfts",
+      "@@": "wfts",
+      "@>": "cs",
+      "<@": "cd",
+      "&&": "ov",
+      "<<": "sl",
+      ">>": "sr",
+      "&<": "nxr",
+      "&>": "nxl",
+      "-|-": "adj",
+      NOT: "not",
+    };
+
     if (currentQuery && currentQuery.rules && currentQuery.rules[0]) {
       console.log("current rules", currentQuery.rules[0]);
+      console.log("currentQuery.rules[0]", currentQuery.rules[0]);
 
-      query_ref = query_ref.filter(
-        currentQuery.rules[0].field,
-        "eq",
-        currentQuery.rules[0].value
-      );
+      currentQuery.rules.forEach((rule) => {
+        query_ref = query_ref.filter(
+          rule.field,
+          convert_sql_operators_to_postgrest[rule.operator],
+          rule.value
+        );
+      });
     }
 
     query_ref.range(page * 10, (page + 1) * 10).then((data) => {
-      setFilterColumns(Object.keys(data.data[0]));
+      console.log(typeof data.data);
+      if (
+        data &&
+        data.data &&
+        data.data[0] &&
+        Object.keys(data.data[0]).length > 0
+      )
+        setFilterColumns(Object.keys(data.data[0]));
       setData(data.data);
       setLoading(false);
     });
@@ -52,20 +90,25 @@ export default function SupabaseTable({
   // if (isLoading) return <p>Loading...</p>;
   // if (!data) return <p>No profile data</p>;
 
-  var rows = data
-    ? "id" in data[0]
-      ? data
-      : data.map((row) => ({ id: row[Object.keys(row)[0]], ...row }))
-    : [];
+  if (data && data[0])
+    var rows = data
+      ? "id" in data[0]
+        ? data
+        : data.map((row) => ({ id: row[Object.keys(row)[0]], ...row }))
+      : [];
+  else var rows = [];
   //var rows = data ? data : [];
 
-  var columns = data
-    ? Object.keys(rows[0]).map((columnName) => ({
-        field: columnName,
-        headerName: columnName,
-        width: 70,
-      }))
-    : [];
+  if (data && data[0])
+    var columns = data
+      ? Object.keys(rows[0]).map((columnName) => ({
+          field: columnName,
+          headerName: columnName,
+          width: 70,
+        }))
+      : [];
+  else var columns = [];
+  console.log("columns", columns);
 
   return (
     <>

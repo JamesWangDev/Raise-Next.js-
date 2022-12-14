@@ -26,7 +26,7 @@ export default function QueryBuilderProvider({ table, children }) {
 
   return (
     <>
-      <div class="qbp">
+      <div className="qbp">
         <pre>
           <code>
             Query:{" "}
