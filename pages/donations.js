@@ -2,7 +2,16 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import SupabaseTable from "../components/SupabaseTable";
+import QueryBuilder from "../components/QueryBuilder";
 import { useState, useEffect } from "react";
+import Orizzonte, {
+  Choices,
+  Dropdown,
+  FullText,
+  Group,
+  Select,
+  Toggle,
+} from "orizzonte";
 
 export default function Dashboard() {
   return (
@@ -11,7 +20,9 @@ export default function Dashboard() {
         <h1 className="text-2xl font-semibold text-gray-900">Donations</h1>
       </div>
       <div className="mx-auto max-w-7xl px-2  ">
-        <SupabaseTable table="donations_for_user_display" />
+        <QueryBuilder>
+          <SupabaseTable table="donations_for_user_display" />
+        </QueryBuilder>
       </div>
     </div>
   );

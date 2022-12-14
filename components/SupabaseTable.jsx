@@ -69,7 +69,7 @@ export default function SupabaseTable({ table, query = "*" }) {
           className="bg-white"
           sx={{
             my: 2,
-            fontFamily: "Inter",
+
             "& .MuiDataGrid-columnHeader .MuiDataGrid-columnSeparator": {
               display: "none",
             },
