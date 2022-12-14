@@ -2,7 +2,7 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import SupabaseTable from "../components/SupabaseTable";
-import QueryBuilder from "../components/QueryBuilder";
+import QueryBuilder from "../components/QueryBuilderProvider";
 import { useState, useEffect } from "react";
 import Orizzonte, {
   Choices,

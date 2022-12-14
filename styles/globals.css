@@ -10,8 +10,9 @@ body {
 
 html,
 body,
-.MuiDataGrid-root {
-  font-family: Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
+.MuiDataGrid-root,
+code {
+  font-family: "Inter var", -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
     Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif !important;
 }
 
@@ -26,4 +27,29 @@ main {
 
 h1 {
   @apply text-3xl font-bold leading-tight tracking-tight text-gray-900 mb-3;
+}
+
+.queryBuilder {
+  .form-control,
+  .form-select {
+    display: inline-block;
+    width: auto;
+  }
+}
+
+.qbp input,
+.qbp select {
+  @apply min-w-0 flex-1 rounded-none rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm mr-2;
+}
+
+.qbp .btn {
+  @apply mr-2 my-1;
+}
+
+code {
+  @apply block bg-gray-900 font-mono font-thin text-white p-3 py-2 my-1;
+}
+
+.ruleGroup .ruleGroup {
+  @apply shadow ring-1 ring-black ring-opacity-5 rounded m-3 p-3;
 }
