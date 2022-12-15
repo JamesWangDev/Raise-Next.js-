@@ -1,6 +1,9 @@
 // Papa parse for csv handling
 const Papa = require("papaparse");
 
+// Postgres client
+const { Client } = require("pg");
+
 import supabase from "../../utils/supabase";
 
 // Load csv of donations to donation and people table
@@ -16,27 +19,42 @@ export default async function loadDonationsCSV(req, res) {
   // Get the file from supabase storage
   const { data: fileBlob, error } = await supabase.storage
     .from("public/imports")
-    .download("" + fileName);
-  const rawContent = await fileBlob.text(); //.toString();
+    .download(fileName);
+  const rawContent = await fileBlob.text();
+  console.log(rawContent);
+
+  // Store a signed URL to pass to PG as fileURL
+  const {
+    data: { publicUrl: fileURL },
+  } = await supabase.storage.from("imports").getPublicUrl(fileName);
+
+  console.log(fileURL);
 
   // Data is the JSON, fields is an array of headers
   const {
-    data,
+    data: FilePasedToJSON,
     // meta: { fieldsb },
   } = Papa.parse(rawContent, { header: true, skipEmptyLines: true });
 
-  // // next js test lines
-  // if (error) res.status(500).send(error);
-  // res.status(200).send(data);
-  // return;
+  // Using .env PGHOST, PGPGPASSWORD, etc instead of var config={};
+  const client = new Client(); // config
 
-  // // Write donations to firstore simultaneously
-  // const donationInsertResults = await Promise.all(
-  //   data.map((row) =>
-  //     accountDB.collection("donations").doc(row["Lineitem ID"]).set(row)
-  //   )
-  // );
-  // donationInsertResults; // Shh linter
+  // Open PG connection
+  await client.connect();
+
+  // Use COPY to load csv to table
+  const response = await client.query(
+    `COPY testtable(text)
+    FROM PROGRAM 'curl "${fileURL}"'
+    DELIMITER ','
+    CSV HEADER;`
+  );
+
+  console.log(response);
+
+  // next js test lines
+  res.status(200).send();
+  return;
 
   // Copy
 

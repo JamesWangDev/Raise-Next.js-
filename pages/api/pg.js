@@ -6,13 +6,6 @@ import supabase from "../../utils/supabase";
 export default async function handler(req, res) {
   console.time("supabase req timer");
 
-  const config = {
-    user: "postgres", // default process.env.PGUSER || process.env.USER
-    password: process.env.PGPASSWORD,
-    host: "db.hhvadsbsmfeutnvgvnrj.supabase.co", // default process.env.PGHOST
-    database: "postgres", // default process.env.PGDATABASE || user
-    port: "5432", // default process.env.PGPORT
-  };
 
   const { Client } = require("pg");
   const client = new Client(config);
