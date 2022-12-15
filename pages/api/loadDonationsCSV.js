@@ -38,7 +38,7 @@ export default async function loadDonationsCSV(req, res) {
   // );
   // donationInsertResults; // Shh linter
 
-  // Copy 
+  // Copy
 
   // // Grab the people collection as an array of rows, and add id to the object
   // const people = [];
