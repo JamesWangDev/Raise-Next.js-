@@ -40,3 +40,6 @@ next-env.d.ts
 /.storbook/*
 
 .env
+/.env
+/.env/
+*.env*

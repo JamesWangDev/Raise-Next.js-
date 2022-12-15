@@ -6,7 +6,6 @@ import supabase from "../../utils/supabase";
 export default async function handler(req, res) {
   console.time("supabase req timer");
 
-
   const { Client } = require("pg");
   const client = new Client(config);
   await client.connect();
