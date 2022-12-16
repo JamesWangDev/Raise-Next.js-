@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { FilePond, registerPlugin } from "react-filepond";
 import "filepond/dist/filepond.min.css";
 import supabase from "../utils/supabase";
+import { data } from "autoprefixer";
 
 const server = {
   process: (
@@ -22,6 +23,7 @@ const server = {
   ) => {
     //   progress(e.lengthComputable, e.loaded, e.total);
     console.log("start process", file);
+    console.time("upload and process");
 
     // Create a root reference
 
@@ -40,6 +42,13 @@ const server = {
         console.log(data, error);
         console.log("File available at", data.path);
         load("done");
+
+        fetch("/api/loadDonationsCSV?fileName=" + encodeURIComponent(data.path))
+          .then((res) => res.text())
+          .then((data) => {
+            console.log(data);
+            console.timeEnd("upload and process");
+          });
       });
 
     // Register three observers:
