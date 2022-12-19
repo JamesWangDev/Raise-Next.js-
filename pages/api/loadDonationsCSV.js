@@ -115,6 +115,7 @@ export default async function loadDonationsCSV(req, res) {
   console.log("loadDonationsCSV()");
 
   console.time("load file");
+  ("a");
 
   // Get fileName from request query variable
   let {
