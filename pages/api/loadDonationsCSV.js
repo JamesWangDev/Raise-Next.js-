@@ -122,7 +122,7 @@ export default async function loadDonationsCSV(req, res) {
   } = req;
 
   // For testing
-  fileName = "rana-ab-backup.csv";
+  fileName = "rana-ab-backup-bigtest.csv";
   console.log("fileName", fileName);
 
   // Get the file from supabase storage
@@ -155,7 +155,7 @@ export default async function loadDonationsCSV(req, res) {
   fileParsedToJSON = fileParsedToJSON.map((row) => ({
     ...row,
     batch_id: batchID,
-    id: uuid(),
+    // id: uuid(),
   }));
 
   // Loop through every row
@@ -169,7 +169,9 @@ export default async function loadDonationsCSV(req, res) {
   });
 
   // // Grab the people collection as an array of rows
-  const people2 = (await supabase.from("people").select()).data;
+  console.time("people get direct query");
+  const people = (await db.query("select * from people")).rows;
+  console.timeEnd("people get direct query");
   const oldPeople = JSON.parse(JSON.stringify(people));
 
   let updates = [];
@@ -239,6 +241,8 @@ export default async function loadDonationsCSV(req, res) {
     });
   let sanitzedFileName = updatedFileUploadResult.data.path;
 
+  console.log("updatedFileUploadResult", updatedFileUploadResult);
+
   // Store a signed URL to pass to PG as fileURL
   const {
     data: { publicUrl: fileURL },
@@ -255,10 +259,12 @@ export default async function loadDonationsCSV(req, res) {
   var concatColumns = '"' + columns.join('", "') + '"';
 
   // Setup query
-  let query = `COPY staging.donations(${concatColumns})
-  FROM PROGRAM 'curl "${fileURL}"'
-  DELIMITER ','
-  CSV HEADER;`;
+  let query = `
+    COPY staging.donations(${concatColumns})
+      FROM PROGRAM 'curl "${fileURL}"'
+      DELIMITER ','
+      CSV HEADER;
+  `;
 
   // Open PG connection and safely close connection
   let result = await db.query(query);
@@ -292,18 +298,9 @@ export default async function loadDonationsCSV(req, res) {
 
   console.time("upsert 7k records into people");
 
-  // Diff to figure out changes
-  // people versus oldPeople
-  const differences = people.filter((x) => {
-    for (const person of oldPeople) {
-      if (JSON.stringify(person) === JSON.stringify(x)) return false;
-    }
-    return true;
-  });
-
   // Insert differences
-
-  const { error4 } = await supabase.from("people").upsert(differences);
+  // console.log("differences.length", differences.length);
+  const { error4 } = await supabase.from("people").upsert(people);
   console.timeEnd("upsert 7k records into people");
   console.log("people insert error4:", error4);
 
