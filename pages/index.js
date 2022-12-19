@@ -5,8 +5,8 @@ import supabase from "../utils/supabase";
 import SupabaseTable from "../components/SupabaseTable";
 import { useState, useEffect } from "react";
 
-import { unstable_getServerSession } from "next-auth/next";
-import { authOptions } from "./api/auth/[...nextauth]";
+// import { unstable_getServerSession } from "next-auth/next";
+// import { authOptions } from "./api/auth/[...nextauth]";
 import { useSession, signIn, signOut } from "next-auth/react";
 
 import PleaseLogin from "../components/PleaseLogin";
@@ -172,14 +172,14 @@ export default function Page() {
   );
 }
 
-export async function getServerSideProps(context) {
-  return {
-    props: {
-      session: await unstable_getServerSession(
-        context.req,
-        context.res,
-        authOptions
-      ),
-    },
-  };
-}
+// export async function getServerSideProps(context) {
+//   return {
+//     props: {
+//       session: await unstable_getServerSession(
+//         context.req,
+//         context.res,
+//         authOptions
+//       ),
+//     },
+//   };
+// }

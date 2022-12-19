@@ -1,16 +1,21 @@
-import { decode } from "base64-arraybuffer";
+// UUID!
+const { v4: uuid } = require("uuid");
+uuid;
 
 // Papa parse for csv handling
 const Papa = require("papaparse");
 
+import { UpdateSharp } from "@mui/icons-material";
 // Postgres client
 import { connectToDatabase } from "../../utils/db";
 const db = connectToDatabase();
 
+// Supabase storage client
 import supabase from "../../utils/supabase";
 
 // List of columns in order from csv file
 let permitTheseColumns = [
+  "batch_id",
   "receipt_id",
   "date",
   "amount",
@@ -99,8 +104,10 @@ let permitTheseColumns = [
 
 // Load csv of donations to donation and people table
 export default async function loadDonationsCSV(req, res) {
-  const batchID = Math.round(Math.random() * 999999999999);
+  // Assign a unique batch ID for transaction integrity
+  const batchID = uuid();
 
+  // Log the time of function execution
   console.time("functionexectime");
   console.log("------");
   console.log("loadDonationsCSV()");
@@ -111,40 +118,45 @@ export default async function loadDonationsCSV(req, res) {
     method,
   } = req;
 
-  console.log("fileName", fileName);
-
   // For testing
-  fileName = "sample.csv";
+  fileName = "rana-ab-backup.csv";
+  console.log("fileName", fileName);
 
   // Get the file from supabase storage
   const { data: fileBlob, error } = await supabase.storage
     .from("public/imports")
     .download(fileName);
-  const rawContent = await fileBlob.text();
+  let rawContent = await fileBlob.text();
   console.log("rawContent.length", rawContent.length);
+
+  // Fix the headers in the raw content
+  var firstLine = rawContent.split("\n", 1)[0].trim();
+  firstLine = firstLine.replaceAll(" ", "_").toLowerCase();
+  rawContent = firstLine + rawContent.slice(rawContent.indexOf("\n"));
 
   // Data is the JSON, fields is an array of headers
   let {
-    data: FilePasedToJSON,
+    data: fileParsedToJSON,
     // meta: { fieldsb },
   } = Papa.parse(rawContent, { header: true, skipEmptyLines: true });
 
   // Add the batch ID
-  FilePasedToJSON = FilePasedToJSON.map((row) => ({
+  fileParsedToJSON = fileParsedToJSON.map((row) => ({
     ...row,
     batch_id: batchID,
   }));
 
   // Loop through every row
-  FilePasedToJSON.forEach((row, index) => {
+  fileParsedToJSON.forEach((row, index) => {
     // Loop through every key
-    FilePasedToJSON.forEach((key, j) => {
+    Object.keys(row).forEach((key, j) => {
       // And drop every key that is not present in permitTheseColumns
-      if (!permitTheseColumns.includes(key)) delete FilePasedToJSON[index][key];
+      if (!permitTheseColumns.includes(key))
+        delete fileParsedToJSON[index][key];
     });
   });
 
-  let updatedFileContents = Papa.unparse(FilePasedToJSON);
+  let updatedFileContents = Papa.unparse(fileParsedToJSON);
 
   // Write the CSV back to storage
   // ..now that we're sure it's compatible
@@ -154,24 +166,17 @@ export default async function loadDonationsCSV(req, res) {
     .upload(batchID + ".csv", updatedFileContents, {
       upsert: true,
     });
-  fileName = updatedFileUploadResult.data.path;
+  let sanitzedFileName = updatedFileUploadResult.data.path;
 
   // Store a signed URL to pass to PG as fileURL
   const {
     data: { publicUrl: fileURL },
-  } = await supabase.storage.from("imports").getPublicUrl(fileName);
+  } = await supabase.storage.from("imports").getPublicUrl(sanitzedFileName);
 
   console.log("fileURL", fileURL);
 
   // Get the target columns parsed from csv into array
-  var firstLine = updatedFileContents.split("\n", 1)[0].trim();
-  firstLine = firstLine.replaceAll(" ", "_").toLowerCase();
-  let columns = firstLine.split(",");
-  var reservedIndex = 1;
-  columns.forEach((item, index) => {
-    if (item == "reserved") columns[index] = "reserved" + reservedIndex++;
-  });
-
+  let columns = updatedFileContents.split("\n", 1)[0].trim().split(",");
   var concatColumns = '"' + columns.join('", "') + '"';
 
   // Setup query
@@ -195,74 +200,90 @@ export default async function loadDonationsCSV(req, res) {
 
   // Setup query to copy staging to production
   let stageToProductionQuery = `
-    
+
       INSERT INTO public.donations
         SELECT * FROM staging.donations
-        WHERE batch_id=${batchID};
-      DELETE FROM staging.donations WHERE batch_id=${batchID};
+        WHERE batch_id='${batchID}';
+      DELETE FROM staging.donations WHERE batch_id='${batchID}';
     `;
+
+  console.log(stageToProductionQuery);
 
   // Open PG connection and safely close connection
   let result2 = await db.query(stageToProductionQuery);
 
   console.log(result2);
+  console.log("b");
 
-  // Copy
+  // // Grab the people collection as an array of rows
+  const people = (await db.query("select * from people")).rows;
+  const oldPeople = JSON.parse(JSON.stringify(people));
 
-  // // Grab the people collection as an array of rows, and add id to the object
-  // const people = [];
-  // (await accountDB.collection("people").get()).forEach((a) =>
-  //   people.push({ ...a.data(), id: a.id })
-  // );
-  // const oldPeople = JSON.parse(JSON.stringify(people));
+  let updates = [];
 
   // // Loop through donation objects
-  // for (const donation of data) {
-  //   functions.logger.log(donation);
+  for (const donation of fileParsedToJSON) {
+    // Does person already exist?
+    const howManyMatchingPeople = people.filter(
+      // Lots of possibilities for record linkage but
+      // let's just find by email to start with.
+      (person) => person.email == donation["donor_email"]
+    ).length;
 
-  //   // Does person already exist?
-  //   // Lots of possibilities for record linkage but
-  //   // let's just find by email to start with.
-  //   const existingRecords = people.filter(
-  //     (person) => person.email == donation["Donor Email"]
-  //   );
-  //   const matchingIndex = people.findIndex(
-  //     (person) => person.email == donation["Donor Email"]
-  //   );
+    // Email isn't unique! Throw error
+    if (howManyMatchingPeople > 1)
+      throw new Error("Email should be unique but was not", donation);
 
-  //   // Email isn't unique! Throw error
-  //   if (existingRecords.length > 1)
-  //     throw new Error("Email should be unique but was not", {
-  //       accountID: accountID,
-  //       donationID: donation["Lineitem ID"],
-  //     });
+    // Create an object to hold new information
+    const newPerson = newPersonFromDonationObject(donation);
 
-  //   // Create an object to hold new information
-  //   const newPerson = newPersonFromDonationObject(donation);
+    // Placeholder for match id
+    let personID;
 
-  //   // If the donor already exists, grab existing id
-  //   let personID;
-  //   if (existingRecords.length > 0) {
-  //     personID = existingRecords[0].id;
-  //     // await accountDB.collection('people').doc(personID).set(newPerson);
+    // If the donor already exists, grab existing id
+    if (howManyMatchingPeople > 0) {
+      // Record the match index
+      const matchingIndex = people.findIndex(
+        (person) => person.email == donation["donor_email"]
+      );
 
-  //     // Record a change a differnt way
-  //     people[matchingIndex] = JSON.parse(
-  //       JSON.stringify({ ...newPerson, id: personID })
-  //     );
-  //   } else {
-  //     // If the donor doesn't already exist, we want to create someone!
-  //     // personID = (await accountDB.collection('people').add(newPerson)).id;
-  //     personID = uuid();
-  //     // Record a change a differnt way
-  //     people.push(JSON.parse(JSON.stringify({ ...newPerson, id: personID })));
-  //   }
+      personID = people[matchingIndex].id;
 
-  //   accountDB
-  //     .collection("donations")
-  //     .doc(donation["Lineitem ID"])
-  //     .update({ personID: personID });
-  // }
+      // Record the overwrite
+      people[matchingIndex] = JSON.parse(
+        JSON.stringify({ ...newPerson, id: personID })
+      );
+    } else {
+      // If the donor doesn't already exist, we want to create someone!
+      // personID = (await accountDB.collection('people').add(newPerson)).id;
+      personID = uuid();
+      // Record a change a differnt way
+      people.push(JSON.parse(JSON.stringify({ ...newPerson, id: personID })));
+    }
+
+    // queryPushPeopleIDsToDonationTable += `UPDATE donations SET person_id='${personID}' WHERE lineitem_id='${donation.lineitem_id}';`;
+
+    updates.push({ personID: personID, donationID: donation.lineitem_id });
+  }
+
+  const updateDonationsWithIDs = await Promise.all(
+    updates.map((row) =>
+      supabase
+        .from("donations")
+        .update({ person_id: row.personID })
+        .eq("lineitem_id", row.donationID)
+    )
+  );
+  console.log(updateDonationsWithIDs);
+
+  // // Push all of the new and existing people IDs back to the donation table
+  // const updateDonationsWithPeopleIDsResult = await db.query(
+  //   "BEGIN;" + queryPushPeopleIDsToDonationTable + "COMMIT;"
+  // );
+  // console.log(
+  //   "updateDonationsWithPeopleIDsResult.length",
+  //   updateDonationsWithPeopleIDsResult.length
+  // );
 
   // // Diff to figure out changes
   // // people versus oldPeople
@@ -293,27 +314,27 @@ export default async function loadDonationsCSV(req, res) {
 function newPersonFromDonationObject(data) {
   return {
     // Basic assignments
-    lastName: data["Donor Last Name"],
-    firstName: data["Donor First Name"],
-    email: data["Donor Email"],
-    phone: data["Donor Phone"],
-    employer: data["Donor Employer"],
-    occupation: data["Donor Occupation"],
+    lastName: data["donor_last_name"],
+    firstName: data["donor_first_name"],
+    email: data["donor_email"],
+    phone: data["donor_phone"],
+    employer: data["donor_employer"],
+    occupation: data["donor_occupation"],
 
     // Address
-    address: data["Donor Addr1"],
-    address2: data["Donor Addr2"],
-    city: data["Donor City"],
-    state: data["Donor State"],
-    country: data["Donor Country"],
+    address: data["donor_addr1"],
+    address2: data["donor_addr2"],
+    city: data["donor_city"],
+    state: data["donor_state"],
+    country: data["donor_country"],
     // zip: data['Donor Zip'],
 
     // Update total, # donations, & largest donation
-    totalDonated: data["Amount"],
+    totalDonated: data["amount"],
     numberOfDonations: 0, // one more...?
     largestDonation: 0, // hmmm
 
     // Update most recent donation
-    mostRecentDonationDate: data["Date"],
+    mostRecentDonationDate: data["date"],
   };
 }
