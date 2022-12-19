@@ -115,7 +115,6 @@ export default async function loadDonationsCSV(req, res) {
   console.log("loadDonationsCSV()");
 
   console.time("load file");
-  ("a");
 
   // Get fileName from request query variable
   let {
@@ -124,7 +123,7 @@ export default async function loadDonationsCSV(req, res) {
   } = req;
 
   // For testing
-  fileName = "rana-ab-backup-bigtest.csv";
+  fileName = "rana-ab-backup.csv";
   console.log("fileName", fileName);
 
   // Get the file from supabase storage
