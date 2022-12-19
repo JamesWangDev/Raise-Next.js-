@@ -96,9 +96,9 @@ const Brand = () => {
           />
         </svg> */}
         <img
-          className="h-7 w-auto"
-          style={{ marginTop: "2px" }}
-          src="https://cdn-icons-png.flaticon.com/512/5842/5842958.png"
+          className="h-6 w-auto"
+          style={{ marginTop: "3px" }}
+          src="/raisemore.png"
           alt="Raise More"
         />
 
