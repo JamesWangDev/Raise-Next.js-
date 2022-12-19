@@ -104,6 +104,7 @@ let permitTheseColumns = [
 ];
 
 // Load csv of donations to donation and people table
+// 12/19/22 Currently loading 60k donations from a 45mb file in 34 seconds
 export default async function loadDonationsCSV(req, res) {
   // Assign a unique batch ID for transaction integrity
   const batchID = uuid();
