@@ -1,11 +1,9 @@
 // UUID!
 const { v4: uuid } = require("uuid");
-uuid;
 
 // Papa parse for csv handling
 const Papa = require("papaparse");
 
-import { UpdateSharp } from "@mui/icons-material";
 // Postgres client
 import { connectToDatabase } from "../../utils/db";
 const db = connectToDatabase();
@@ -123,7 +121,7 @@ export default async function loadDonationsCSV(req, res) {
   } = req;
 
   // For testing
-  fileName = "rana-ab-backup.csv";
+  // fileName = "rana-ab-backup.csv";
   console.log("fileName", fileName);
 
   // Get the file from supabase storage
