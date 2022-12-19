@@ -15,6 +15,7 @@ import supabase from "../../utils/supabase";
 
 // List of columns in order from csv file
 let permitTheseColumns = [
+  "id",
   "batch_id",
   "receipt_id",
   "date",
@@ -112,6 +113,8 @@ export default async function loadDonationsCSV(req, res) {
   console.log("------");
   console.log("loadDonationsCSV()");
 
+  console.time("load file");
+
   // Get fileName from request query variable
   let {
     query: { fileName },
@@ -129,6 +132,10 @@ export default async function loadDonationsCSV(req, res) {
   let rawContent = await fileBlob.text();
   console.log("rawContent.length", rawContent.length);
 
+  console.timeEnd("load file");
+
+  console.time("parse file");
+
   // Fix the headers in the raw content
   var firstLine = rawContent.split("\n", 1)[0].trim();
   firstLine = firstLine.replaceAll(" ", "_").toLowerCase();
@@ -140,10 +147,15 @@ export default async function loadDonationsCSV(req, res) {
     // meta: { fieldsb },
   } = Papa.parse(rawContent, { header: true, skipEmptyLines: true });
 
+  console.timeEnd("parse file");
+
+  console.time("edit file");
+
   // Add the batch ID
   fileParsedToJSON = fileParsedToJSON.map((row) => ({
     ...row,
     batch_id: batchID,
+    id: uuid(),
   }));
 
   // Loop through every row
@@ -156,73 +168,16 @@ export default async function loadDonationsCSV(req, res) {
     });
   });
 
-  let updatedFileContents = Papa.unparse(fileParsedToJSON);
-
-  // Write the CSV back to storage
-  // ..now that we're sure it's compatible
-  // and replace fileName with these cleaned file
-  const updatedFileUploadResult = await supabase.storage
-    .from("imports")
-    .upload(batchID + ".csv", updatedFileContents, {
-      upsert: true,
-    });
-  let sanitzedFileName = updatedFileUploadResult.data.path;
-
-  // Store a signed URL to pass to PG as fileURL
-  const {
-    data: { publicUrl: fileURL },
-  } = await supabase.storage.from("imports").getPublicUrl(sanitzedFileName);
-
-  console.log("fileURL", fileURL);
-
-  // Get the target columns parsed from csv into array
-  let columns = updatedFileContents.split("\n", 1)[0].trim().split(",");
-  var concatColumns = '"' + columns.join('", "') + '"';
-
-  // Setup query
-  let query = `COPY staging.donations(${concatColumns})
-  FROM PROGRAM 'curl "${fileURL}"'
-  DELIMITER ','
-  CSV HEADER;`;
-
-  // Open PG connection and safely close connection
-  let result = await db.query(query);
-
-  // next js test lines
-  let successfulCopies = "rowCount" in result ? result.rowCount : 0;
-  console.log("successfulCopies", successfulCopies);
-
-  if (!(successfulCopies > 0)) {
-    var error2 = "";
-    console.error(error2);
-    res.status(500).send(error2);
-  }
-
-  // Setup query to copy staging to production
-  let stageToProductionQuery = `
-
-      INSERT INTO public.donations
-        SELECT * FROM staging.donations
-        WHERE batch_id='${batchID}';
-      DELETE FROM staging.donations WHERE batch_id='${batchID}';
-    `;
-
-  console.log(stageToProductionQuery);
-
-  // Open PG connection and safely close connection
-  let result2 = await db.query(stageToProductionQuery);
-
-  console.log(result2);
-  console.log("b");
-
   // // Grab the people collection as an array of rows
-  const people = (await db.query("select * from people")).rows;
+  const people2 = (await supabase.from("people").select()).data;
   const oldPeople = JSON.parse(JSON.stringify(people));
 
   let updates = [];
 
   // // Loop through donation objects
-  for (const donation of fileParsedToJSON) {
+  for (let index = 0; index < fileParsedToJSON.length; index++) {
+    const donation = fileParsedToJSON[index];
+
     // Does person already exist?
     const howManyMatchingPeople = people.filter(
       // Lots of possibilities for record linkage but
@@ -261,50 +216,98 @@ export default async function loadDonationsCSV(req, res) {
       people.push(JSON.parse(JSON.stringify({ ...newPerson, id: personID })));
     }
 
-    // queryPushPeopleIDsToDonationTable += `UPDATE donations SET person_id='${personID}' WHERE lineitem_id='${donation.lineitem_id}';`;
-
-    updates.push({ personID: personID, donationID: donation.lineitem_id });
+    fileParsedToJSON[index]["person_id"] = personID;
   }
 
-  const updateDonationsWithIDs = await Promise.all(
-    updates.map((row) =>
-      supabase
-        .from("donations")
-        .update({ person_id: row.personID })
-        .eq("lineitem_id", row.donationID)
-    )
-  );
-  console.log(updateDonationsWithIDs);
+  console.timeEnd("edit file");
 
-  // // Push all of the new and existing people IDs back to the donation table
-  // const updateDonationsWithPeopleIDsResult = await db.query(
-  //   "BEGIN;" + queryPushPeopleIDsToDonationTable + "COMMIT;"
-  // );
-  // console.log(
-  //   "updateDonationsWithPeopleIDsResult.length",
-  //   updateDonationsWithPeopleIDsResult.length
-  // );
+  console.time("unparse JSON to file");
 
-  // // Diff to figure out changes
-  // // people versus oldPeople
-  // const differences = people.filter((x) => {
-  //   for (const person of oldPeople) {
-  //     if (JSON.stringify(person) === JSON.stringify(x)) return false;
-  //   }
-  //   return true;
-  // });
+  let updatedFileContents = Papa.unparse(fileParsedToJSON);
 
-  // // Write donations to firstore simultaneously
-  // const peopleInsertResults = await Promise.all(
-  //   differences.map((row) =>
-  //     accountDB
-  //       .collection("people")
-  //       .doc(row["id"])
-  //       .set(_.omit(row, ["id"]))
-  //   )
-  // );
-  // peopleInsertResults; // Shh linter
+  console.timeEnd("unparse JSON to file");
 
+  console.time("resave file and get url");
+
+  // Write the CSV back to storage
+  // ..now that we're sure it's compatible
+  // and replace fileName with these cleaned file
+  const updatedFileUploadResult = await supabase.storage
+    .from("imports")
+    .upload(batchID + ".csv", updatedFileContents, {
+      upsert: true,
+    });
+  let sanitzedFileName = updatedFileUploadResult.data.path;
+
+  // Store a signed URL to pass to PG as fileURL
+  const {
+    data: { publicUrl: fileURL },
+  } = await supabase.storage.from("imports").getPublicUrl(sanitzedFileName);
+
+  console.log("fileURL", fileURL);
+
+  console.timeEnd("resave file and get url");
+
+  console.time("donations queries");
+
+  // Get the target columns parsed from csv into array
+  let columns = updatedFileContents.split("\n", 1)[0].trim().split(",");
+  var concatColumns = '"' + columns.join('", "') + '"';
+
+  // Setup query
+  let query = `COPY staging.donations(${concatColumns})
+  FROM PROGRAM 'curl "${fileURL}"'
+  DELIMITER ','
+  CSV HEADER;`;
+
+  // Open PG connection and safely close connection
+  let result = await db.query(query);
+
+  // next js test lines
+  let successfulCopies = "rowCount" in result ? result.rowCount : 0;
+  console.log("successfulCopies", successfulCopies);
+
+  if (!(successfulCopies > 0)) {
+    var error2 = "";
+    console.error(error2);
+    res.status(500).send(error2);
+  }
+
+  // Setup query to copy staging to production
+  let stageToProductionQuery = `
+      INSERT INTO public.donations
+        SELECT * FROM staging.donations
+        WHERE batch_id='${batchID}';
+      DELETE FROM staging.donations WHERE batch_id='${batchID}';
+    `;
+
+  console.log(stageToProductionQuery);
+
+  // Open PG connection and safely close connection
+  let result2 = await db.query(stageToProductionQuery);
+  console.log(result2);
+  console.log("b");
+
+  console.timeEnd("donations queries");
+
+  console.time("upsert 7k records into people");
+
+  // Diff to figure out changes
+  // people versus oldPeople
+  const differences = people.filter((x) => {
+    for (const person of oldPeople) {
+      if (JSON.stringify(person) === JSON.stringify(x)) return false;
+    }
+    return true;
+  });
+
+  // Insert differences
+
+  const { error4 } = await supabase.from("people").upsert(differences);
+  console.timeEnd("upsert 7k records into people");
+  console.log("people insert error4:", error4);
+
+  // //////////////////////////////////////////
   // // End handleDonationsCSVImport()
   console.timeEnd("functionexectime");
   res.send("ok");
@@ -314,27 +317,19 @@ export default async function loadDonationsCSV(req, res) {
 function newPersonFromDonationObject(data) {
   return {
     // Basic assignments
-    lastName: data["donor_last_name"],
-    firstName: data["donor_first_name"],
+    last_name: data["donor_last_name"],
+    first_name: data["donor_first_name"],
     email: data["donor_email"],
     phone: data["donor_phone"],
     employer: data["donor_employer"],
     occupation: data["donor_occupation"],
 
     // Address
-    address: data["donor_addr1"],
-    address2: data["donor_addr2"],
+    addr1: data["donor_addr1"],
+    addr2: data["donor_addr2"],
     city: data["donor_city"],
     state: data["donor_state"],
     country: data["donor_country"],
-    // zip: data['Donor Zip'],
-
-    // Update total, # donations, & largest donation
-    totalDonated: data["amount"],
-    numberOfDonations: 0, // one more...?
-    largestDonation: 0, // hmmm
-
-    // Update most recent donation
-    mostRecentDonationDate: data["date"],
+    zip: data["Donor Zip"],
   };
 }
