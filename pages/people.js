@@ -4,7 +4,7 @@ import Link from "next/link";
 import QueryBuilderProvider from "../components/QueryBuilderProvider";
 import { useState, useEffect } from "react";
 
-export default function Dashboard() {
+export default function PeoplePage() {
   return (
     <div className="py-2">
       <div className="mx-auto max-w-7xl px-2 ">

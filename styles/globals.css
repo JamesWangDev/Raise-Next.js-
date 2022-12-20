@@ -81,6 +81,11 @@ code {
   padding: 0.625rem 1rem 0.625rem calc(5rem + 1ch) !important;
 }
 
-.cl-navbar {
+/* .cl-navbar {
   @apply hidden;
+} */
+
+.brand,
+.brand * {
+  color: #103fef !important;
 }

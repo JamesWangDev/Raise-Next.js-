@@ -74,17 +74,15 @@ export function StatCard({ query, table, key, item }) {
       .select(query)
       .single()
       .then((data) => {
-        console.log(data, isLoading);
         setData(data.data);
         setLoading(false);
       });
   }, []);
 
-  item.stat = data
-    ? Object.keys(data)
-      ? JSON.stringify(data[Object.keys(data)[0]])
-      : 0
-    : 0;
+  item.stat = data ? (Object.keys(data) ? data[Object.keys(data)[0]] : 0) : 0;
+
+  // Fix NaN
+  if (isNaN(item.stat)) item.stat = 0;
 
   // Format certain metrics
   if (
@@ -94,13 +92,10 @@ export function StatCard({ query, table, key, item }) {
   )
     item.stat = "$" + Number(item.stat).toLocaleString();
 
-  // Fix NaN
-  if (isNaN(item.stat)) item.stat = 0;
-
   return (
     <div
       key={item.id}
-      className="relative overflow-hidden rounded-lg bg-white px-4 pt-5 pb-12 shadow-sm sm:px-6 sm:pt-6 ring-1 ring-black ring-opacity-5"
+      className="relative overflow-hidden rounded-lg bg-white px-4 pt-5 pb-12 pb-0 shadow-sm sm:px-6 sm:pt-6 ring-1 ring-black ring-opacity-5"
     >
       <dt>
         <div className="absolute rounded-md bg-gray-400 p-3">
@@ -135,7 +130,7 @@ export function StatCard({ query, table, key, item }) {
           </span>
           {item.change}
         </p> */}
-        <div className="absolute inset-x-0 bottom-0 bg-gray-50 px-4 py-4 sm:px-6">
+        {/* <div className="absolute inset-x-0 bottom-0 bg-gray-50 px-4 py-4 sm:px-6">
           <div className="text-sm">
             <a
               href="#"
@@ -144,7 +139,7 @@ export function StatCard({ query, table, key, item }) {
               View all<span className="sr-only"> {item.name} stats</span>
             </a>
           </div>
-        </div>
+        </div> */}
       </dd>
     </div>
   );
@@ -169,7 +164,6 @@ export function HomepageCards() {
 }
 
 export default function Page() {
-  // const { data: session } = useSession();
   const { isSignedIn, isLoading, user } = useUser();
 
   return (

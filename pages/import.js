@@ -98,7 +98,7 @@ const server = {
 
 export default function Import() {
   return (
-    <div className="py-2">
+    <div className="py-2 shadow-sm bg-white rounded-lg p-6 py-6 mx-12">
       <div className="mx-auto max-w-7xl px-2 ">
         <h1 className="text-2xl font-semibold text-gray-900">Import</h1>
       </div>
