@@ -4,16 +4,17 @@ import Layout from "../components/Layout";
 
 //import { AppProps } from "next/app";
 //import { Session } from "next-auth";
-import { SessionProvider } from "next-auth/react";
+// import { SessionProvider } from "next-auth/react";
+import { ClerkProvider } from "@clerk/nextjs";
 
 function App({ Component, pageProps: { session, ...pageProps } }) {
   // console.log("pageProps", Object.keys(pageProps));
   return (
-    <SessionProvider session={session}>
+    <ClerkProvider {...pageProps}>
       <Layout>
         <Component {...pageProps} />
       </Layout>
-    </SessionProvider>
+    </ClerkProvider>
   );
 }
 

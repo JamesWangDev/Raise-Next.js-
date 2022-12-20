@@ -7,7 +7,16 @@ import { useState, useEffect } from "react";
 
 // import { unstable_getServerSession } from "next-auth/next";
 // import { authOptions } from "./api/auth/[...nextauth]";
-import { useSession, signIn, signOut } from "next-auth/react";
+// import { useSession, signIn, signOut } from "next-auth/react";
+import {
+  useAuth,
+  useUser,
+  UserButton,
+  SignInButton,
+  SignUpButton,
+  SignIn,
+  SignUp,
+} from "@clerk/nextjs";
 
 import PleaseLogin from "../components/PleaseLogin";
 
@@ -85,6 +94,9 @@ export function StatCard({ query, table, key, item }) {
   )
     item.stat = "$" + Number(item.stat).toLocaleString();
 
+  // Fix NaN
+  if (isNaN(item.stat)) item.stat = 0;
+
   return (
     <div
       key={item.id}
@@ -157,8 +169,8 @@ export function HomepageCards() {
 }
 
 export default function Page() {
-  const { data: session } = useSession();
-  if (!session) return <PleaseLogin />;
+  // const { data: session } = useSession();
+  const { isSignedIn, isLoading, user } = useUser();
 
   return (
     <div className="py-2">
@@ -171,15 +183,3 @@ export default function Page() {
     </div>
   );
 }
-
-// export async function getServerSideProps(context) {
-//   return {
-//     props: {
-//       session: await unstable_getServerSession(
-//         context.req,
-//         context.res,
-//         authOptions
-//       ),
-//     },
-//   };
-// }

@@ -1,9 +1,22 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import PleaseLogin from "../components/PleaseLogin";
+// import PleaseLogin from "../components/PleaseLogin";
 import { useRouter } from "next/router";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { CreateOrganization } from "@clerk/clerk-react";
+import { OrganizationSwitcher } from "@clerk/clerk-react";
+
+// import { useSession, signIn, signOut } from "next-auth/react";
+import {
+  useAuth,
+  useUser,
+  UserButton,
+  SignInButton,
+  SignUpButton,
+  SignIn,
+  SignUp,
+} from "@clerk/nextjs";
+
 import { Fragment, useState } from "react";
 import { Dialog, Menu, Transition } from "@headlessui/react";
 import { Bars3CenterLeftIcon, Bars4Icon } from "@heroicons/react/24/outline";
@@ -60,21 +73,33 @@ const navigation = [
     icon: ChevronDoubleRightIcon,
     current: false,
   },
-  { name: "Users", href: "/users", icon: UserPlusIcon, current: false },
-  { name: "Settings", href: "/settings", icon: Cog6ToothIcon, current: false },
+  {
+    name: "Manage Organization",
+    href: "/organization",
+    icon: UserPlusIcon,
+    current: false,
+  },
+  {
+    name: "Login & Security",
+    href: "/user",
+    icon: Cog6ToothIcon,
+    current: false,
+  },
 ];
 
-const userNavigation = [
-  { name: "Settings", href: "#" },
-  { name: "Sign out", href: "#", onClick: signOut },
-];
+// const userNavigation = [
+//   { name: "Settings", href: "#" },
+//   // { name: "Sign out", href: "#", onClick: signOut },
+// ];
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 const Brand = () => {
-  const { data: session } = useSession();
+  // const { data: session } = useSession();
+  const { isSignedIn, isLoading, user } = useUser();
+
   return (
     <>
       <div className="flex flex-shrink-0 items-center px-4">
@@ -109,7 +134,9 @@ const Brand = () => {
 };
 
 const Layout = ({ children }) => {
-  const { data: session } = useSession();
+  // const { data: session } = useSession();
+  const { isSignedIn, isLoading, user } = useUser();
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Set the right page as active link using router
@@ -121,6 +148,8 @@ const Layout = ({ children }) => {
       : navigation.findIndex((element) => element.href == router.pathname);
 
   if (activeIndex in navigation) navigation[activeIndex].current = true;
+
+  const hasOrg = user ? !!user.organizationMemberships.length : false;
 
   return (
     <>
@@ -293,9 +322,9 @@ const Layout = ({ children }) => {
                 </form>
               </div>
 
-              {session ? (
+              {isSignedIn ? (
                 <>
-                  <div className="ml-4 flex items-center md:ml-6">
+                  <div className="ml-4 flex items-center md:ml-6 gap-5">
                     <button
                       type="button"
                       className="rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
@@ -306,13 +335,13 @@ const Layout = ({ children }) => {
 
                     {/* Profile dropdown */}
 
-                    <Menu as="div" className="relative ml-3">
-                      {/* <div>
+                    {/* <Menu as="div" className="relative ml-3"> */}
+                    {/* <div>
                         <Menu.Button className="flex max-w-xs items-center rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                           <span className="sr-only">Open user menu</span>
 
                           <Image
-                            src={session.user.image}
+                            src={user.image}
                             width="25"
                             height="25"
                             className="h-8 w-8 rounded-full inline align-text-top"
@@ -320,20 +349,20 @@ const Layout = ({ children }) => {
                         </Menu.Button>
                       </div> */}
 
-                      <Menu.Button className="my-1 mx-2 group flex rounded-md bg-gray-100 px-3 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-100">
+                    {/* <Menu.Button className="my-1 mx-2 group flex rounded-md bg-gray-100 px-3 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-100">
                         <span className="flex w-full items-center justify-between">
                           <span className="flex min-w-0 items-center justify-between space-x-3">
                             <Image
                               className="h-8 w-8 flex-shrink-0 rounded-full bg-gray-300"
                               height="30"
                               width="30"
-                              src={session.user.image}
+                              src={user.image}
                               alt=""
                             />
 
                             <span className="flex min-w-0 flex-1 flex-col">
                               <span className="truncate text-sm font-medium text-gray-900">
-                                {session.user.name}
+                                {user.name}
                               </span>
                               <span className="truncate text-sm text-gray-500">
                                 Obama for Congress
@@ -345,8 +374,8 @@ const Layout = ({ children }) => {
                             aria-hidden="true"
                           />
                         </span>
-                      </Menu.Button>
-                      <Transition
+                      </Menu.Button> */}
+                    {/* <Transition
                         as={Fragment}
                         enter="transition ease-out duration-100"
                         enterFrom="transform opacity-0 scale-95"
@@ -373,8 +402,10 @@ const Layout = ({ children }) => {
                             </Menu.Item>
                           ))}
                         </Menu.Items>
-                      </Transition>
-                    </Menu>
+                      </Transition> */}
+                    <OrganizationSwitcher hidePersonal={true} />
+                    <UserButton />
+                    {/* </Menu> */}
                   </div>
                 </>
               ) : (
@@ -384,7 +415,30 @@ const Layout = ({ children }) => {
           </div>
 
           <main className="flex-1">
-            <div className="py-6">{session ? children : <PleaseLogin />}</div>
+            <div className="py-6">
+              {isSignedIn ? (
+                hasOrg ? (
+                  children
+                ) : (
+                  <CreateOrganization />
+                )
+              ) : (
+                <>
+                  <div className="flex min-h-full flex-col justify-center  sm:px-6 lg:px-8">
+                    <div className="sm:mx-auto sm:w-full sm:max-w-md">
+                      <SignUp
+                        appearance={{
+                          layout: {
+                            // socialButtonsVariant: "iconButton",
+                            // socialButtonsPlacement: "bottom",
+                          },
+                        }}
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
           </main>
         </div>
       </Menu>

@@ -63,3 +63,20 @@ code {
 .filepond--wrapper {
   @apply my-3;
 }
+.cl-userButtonPopoverFooter,
+.cl-internal-b3fm6y,
+.cl-organizationSwitcherPopoverFooter {
+  display: none !important;
+}
+
+.cl-card {
+  @apply shadow-md ring-1 ring-black ring-opacity-5;
+}
+
+.cl-main {
+  gap: 1.2em;
+}
+
+.cl-formFieldInput__phoneNumber {
+  padding: 0.625rem 1rem 0.625rem calc(5rem + 1ch) !important;
+}
