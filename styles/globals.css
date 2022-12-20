@@ -49,11 +49,20 @@ h2 {
 }
 
 code {
-  @apply block bg-gray-900 font-mono font-thin text-white p-3 py-2 my-1;
+  @apply block font-mono font-light  text-black p-3 py-2 my-1 bg-white;
+  @apply ring-1 ring-black shadow-sm rounded-sm py-1.5 ring-opacity-10 mt-1.5;
+}
+
+pre {
+  @apply w-4/6 flex-auto;
 }
 
 .ruleGroup .ruleGroup {
   @apply shadow-sm ring-1 ring-black ring-opacity-5 rounded m-3 p-3;
+}
+
+.ruleGroup-header {
+  @apply hidden;
 }
 
 .filepond--credits {
@@ -85,7 +94,23 @@ code {
   @apply hidden;
 } */
 
-.brand,
-.brand * {
-  color: #103fef !important;
+.brand {
+  color: #0d6efd !important;
+}
+
+.nav-item {
+  @apply flex items-center px-2 py-2 text-sm font-medium rounded-md;
+  @apply text-gray-600 hover:bg-gray-100 hover:text-gray-900;
+}
+
+.nav-item.current {
+  @apply bg-gray-100 text-gray-400;
+}
+
+.nav-item svg {
+  @apply mr-3 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500;
+}
+
+.nav-item.current svg {
+  @apply text-gray-700;
 }

@@ -104,7 +104,7 @@ export default function Import() {
       </div>
       <div className="mx-auto max-w-7xl px-2  ">
         <h2>Upload your Actblue alltime donations file to sync:</h2>
-        <div className="md:grid md:grid-cols-3">
+        <div className="md:grid md:grid-cols-2">
           <div className="col-span-1">
             <FilePond
               allowMultiple={false}

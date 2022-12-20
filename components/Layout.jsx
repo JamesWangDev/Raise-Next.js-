@@ -136,7 +136,7 @@ const Brand = () => {
           />
         </svg>
 
-        <span className="text-xl font-bold mx-3 text-gray-900">Raise More</span>
+        <span className="text-xl font-bold mx-3 text-gray-800">Raise More</span>
       </div>
     </>
   );
@@ -266,22 +266,9 @@ const Layout = ({ children }) => {
                     <Link
                       key={item.name}
                       href={item.href}
-                      className={classNames(
-                        item.current
-                          ? "text-gray-900 bg-gray-100 text-black font-bold"
-                          : "text-gray-600 hover:bg-gray-100 hover:text-gray-900",
-                        "group flex items-center px-2 py-2 text-sm font-medium rounded-md"
-                      )}
+                      className={item.current ? "nav-item current" : "nav-item"}
                     >
-                      <item.icon
-                        className={classNames(
-                          item.current
-                            ? "text-gray-600"
-                            : "text-gray-400 group-hover:text-gray-500",
-                          "mr-3 flex-shrink-0 h-6 w-6"
-                        )}
-                        aria-hidden="true"
-                      />
+                      <item.icon aria-hidden="true" />
                       {item.name}
                     </Link>
                     {["Make Calls", "Donations"].includes(item.name) ? (
