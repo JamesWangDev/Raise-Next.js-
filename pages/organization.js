@@ -11,7 +11,7 @@ const OrganizationProfilePage = () => {
         alignItems: "center",
       }}
     >
-      <OrganizationProfile />
+      <OrganizationProfile hidePersonal={true} />
     </div>
   );
 };

@@ -175,34 +175,69 @@ export default async function loadDonationsCSV(req, res) {
 
   let updates = [];
 
+  function matchExpression(person, index) {
+    var isMatch = person.email == this.donation["donor_email"];
+    if (isMatch) {
+      console.log("this.matchingIndex", this.matchingIndex);
+      console.log("index", index);
+      this.matchingIndex = index;
+    }
+    return !!isMatch;
+  }
+  function matchExpressionByName(person, index) {
+    var isMatch =
+      person.first_name == this.donation["donor_first_name"] &&
+      person.last_name == this.donation["donor_last_name"];
+    if (isMatch) {
+      console.log("this.matchingIndex", this.matchingIndex);
+      console.log("index", index);
+      this.matchingIndex = index;
+    }
+    return !!isMatch;
+  }
+
   // // Loop through donation objects
   for (let index = 0; index < fileParsedToJSON.length; index++) {
     const donation = fileParsedToJSON[index];
 
-    // Does person already exist?
-    const howManyMatchingPeople = people.filter(
-      // Lots of possibilities for record linkage but
-      // let's just find by email to start with.
-      (person) => person.email == donation["donor_email"]
-    ).length;
+    let passThrough = {
+      matchingIndex: null,
+      donation: donation,
+    };
 
-    // Email isn't unique! Throw error
-    if (howManyMatchingPeople > 1)
-      throw new Error("Email should be unique but was not", donation);
+    let matchingPeople;
+    let howManyMatchingPeople;
+
+    // Does person already exist? Try by email
+    if (!!donation["Donor Email"]) {
+      matchingPeople = people.filter(matchExpression, passThrough);
+      howManyMatchingPeople = matchingPeople.length;
+      console.log("howManyMatchingPeople", howManyMatchingPeople);
+
+      if (howManyMatchingPeople > 1) {
+        // Email isn't unique! Throw error
+        console.error(donation);
+        throw new Error("Email should be unique but was not");
+      }
+    } else {
+      // Otherwise, try by name
+      matchingPeople = people.filter(matchExpressionByName, passThrough);
+      howManyMatchingPeople = matchingPeople.length;
+    }
+
+    // Placeholder for match index
+    let matchingIndex = passThrough.matchingIndex;
 
     // Create an object to hold new information
     const newPerson = newPersonFromDonationObject(donation);
 
-    // Placeholder for match id
+    // Placeholder for matching person's id to inject back into donation
     let personID;
+
+    console.log("matchingIndex", matchingIndex);
 
     // If the donor already exists, grab existing id
     if (howManyMatchingPeople > 0) {
-      // Record the match index
-      const matchingIndex = people.findIndex(
-        (person) => person.email == donation["donor_email"]
-      );
-
       personID = people[matchingIndex].id;
 
       // Record the overwrite

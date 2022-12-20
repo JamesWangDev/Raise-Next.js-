@@ -53,7 +53,7 @@ code {
 }
 
 .ruleGroup .ruleGroup {
-  @apply shadow ring-1 ring-black ring-opacity-5 rounded m-3 p-3;
+  @apply shadow-sm ring-1 ring-black ring-opacity-5 rounded m-3 p-3;
 }
 
 .filepond--credits {
@@ -70,7 +70,7 @@ code {
 }
 
 .cl-card {
-  @apply shadow-md ring-1 ring-black ring-opacity-5;
+  @apply shadow-sm;
 }
 
 .cl-main {
@@ -79,4 +79,8 @@ code {
 
 .cl-formFieldInput__phoneNumber {
   padding: 0.625rem 1rem 0.625rem calc(5rem + 1ch) !important;
+}
+
+.cl-navbar {
+  @apply hidden;
 }

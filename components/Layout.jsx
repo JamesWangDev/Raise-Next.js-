@@ -3,8 +3,11 @@ import Image from "next/image";
 import Link from "next/link";
 // import PleaseLogin from "../components/PleaseLogin";
 import { useRouter } from "next/router";
-import { CreateOrganization } from "@clerk/clerk-react";
-import { OrganizationSwitcher } from "@clerk/clerk-react";
+import {
+  CreateOrganization,
+  OrganizationSwitcher,
+  SignedOut,
+} from "@clerk/clerk-react";
 
 // import { useSession, signIn, signOut } from "next-auth/react";
 import {
@@ -259,7 +262,7 @@ const Layout = ({ children }) => {
                       href={item.href}
                       className={classNames(
                         item.current
-                          ? "text-gray-900 bg-gray-100 shadow"
+                          ? "text-gray-900 bg-gray-100 shadow-sm"
                           : "text-gray-600 hover:bg-gray-100 hover:text-gray-900",
                         "group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                       )}
@@ -289,7 +292,7 @@ const Layout = ({ children }) => {
           </div>
         </div>
         <div className="flex flex-1 flex-col md:pl-64">
-          <div className="sticky top-0 z-10 flex h-16 flex-shrink-0 bg-white shadow">
+          <div className="sticky top-0 z-10 flex h-16 flex-shrink-0 bg-white shadow-sm">
             <button
               type="button"
               className="border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 md:hidden"
@@ -420,24 +423,32 @@ const Layout = ({ children }) => {
                 hasOrg ? (
                   children
                 ) : (
-                  <CreateOrganization />
+                  <>
+                    <div className="block min-h-full flex-col justify-center sm:px-6 lg:px-8">
+                      <div className="sm:mx-auto w-25">
+                        <CreateOrganization />
+                      </div>
+                    </div>
+                  </>
                 )
               ) : (
-                <>
-                  <div className="flex min-h-full flex-col justify-center  sm:px-6 lg:px-8">
-                    <div className="sm:mx-auto sm:w-full sm:max-w-md">
-                      <SignUp
-                        appearance={{
-                          layout: {
-                            // socialButtonsVariant: "iconButton",
-                            // socialButtonsPlacement: "bottom",
-                          },
-                        }}
-                      />
-                    </div>
-                  </div>
-                </>
+                ""
               )}
+
+              <SignedOut>
+                <div className="flex min-h-full flex-col justify-center  sm:px-6 lg:px-8">
+                  <div className="sm:mx-auto sm:w-full sm:max-w-md">
+                    <SignUp
+                      appearance={{
+                        layout: {
+                          // socialButtonsVariant: "iconButton",
+                          // socialButtonsPlacement: "bottom",
+                        },
+                      }}
+                    />
+                  </div>
+                </div>
+              </SignedOut>
             </div>
           </main>
         </div>

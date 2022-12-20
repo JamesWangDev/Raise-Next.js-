@@ -25,7 +25,9 @@ export default function SupabaseTable({
   useEffect(() => {
     setLoading(true);
 
-    var query_ref = supabase.from(table).select(query);
+    var query_ref = supabase
+      .from(table)
+      .select("*", { count: "estimated", head: false });
 
     const convert_sql_operators_to_postgrest = {
       // sql: "postgrest",
@@ -56,9 +58,6 @@ export default function SupabaseTable({
     };
 
     if (currentQuery && currentQuery.rules && currentQuery.rules[0]) {
-      console.log("current rules", currentQuery.rules[0]);
-      console.log("currentQuery.rules[0]", currentQuery.rules[0]);
-
       currentQuery.rules.forEach((rule) => {
         query_ref = query_ref.filter(
           rule.field,
@@ -68,8 +67,8 @@ export default function SupabaseTable({
       });
     }
 
-    query_ref.range(page * 10, (page + 1) * 10).then((data) => {
-      console.log(typeof data.data);
+    query_ref.range(page * 25, (page + 1) * 25).then((data) => {
+      console.log("data", data);
       if (
         data &&
         data.data &&
@@ -79,16 +78,9 @@ export default function SupabaseTable({
         setFilterColumns(Object.keys(data.data[0]));
       setData(data.data);
       setLoading(false);
+      setRowCountState(data.count ? data.count : 0);
     });
-
-    supabase
-      .from(table)
-      .select("*", { count: "exact", head: true })
-      .then((data) => setRowCountState(data.count));
   }, [page, setPage, currentQuery]);
-
-  // if (isLoading) return <p>Loading...</p>;
-  // if (!data) return <p>No profile data</p>;
 
   if (data && data[0])
     var rows = data
@@ -97,7 +89,6 @@ export default function SupabaseTable({
         : data.map((row) => ({ id: row[Object.keys(row)[0]], ...row }))
       : [];
   else var rows = [];
-  //var rows = data ? data : [];
 
   if (data && data[0])
     var columns = data
@@ -119,20 +110,19 @@ export default function SupabaseTable({
           loading={isLoading}
           rows={rows}
           columns={columns}
-          pageSize={10}
-          rowsPerPageOptions={[10]}
+          pageSize={25}
+          rowsPerPageOptions={[25]}
           checkboxSelection
           onPageChange={setPage}
           className="bg-white"
           sx={{
             my: 2,
-
             "& .MuiDataGrid-columnHeader .MuiDataGrid-columnSeparator": {
               display: "none",
             },
-            "& .MuiDataGrid-columnHeader": {
-              fontWeight: "bold",
-            },
+            // "& .MuiDataGrid-columnHeader": {
+            //   fontWeight: "bold",
+            // },
           }}
         />
       </Box>

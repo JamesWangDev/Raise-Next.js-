@@ -11,7 +11,7 @@ const UserProfilePage = () => {
         alignItems: "center",
       }}
     >
-      <UserProfile />
+      <UserProfile hideNavigation />
     </div>
   );
 };
