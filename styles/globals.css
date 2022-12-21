@@ -12,7 +12,7 @@ html,
 body,
 .MuiDataGrid-root,
 code {
-  font-family: "Inter var", -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
+  font-family: Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
     Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif !important;
 }
 
@@ -100,17 +100,14 @@ pre {
 
 .nav-item {
   @apply flex items-center px-2 py-2 text-sm font-medium rounded-md;
-  @apply text-gray-600 hover:bg-gray-100 hover:text-gray-900;
-}
-
-.nav-item.current {
-  @apply bg-gray-100 text-gray-400;
+  @apply text-gray-500 hover:bg-gray-100 hover:text-gray-900;
 }
 
 .nav-item svg {
   @apply mr-3 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500;
 }
 
+.nav-item.current,
 .nav-item.current svg {
-  @apply text-gray-700;
+  @apply bg-gray-100 text-indigo-400;
 }

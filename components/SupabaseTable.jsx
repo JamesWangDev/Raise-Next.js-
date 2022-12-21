@@ -27,9 +27,7 @@ export default function SupabaseTable({
     )}`,
     fetcher
   );
-
-  if (error) return "An error has occurred.";
-
+  if (error) console.log(error); // "An error has occurred.";
   const rows = data ? data : [];
 
   // setFilterColumns(columns);

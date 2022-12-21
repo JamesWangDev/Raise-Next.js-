@@ -43,7 +43,10 @@ export default function QueryBuilderProvider({ table, children }) {
   const [query, setQuery] = useState(initialQuery);
   //const [filterColumns, setFilterColumns] = useState([]);
 
-  var formatted = formatQuery(query, { format: "sql", parseNumbers: true });
+  var formatted = formatQuery(query, {
+    format: "sql",
+    parseNumbers: true,
+  }).replaceAll("like '%", "ilike '%");
   console.log("formatted", formatted);
 
   const { data: rowsForColumns, error } = useSWR(
