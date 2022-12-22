@@ -209,7 +209,7 @@ export default async function loadDonationsCSV(req, res) {
     let howManyMatchingPeople;
 
     // Does person already exist? Try by email
-    if (!!donation["Donor Email"]) {
+    if (!!donation["donor_email"]) {
       matchingPeople = people.filter(matchExpression, passThrough);
       howManyMatchingPeople = matchingPeople.length;
       console.log("howManyMatchingPeople", howManyMatchingPeople);

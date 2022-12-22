@@ -72,6 +72,7 @@ pre {
 .filepond--wrapper {
   @apply my-3;
 }
+
 .cl-userButtonPopoverFooter,
 .cl-internal-b3fm6y,
 .cl-organizationSwitcherPopoverFooter {
@@ -107,6 +108,7 @@ pre {
 .nav-item.current svg {
   @apply bg-gray-100 text-gray-400;
 }
+
 .brand {
   /* color: #0d6efd !important; */
   @apply text-black;
@@ -129,7 +131,9 @@ pre {
 html {
   @apply h-full bg-gray-50;
 }
+
 body {
   @apply h-full;
 }
+
 /* ebedf0 */
