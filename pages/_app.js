@@ -1,4 +1,5 @@
 import "../styles/globals.css";
+// import "@docsearch/css";
 
 import Layout from "../components/Layout";
 import { ClerkProvider } from "@clerk/nextjs";

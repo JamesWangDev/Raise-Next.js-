@@ -46,6 +46,15 @@ import {
 } from "@heroicons/react/24/outline";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 
+// import algoliasearch from "algoliasearch/lite";
+// import { InstantSearch, SearchBox, Hits } from "react-instantsearch-dom";
+// const searchClient = algoliasearch(
+//   "latency",
+//   process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_ONLY_API_KEY
+// );
+import { DocSearch } from "@docsearch/react";
+import "@docsearch/css";
+
 const navigation = [
   { name: "Dashboard", href: "/", icon: HomeIcon, current: true },
   { name: "People", href: "/people", icon: UsersIcon, current: false },
@@ -127,7 +136,7 @@ const Brand = () => {
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
           fill="currentColor"
-          className="w-7 h-7 mt-1"
+          className="w-7 h-7"
         >
           <path
             fillRule="evenodd"
@@ -136,7 +145,7 @@ const Brand = () => {
           />
         </svg>
 
-        <span className="text-xl font-bold mx-3 text-gray-800">Raise More</span>
+        <span>Raise More</span>
       </div>
     </>
   );
@@ -297,10 +306,26 @@ const Layout = ({ children }) => {
             <div className="flex flex-1 justify-between px-4">
               <div className="flex flex-1">
                 <form className="flex w-full md:ml-0" action="#" method="GET">
-                  <label htmlFor="search-field" className="sr-only">
+                  {/* <label htmlFor="search-field" className="sr-only">
                     Search
-                  </label>
-                  <div className="relative w-full text-gray-400 focus-within:text-gray-600">
+                  </label> */}
+                  {/* <InstantSearch
+                    indexName="RaiseMoreClientSearch"
+                    searchClient={searchClient}
+                  >
+                    <SearchBox />
+                    <Hits />
+                  </InstantSearch> */}
+                  <div className="mr-5 relative pt-3 w-full text-gray-400 focus-within:text-gray-600">
+                    <DocSearch
+                      appId={process.env.ALGOLIA_APPLICATION_ID}
+                      indexName="RaiseMoreClientSearch"
+                      apiKey={
+                        process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_ONLY_API_KEY
+                      }
+                    />
+                  </div>
+                  {/* <div className="relative w-full text-gray-400 focus-within:text-gray-600">
                     <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center">
                       <MagnifyingGlassIcon
                         className="h-5 w-5"
@@ -314,7 +339,7 @@ const Layout = ({ children }) => {
                       type="search"
                       name="search"
                     />
-                  </div>
+                  </div> */}
                 </form>
               </div>
 

@@ -49,7 +49,7 @@ h2 {
 }
 
 code {
-  @apply block font-mono font-light  text-black p-3 py-2 my-1 bg-white;
+  @apply block font-mono text-center italic font-thin text-gray-700 p-3 py-2 my-1 bg-white;
   @apply ring-1 ring-black shadow-sm rounded-sm py-1.5 ring-opacity-10 mt-1.5;
 }
 
@@ -79,7 +79,7 @@ pre {
 }
 
 .cl-card {
-  @apply shadow-sm;
+  @apply shadow-none ring-1 ring-black ring-opacity-10;
 }
 
 .cl-main {
@@ -94,10 +94,6 @@ pre {
   @apply hidden;
 } */
 
-.brand {
-  color: #0d6efd !important;
-}
-
 .nav-item {
   @apply flex items-center px-2 py-2 text-sm font-medium rounded-md;
   @apply text-gray-500 hover:bg-gray-100 hover:text-gray-900;
@@ -109,5 +105,31 @@ pre {
 
 .nav-item.current,
 .nav-item.current svg {
-  @apply bg-gray-100 text-indigo-400;
+  @apply bg-gray-100 text-gray-400;
 }
+.brand {
+  /* color: #0d6efd !important; */
+  @apply text-black;
+  /* color: #0738d2; */
+  /* @apply font-semibold; */
+}
+
+.brand span {
+  @apply text-xl font-semibold mx-3;
+  /* @apply text-gray-800; */
+}
+
+.DocSearch-Button {
+  /* width: 100% !important; */
+  @apply w-full block;
+  padding: 20px !important;
+  margin-top: 0 !important;
+}
+
+html {
+  @apply h-full bg-gray-50;
+}
+body {
+  @apply h-full;
+}
+/* ebedf0 */
