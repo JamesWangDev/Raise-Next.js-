@@ -361,6 +361,6 @@ function newPersonFromDonationObject(data) {
     city: data["donor_city"],
     state: data["donor_state"],
     country: data["donor_country"],
-    zip: data["Donor Zip"],
+    zip: data["donor_zip"],
   };
 }

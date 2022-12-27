@@ -56,7 +56,7 @@ export default function QueryBuilderProvider({ table, children }) {
     fetcher
   );
 
-  if (rowsForColumns)
+  if (rowsForColumns && rowsForColumns[0])
     fields = Object.keys(rowsForColumns[0]).map((a) => ({ name: a, label: a }));
   else fields = [];
 
