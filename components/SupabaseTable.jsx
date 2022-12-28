@@ -21,10 +21,12 @@ export default function SupabaseTable({
   const [rowCountState, setRowCountState] = useState(rowCount);
   const [page, setPage] = useState(0);
 
+  const SWRquery =
+    `select * from ${table}` +
+    (!!currentQuery ? ` where ${currentQuery}` : "") +
+    ` limit 25`;
   const { data, error } = useSWR(
-    `/api/rq?start=${encodeURI(page * 25)}&query=${encodeURI(
-      `select * from ${table} where ${currentQuery} limit 25`
-    )}`,
+    `/api/rq?start=${encodeURI(page * 25)}&query=${encodeURI(SWRquery)}`,
     fetcher
   );
   if (error) console.log(error); // "An error has occurred.";

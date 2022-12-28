@@ -6,20 +6,26 @@ import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
 import supabase from "../utils/supabase";
 
+import { useOrganization } from "@clerk/nextjs";
+
 export default function SaveList({ formattedQuery }) {
+  const { isLoaded, organization, invitationList, membershipList, membership } =
+    useOrganization();
+
   const [listNameTemp, setListNameTemp] = useState("");
   const [savedListName, setSavedListName] = useState(false);
 
   const saveList = async (event) => {
     // listNameTemp
     event.preventDefault();
-    console.log(event, listNameTemp);
+
     setSavedListName(listNameTemp);
     const listObject = {
-      name: savedListName,
+      account_id: organization.id,
+      name: listNameTemp,
       query: formattedQuery,
     };
-    supabase.from("saved_list").upsert(listObject);
+    console.log(await supabase.from("saved_lists").upsert(listObject));
   };
 
   var isSaved = !!savedListName;
