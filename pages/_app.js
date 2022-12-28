@@ -19,6 +19,12 @@ function App({ Component, pageProps }) {
           as="fetch"
           crossorigin="anonymous"
         />
+        <link
+          rel="preload"
+          href="https://clerk.prompt.meerkat-85.lcl.dev/npm/@clerk/clerk-js@4/dist/clerk.browser.js"
+          as="fetch"
+          crossorigin="anonymous"
+        />
       </Head>
       <Layout>
         <Component {...pageProps} />

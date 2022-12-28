@@ -1,7 +1,3 @@
-export const config = {
-  runtime: "experimental-edge",
-};
-
 // UUID!
 const { v4: uuid } = require("uuid");
 
@@ -9,8 +5,10 @@ const { v4: uuid } = require("uuid");
 const Papa = require("papaparse");
 
 // Postgres client
-import { connectToDatabase } from "../../utils/db";
-const db = connectToDatabase();
+// import { connectToDatabase } from "../../utils/db";
+// const db = connectToDatabase();
+// New postgres client
+import sql from "../../utils/db-sql";
 
 // Supabase storage client
 import supabase from "../../utils/supabase";
@@ -173,7 +171,7 @@ export default async function loadDonationsCSV(req, res) {
 
   // // Grab the people collection as an array of rows
   console.time("people get direct query");
-  const people = (await db.query("select * from people")).rows;
+  const people = (await sql.unsafe("select * from people")).rows;
   console.timeEnd("people get direct query");
   const oldPeople = JSON.parse(JSON.stringify(people));
 
@@ -305,7 +303,7 @@ export default async function loadDonationsCSV(req, res) {
   `;
 
   // Open PG connection and safely close connection
-  let result = await db.query(query);
+  let result = await sql.unsafe(query);
 
   // next js test lines
   let successfulCopies = "rowCount" in result ? result.rowCount : 0;
@@ -328,7 +326,7 @@ export default async function loadDonationsCSV(req, res) {
   console.log(stageToProductionQuery);
 
   // Open PG connection and safely close connection
-  let result2 = await db.query(stageToProductionQuery);
+  let result2 = await sql.unsafe(stageToProductionQuery);
   console.log(result2);
   console.log("b");
 
