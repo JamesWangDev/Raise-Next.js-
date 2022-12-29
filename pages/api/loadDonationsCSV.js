@@ -5,10 +5,8 @@ const { v4: uuid } = require("uuid");
 const Papa = require("papaparse");
 
 // Postgres client
-// import { connectToDatabase } from "../../utils/db";
-// const db = connectToDatabase();
-// New postgres client
-import sql from "../../utils/db-sql";
+import { connectToDatabase } from "../../utils/db";
+const db = connectToDatabase();
 
 // Supabase storage client
 import supabase from "../../utils/supabase";
@@ -171,7 +169,7 @@ export default async function loadDonationsCSV(req, res) {
 
   // // Grab the people collection as an array of rows
   console.time("people get direct query");
-  const people = (await sql.unsafe("select * from people")).rows;
+  const people = (await db.query("select * from people")).rows;
   console.timeEnd("people get direct query");
   const oldPeople = JSON.parse(JSON.stringify(people));
 
@@ -180,8 +178,8 @@ export default async function loadDonationsCSV(req, res) {
   function matchExpression(person, index) {
     var isMatch = person.email == this.donation["donor_email"];
     if (isMatch) {
-      console.log("this.matchingIndex", this.matchingIndex);
-      console.log("index", index);
+      // console.log("this.matchingIndex", this.matchingIndex);
+      // console.log("index", index);
       this.matchingIndex = index;
     }
     return !!isMatch;
@@ -191,8 +189,8 @@ export default async function loadDonationsCSV(req, res) {
       person.first_name == this.donation["donor_first_name"] &&
       person.last_name == this.donation["donor_last_name"];
     if (isMatch) {
-      console.log("this.matchingIndex", this.matchingIndex);
-      console.log("index", index);
+      // console.log("this.matchingIndex", this.matchingIndex);
+      // console.log("index", index);
       this.matchingIndex = index;
     }
     return !!isMatch;
@@ -214,7 +212,7 @@ export default async function loadDonationsCSV(req, res) {
     if (!!donation["donor_email"]) {
       matchingPeople = people.filter(matchExpression, passThrough);
       howManyMatchingPeople = matchingPeople.length;
-      console.log("howManyMatchingPeople", howManyMatchingPeople);
+      // console.log("howManyMatchingPeople", howManyMatchingPeople);
 
       if (howManyMatchingPeople > 1) {
         // Email isn't unique! Throw error
@@ -236,7 +234,7 @@ export default async function loadDonationsCSV(req, res) {
     // Placeholder for matching person's id to inject back into donation
     let personID;
 
-    console.log("matchingIndex", matchingIndex);
+    // console.log("matchingIndex", matchingIndex);
 
     // If the donor already exists, grab existing id
     if (howManyMatchingPeople > 0) {
@@ -303,7 +301,7 @@ export default async function loadDonationsCSV(req, res) {
   `;
 
   // Open PG connection and safely close connection
-  let result = await sql.unsafe(query);
+  let result = await db.query(query);
 
   // next js test lines
   let successfulCopies = "rowCount" in result ? result.rowCount : 0;
@@ -326,7 +324,7 @@ export default async function loadDonationsCSV(req, res) {
   console.log(stageToProductionQuery);
 
   // Open PG connection and safely close connection
-  let result2 = await sql.unsafe(stageToProductionQuery);
+  let result2 = await db.query(stageToProductionQuery);
   console.log(result2);
   console.log("b");
 

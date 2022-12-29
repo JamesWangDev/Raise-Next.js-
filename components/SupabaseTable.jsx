@@ -8,14 +8,17 @@ import { useSession, signIn, signOut } from "next-auth/react";
 import Box from "@mui/material/Box";
 import supabase from "../utils/supabase";
 
+import Button from "@mui/material/Button";
 import { DataGrid, GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
 import { InstallMobileRounded } from "@mui/icons-material";
+
+import { useRouter } from "next/router";
 
 export default function SupabaseTable({
   table,
   query = "*",
   currentQuery,
-  setFilterColumns = function () {},
+  setFilterColumns = () => {},
 }) {
   var rowCount = 0;
   const [rowCountState, setRowCountState] = useState(rowCount);
@@ -47,11 +50,24 @@ export default function SupabaseTable({
       ? Object.keys(rows[0]).map((columnName) => ({
           field: columnName,
           headerName: columnName,
-          width: 120,
         }))
       : [];
   else var columns = [];
   console.log("columns", columns);
+  if (table == "saved_lists") {
+    columns.push({
+      field: "View/Edit Query",
+      headerName: "View/Edit Query",
+      renderCell: loadListButton,
+      width: 150,
+    });
+    columns.push({
+      field: "Make Calls",
+      headerName: "Make Calls",
+      renderCell: makeCallsButton,
+      width: 150,
+    });
+  }
 
   return (
     <>
@@ -64,7 +80,7 @@ export default function SupabaseTable({
           columns={columns}
           pageSize={25}
           rowsPerPageOptions={[25]}
-          checkboxSelection
+          // checkboxSelection
           onPageChange={setPage}
           className="bg-white"
           sx={{
@@ -81,3 +97,43 @@ export default function SupabaseTable({
     </>
   );
 }
+
+const loadListButton = (params) => {
+  const router = useRouter();
+  return (
+    <strong>
+      <button
+        className="btn btn-primary"
+        color="primary"
+        size="small"
+        onClick={(e) => {
+          e.stopPropagation();
+          console.log(params, params.row);
+          router.push("/people/" + params.row.id);
+        }}
+      >
+        View/Edit Query
+      </button>
+    </strong>
+  );
+};
+
+const makeCallsButton = (params) => {
+  const router = useRouter();
+  return (
+    <strong>
+      <button
+        className="btn btn-primary"
+        color="primary"
+        size="small"
+        onClick={(e) => {
+          e.stopPropagation();
+          console.log(params, params.row);
+          router.push("/makecalls/" + params.row.id);
+        }}
+      >
+        Dial List
+      </button>
+    </strong>
+  );
+};
