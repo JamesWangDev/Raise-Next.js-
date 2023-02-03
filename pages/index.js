@@ -5,9 +5,6 @@ import { useState, useEffect } from "react";
 import supabase from "../utils/supabase";
 import SupabaseTable from "../components/SupabaseTable";
 
-// import { unstable_getServerSession } from "next-auth/next";
-// import { authOptions } from "./api/auth/[...nextauth]";
-// import { useSession, signIn, signOut } from "next-auth/react";
 import {
   useAuth,
   useUser,
