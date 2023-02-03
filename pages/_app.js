@@ -19,12 +19,12 @@ function App({ Component, pageProps }) {
           as="fetch"
           crossorigin="anonymous"
         />
-        <link
+        {/* <link
           rel="preload"
           href="https://clerk.prompt.meerkat-85.lcl.dev/npm/@clerk/clerk-js@4/dist/clerk.browser.js"
           as="fetch"
           crossorigin="anonymous"
-        />
+        /> */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
