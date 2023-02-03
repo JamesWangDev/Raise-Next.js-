@@ -58,13 +58,13 @@ export default function SupabaseTable({
     columns.push({
       field: "View/Edit Query",
       headerName: "View/Edit Query",
-      renderCell: loadListButton,
+      renderCell: LoadListButton,
       width: 150,
     });
     columns.push({
       field: "Make Calls",
       headerName: "Make Calls",
-      renderCell: makeCallsButton,
+      renderCell: MakeCallsButton,
       width: 150,
     });
   }
@@ -98,7 +98,7 @@ export default function SupabaseTable({
   );
 }
 
-const loadListButton = (params) => {
+const LoadListButton = (params) => {
   const router = useRouter();
   return (
     <strong>
@@ -109,7 +109,7 @@ const loadListButton = (params) => {
         onClick={(e) => {
           e.stopPropagation();
           console.log(params, params.row);
-          router.push("/people/" + params.row.id);
+          router.push("/lists/" + params.row.id);
         }}
       >
         View/Edit Query
@@ -118,7 +118,7 @@ const loadListButton = (params) => {
   );
 };
 
-const makeCallsButton = (params) => {
+const MakeCallsButton = (params) => {
   const router = useRouter();
   return (
     <strong>
@@ -129,7 +129,7 @@ const makeCallsButton = (params) => {
         onClick={(e) => {
           e.stopPropagation();
           console.log(params, params.row);
-          router.push("/makecalls/" + params.row.id);
+          router.push("/dial-list/" + params.row.id);
         }}
       >
         Dial List

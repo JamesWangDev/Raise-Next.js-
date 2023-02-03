@@ -33,7 +33,7 @@
     "eslint-config-next": "13.0.6",
     "filepond": "^4.30.4",
     "jsonwebtoken": "^8.5.1",
-    "next": "^13.0.6",
+    "next": "^13.1.1",
     "orizzonte": "^0.3.7",
     "papaparse": "^5.3.2",
     "pg": "^8.8.0",

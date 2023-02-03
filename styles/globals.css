@@ -163,6 +163,10 @@ body {
   margin-top: 1px !important;
 }
 
+.cl-organizationPreviewAvatarBox {
+  @apply bg-gray-300;
+}
+
 /* Dark mode */
 @media (prefers-color-scheme: dark), html[data-theme="dark"] {
   .nav-item {
