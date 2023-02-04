@@ -3,11 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 // import PleaseLogin from "../components/PleaseLogin";
 import { useRouter } from "next/router";
-import {
-  CreateOrganization,
-  OrganizationSwitcher,
-  SignedOut,
-} from "@clerk/clerk-react";
+import {} from "@clerk/clerk-react";
 
 // import { useSession, signIn, signOut } from "next-auth/react";
 import {
@@ -18,6 +14,9 @@ import {
   SignUpButton,
   SignIn,
   SignUp,
+  CreateOrganization,
+  OrganizationSwitcher,
+  SignedOut,
 } from "@clerk/nextjs";
 
 import { Fragment, useState } from "react";
