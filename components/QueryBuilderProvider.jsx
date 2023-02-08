@@ -15,11 +15,13 @@ import { QueryBuilderBootstrap } from "@react-querybuilder/bootstrap";
 import { useState, useEffect } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 
+import supabase from "../utils/supabase";
 import SaveList from "./SaveList";
 import SupabaseTable from "./SupabaseTable";
 
 import {
   formatQuery,
+  parseSQL,
   add,
   defaultCombinators,
   Field,
@@ -40,13 +42,32 @@ const initialQuery = {
   ],
 };
 
-export default function QueryBuilderProvider({ table, children }) {
+export default function QueryBuilderProvider({ table, children, listID }) {
+  // Load the list id, name, and query if present on page load
+  useEffect(() => {
+    if (listID) {
+      supabase
+        .from("saved_lists")
+        .select()
+        .eq("id", listID)
+        .single()
+        .then((result) => {
+          let list = result.data;
+          console.log("list.query", list.query);
+          setQuery(parseSQL(list.query));
+          setList(list);
+        });
+    }
+  });
+
+  const [list, setList] = useState({});
   const [query, setQuery] = useState(initialQuery);
 
   var formatted = formatQuery(query, {
     format: "sql",
     parseNumbers: true,
-  }).replaceAll("like '%", "ilike '%");
+  });
+  // .replaceAll("like '%", "like '%");
   console.log("formatted", formatted);
 
   const { data: rowsForColumns, error } = useSWR(
@@ -86,7 +107,7 @@ export default function QueryBuilderProvider({ table, children }) {
             Add Filter Step
           </button>
 
-          <SaveList formattedQuery={formatted} />
+          <SaveList formattedQuery={formatted} list={list} />
         </div>
         <QueryBuilderBootstrap>
           <QueryBuilder

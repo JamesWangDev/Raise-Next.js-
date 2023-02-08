@@ -8,12 +8,12 @@ import supabase from "../utils/supabase";
 
 import { useOrganization } from "@clerk/nextjs";
 
-export default function SaveList({ formattedQuery }) {
+export default function SaveList({ formattedQuery, listName, listID }) {
   const { isLoaded, organization, invitationList, membershipList, membership } =
     useOrganization();
 
-  const [listNameTemp, setListNameTemp] = useState("");
-  const [savedListName, setSavedListName] = useState(false);
+  const [listNameTemp, setListNameTemp] = useState(listName ?? "");
+  const [savedListName, setSavedListName] = useState(!!listName);
 
   const saveList = async (event) => {
     // listNameTemp
