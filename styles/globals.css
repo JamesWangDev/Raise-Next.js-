@@ -60,6 +60,7 @@ h3 {
 code {
   @apply block font-mono text-center italic font-thin text-gray-700 p-3 py-2 my-1 bg-white;
   @apply ring-1 ring-black shadow-sm rounded-sm py-1.5 ring-opacity-10 mt-1.5;
+  /* @apply shadow */
 }
 
 pre {
