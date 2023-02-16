@@ -44,7 +44,7 @@ export default function SupabaseTable({
       : [];
   else var rows = [];
 
-  // // Extract columns
+  // Extract columns
   if (data && data[0])
     var columns = data
       ? Object.keys(rows[0]).map((columnName) => ({
@@ -65,6 +65,14 @@ export default function SupabaseTable({
       field: "Make Calls",
       headerName: "Make Calls",
       renderCell: MakeCallsButton,
+      width: 150,
+    });
+  }
+  if (table.toLowerCase().startsWith("people")) {
+    columns.unshift({
+      field: "View Person",
+      headerName: "View Person",
+      renderCell: ViewPersonButton,
       width: 150,
     });
   }
@@ -133,6 +141,26 @@ const MakeCallsButton = (params) => {
         }}
       >
         Dial List
+      </button>
+    </strong>
+  );
+};
+
+const ViewPersonButton = (params) => {
+  const router = useRouter();
+  return (
+    <strong>
+      <button
+        className="btn btn-primary"
+        color="primary"
+        size="small"
+        onClick={(e) => {
+          e.stopPropagation();
+          console.log(params, params.row);
+          router.push("/people/" + params.row.id);
+        }}
+      >
+        View Person
       </button>
     </strong>
   );
