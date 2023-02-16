@@ -21,9 +21,13 @@ export default function SpecificListPage() {
 
   return (
     <div className="py-2">
-      <div className="mx-auto max-w-7xl px-2">
-        <PersonContactInfo person={person} />
-        <PersonContactHistory person={person} />
+      <div className="mx-auto max-w-7xl px-2 columns-3">
+        <div>
+          <PersonContactInfo person={person} />
+        </div>
+        <div>
+          <PersonContactHistory person={person} />
+        </div>
       </div>
     </div>
   );
