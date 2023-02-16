@@ -43,11 +43,11 @@ function PersonContactInfo({ person }) {
         {person.occupation} | {person.employer} | {person.city}, {person.state}{" "}
         {person.zip}
       </h2>
-      <h3>Phone Numbers</h3>
+      <h3 className="border-t-2 pt-2">Phone Numbers</h3>
       {person.phone}
-      <h3>Emails</h3>
+      <h3 className="border-t-2 pt-2">Emails</h3>
       {person.email}
-      <h3>Addresses</h3>
+      <h3 className="border-t-2 pt-2">Addresses</h3>
       {person.addr1}
       <br />
       {person.addr2}
