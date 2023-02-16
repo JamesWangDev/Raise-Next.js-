@@ -22,13 +22,37 @@ export default function SpecificListPage() {
   return (
     <div className="py-2">
       <div className="mx-auto max-w-7xl px-2">
-        <h1 className="text-2xl font-semibold text-gray-900">
-          Person view {personID}
-        </h1>
-      </div>
-      <div className="mx-auto max-w-7xl px-2">
-        <pre>{JSON.stringify(person, 0, 2)}</pre>
+        <PersonContactInfo person={person} />
+        <PersonContactHistory person={person} />
       </div>
     </div>
   );
+}
+
+function PersonContactInfo({ person }) {
+  return (
+    <div>
+      <h1>
+        {person.first_name} {person.last_name}
+      </h1>
+      <h2>
+        {person.occupation} | {person.employer} | {person.city}, {person.state}{" "}
+        {person.zip}
+      </h2>
+      <h3>Phone Numbers</h3>
+      {person.phone}
+      <h3>Emails</h3>
+      {person.email}
+      <h3>Addresses</h3>
+      {person.addr1}
+      <br />
+      {person.addr2}
+      <br />
+      {person.city}, {person.state} {person.zip}
+    </div>
+  );
+}
+
+function PersonContactHistory({ person }) {
+  return <>Contact history here</>;
 }

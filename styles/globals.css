@@ -38,6 +38,10 @@ h2 {
   @apply font-semibold leading-tight tracking-tight text-gray-900 mb-3;
 }
 
+h3 {
+  @apply font-semibold leading-tight tracking-tight text-gray-900 mb-3 text-lg border-t-2 pt-2 mt-2;
+}
+
 .queryBuilder .form-control,
 .queryBuilder .form-select {
   display: inline-block;
@@ -220,6 +224,7 @@ body {
     color: #bdc1c6;
   }
 
+  /*Search*/
   :root,
   * {
     --ifm-color-scheme: dark;
