@@ -34,7 +34,7 @@ export default function SpecificListPage() {
           {person.occupation} | {person.employer} | {person.state}
         </h2>
       </div>
-      <div className="mx-auto max-w-7xl px-2 grid grid-flow-col grid-cols-4 gap-x-12	bg-white border-t-2 -mx-6 px-6 py-6 mt-6">
+      <div className="max-w-7xl px-2 grid grid-flow-col grid-cols-4 gap-x-12 bg-white border-t-2 px-6 py-6 mt-6 -mx-6">
         <div className="col-span-1">
           <PersonContactInfo person={person} />
         </div>
