@@ -13,7 +13,7 @@ export default function Dashboard() {
         </h1>
       </div>
       <div className="mx-auto max-w-7xl px-2  ">
-        <SupabaseTable table="contact_history" />
+        <SupabaseTable table="interactions" />
       </div>
     </div>
   );

@@ -9,22 +9,26 @@ import {
   HandThumbUpIcon,
   UserIcon,
 } from "@heroicons/react/20/solid";
+import InteractionHistory from "../../components/InteractionHistory";
 
 export default function SpecificListPage() {
   const router = useRouter();
   const { personID } = router.query;
-  const [person, setPerson] = useState({});
+  const [person, setPerson] = useState();
 
   useEffect(() => {
     supabase
       .from("people")
-      .select()
+      .select("*, interactions ( * )")
       .eq("id", personID)
       .single()
       .then((result) => setPerson(result.data));
   }, [personID]);
 
-  return (
+  interactions = person ? person.interactions : [];
+  console.log(interactions);
+
+  return person ? (
     <div className="py-2">
       <div>
         <h1>
@@ -39,11 +43,13 @@ export default function SpecificListPage() {
           <PersonContactInfo person={person} />
         </div>
         <div className="col-span-2">
-          <PersonContactHistory person={person} />
+          <InteractionHistory person={person} interactions={interactions} />
         </div>
         <div className="col-span-1">Last column</div>
       </div>
     </div>
+  ) : (
+    <></>
   );
 }
 
@@ -65,7 +71,7 @@ function PersonContactInfo({ person }) {
   );
 }
 
-const timeline = [
+var interactions = [
   {
     id: 1,
     content: "Applied to",
@@ -120,57 +126,4 @@ const timeline = [
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
-}
-
-function PersonContactHistory() {
-  return (
-    <div className="flow-root">
-      <h2>Interaction History</h2>
-      <ul role="list" className="-mb-8 mt-6">
-        {timeline.map((event, eventIdx) => (
-          <li key={event.id}>
-            <div className="relative pb-8">
-              {eventIdx !== timeline.length - 1 ? (
-                <span
-                  className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200"
-                  aria-hidden="true"
-                />
-              ) : null}
-              <div className="relative flex space-x-3">
-                <div>
-                  <span
-                    className={classNames(
-                      event.iconBackground,
-                      "h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white"
-                    )}
-                  >
-                    <event.icon
-                      className="h-5 w-5 text-white"
-                      aria-hidden="true"
-                    />
-                  </span>
-                </div>
-                <div className="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
-                  <div>
-                    <p className="text-sm text-gray-500">
-                      {event.content}{" "}
-                      <a
-                        href={event.href}
-                        className="font-medium text-gray-900"
-                      >
-                        {event.target}
-                      </a>
-                    </p>
-                  </div>
-                  <div className="whitespace-nowrap text-right text-sm text-gray-500">
-                    <time dateTime={event.datetime}>{event.date}</time>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
 }
