@@ -270,9 +270,8 @@ const Layout = ({ children }) => {
             <div className="mt-5 flex flex-grow flex-col">
               <nav className="flex-1 space-y-1 px-2 pb-4">
                 {navigation.map((item, index) => (
-                  <>
+                  <div key={index}>
                     <Link
-                      key={index}
                       href={item.href}
                       className={item.current ? "nav-item current" : "nav-item"}
                     >
@@ -286,7 +285,7 @@ const Layout = ({ children }) => {
                     ) : (
                       ""
                     )}
-                  </>
+                  </div>
                 ))}
               </nav>
             </div>
