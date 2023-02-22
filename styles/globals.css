@@ -121,15 +121,16 @@ pre {
     @apply bg-gray-100 text-gray-400;
 }
 
-.brand {
-    /* color: #0d6efd !important; */
-    @apply text-black;
+.brand,
+.brand * {
+    color: #1f57f6 !important;
+    /* @apply text-black; */
     /* color: #0738d2; */
     /* @apply font-semibold; */
 }
 
 .brand span {
-    @apply text-xl font-semibold mx-3;
+    @apply text-2xl font-semibold mx-3;
     /* @apply text-gray-800; */
 }
 

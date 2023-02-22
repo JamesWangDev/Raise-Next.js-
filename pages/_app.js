@@ -8,13 +8,16 @@ import "../styles/globals.css";
 
 import Layout from "../components/Layout";
 import { ClerkProvider } from "@clerk/nextjs";
+import { IntercomProvider } from "../utils/IntercomProvider";
 
 function App({ Component, pageProps }) {
     return (
         <ClerkProvider {...pageProps}>
-            <Layout>
-                <Component {...pageProps} />
-            </Layout>
+            <IntercomProvider>
+                <Layout>
+                    <Component {...pageProps} />
+                </Layout>
+            </IntercomProvider>
         </ClerkProvider>
     );
 }
