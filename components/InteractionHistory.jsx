@@ -33,7 +33,12 @@ export default function InteractionHistory({ person, interactions }) {
           interaction.datetime = new Date(interaction.created_at).toString();
           interaction.href = "";
 
-          interaction.content = interaction.note;
+          interaction.content =
+            interaction.contact_type +
+            ", " +
+            interaction.disposition +
+            ", " +
+            interaction.note;
 
           return (
             <li key={interaction.id}>
