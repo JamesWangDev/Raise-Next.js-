@@ -142,7 +142,7 @@ pre {
 }
 
 html {
-    @apply h-full;
+    @apply h-full bg-gray-50;
 }
 
 body {
