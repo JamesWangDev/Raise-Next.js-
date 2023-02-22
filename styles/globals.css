@@ -304,6 +304,7 @@ main button[disabled]:not(.MuiButtonBase-root) {
 
 .nav-item {
     @apply font-normal;
+    @apply text-gray-600;
 }
 
 .nav-item.current,
