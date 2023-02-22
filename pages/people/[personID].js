@@ -11,6 +11,7 @@ import {
     PhoneIcon,
 } from "@heroicons/react/20/solid";
 import InteractionHistory from "../../components/InteractionHistory";
+import Breadcrumbs from "../../components/Breadcrumbs";
 
 export default function SpecificListPage() {
     const router = useRouter();
@@ -33,6 +34,17 @@ export default function SpecificListPage() {
         <div className="py-2">
             <div id="person-header" className="grid grid-cols-2 gap-16">
                 <div id="">
+                    <Breadcrumbs
+                        pages={[
+                            { name: "People", href: "/people", current: false },
+                            {
+                                name:
+                                    person.first_name + " " + person.last_name,
+                                href: "/people/" + person.id,
+                                current: true,
+                            },
+                        ]}
+                    />
                     <h1 className="text-2xl font-semibold text-gray-900">
                         {person.first_name} {person.last_name}
                     </h1>{" "}

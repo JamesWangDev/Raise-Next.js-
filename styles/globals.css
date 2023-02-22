@@ -31,7 +31,8 @@ main {
 }
 
 h1 {
-    @apply text-3xl font-bold leading-tight tracking-tight text-gray-900 mb-3;
+    @apply text-3xl font-bold leading-tight tracking-tight text-gray-900 mb-5;
+    @apply text-2xl font-semibold text-gray-900;
 }
 
 h2 {

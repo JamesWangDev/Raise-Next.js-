@@ -1,11 +1,8 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-// import PleaseLogin from "../components/PleaseLogin";
 import { useRouter } from "next/router";
-import {} from "@clerk/clerk-react";
-
-// import { useSession, signIn, signOut } from "next-auth/react";
+import Breadcrumbs from "./Breadcrumbs";
 import {
     useAuth,
     useUser,
@@ -53,6 +50,7 @@ import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 // );
 import { DocSearch } from "@docsearch/react";
 import "@docsearch/css";
+import { Breadcrumb } from "react-instantsearch-dom";
 
 const navigation = [
     { name: "Dashboard", href: "/", icon: HomeIcon, current: true },
