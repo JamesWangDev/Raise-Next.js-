@@ -33,10 +33,10 @@ export default function SpecificListPage() {
         <div className="py-2">
             <div id="person-header" className="grid grid-cols-2 gap-16">
                 <div id="">
-                    <h1>
+                    <h1 className="text-2xl font-semibold text-gray-900">
                         {person.first_name} {person.last_name}
                     </h1>{" "}
-                    <h2>
+                    <h2 className="text-base font-semibold text-gray-700">
                         {person.occupation} | {person.employer} | {person.state}
                     </h2>
                     <p className="text-sm">Person ID: {person.id}</p>
@@ -52,7 +52,11 @@ export default function SpecificListPage() {
                         </button>
                     ) : (
                         <button type="button" disabled>
-                            <s>Call</s>&nbsp;(no phone #)
+                            <PhoneIcon
+                                className="-ml-1 mr-2 h-5 w-5 text-gray-400"
+                                aria-hidden="true"
+                            />
+                            Call
                         </button>
                     )}
                     <button type="button">Merge Records</button>
