@@ -123,7 +123,7 @@ pre {
 
 .brand,
 .brand * {
-    color: #1f57f6 !important;
+    color: #2d28ff !important;
     /* @apply text-black; */
     /* color: #0738d2; */
     /* @apply font-semibold; */
@@ -142,7 +142,7 @@ pre {
 }
 
 html {
-    @apply h-full bg-gray-50;
+    @apply h-full;
 }
 
 body {
@@ -294,10 +294,18 @@ body {
     }
 }
 
-main button[type="button"] {
+main button[type="button"]:not(.MuiButtonBase-root) {
     @apply mx-2 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2;
 }
 
-main button[disabled] {
+main button[disabled]:not(.MuiButtonBase-root) {
     @apply bg-gray-200 text-gray-400 !important;
+}
+
+.nav-item.current,
+.nav-item.current *,
+.nav-item:hover,
+.nav-item:hover * {
+    color: #2d28ff !important;
+    @apply bg-gray-50;
 }
