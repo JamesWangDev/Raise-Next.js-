@@ -178,6 +178,7 @@ export default function Page() {
                     pages={[{ name: "Dashboard", href: "/", current: false }]}
                 />
                 <h1>Dashboard</h1>
+                <h3>A real time picture of your fundraising so far.</h3>
             </div>
             <div className="mx-auto max-w-7xl px-2  ">
                 <HomepageCards />
