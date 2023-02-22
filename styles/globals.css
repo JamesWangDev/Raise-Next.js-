@@ -302,10 +302,15 @@ main button[disabled]:not(.MuiButtonBase-root) {
     @apply bg-gray-200 text-gray-400 !important;
 }
 
+.nav-item {
+    @apply font-normal;
+}
+
 .nav-item.current,
 .nav-item.current *,
 .nav-item:hover,
 .nav-item:hover * {
     color: #2d28ff !important;
     @apply bg-gray-50;
+    @apply font-medium;
 }
