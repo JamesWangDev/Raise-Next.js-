@@ -21,7 +21,7 @@ export default function SpecificListPage() {
     useEffect(() => {
         supabase
             .from("people")
-            .select("*, interactions ( * )")
+            .select("*, interactions ( * ), donations ( * ), pledges ( * )")
             .eq("id", personID)
             .single()
             .then((result) => setPerson(result.data));
