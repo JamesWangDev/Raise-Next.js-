@@ -36,9 +36,9 @@ export default function SaveList({ formattedQuery, listName, listID }) {
     var isSaved = !!savedListName;
 
     return (
-        <Menu as="div" className="relative inline-block text-left mt-1 ml-3">
+        <Menu as="div" className="relative inline-block text-left mt-1 ">
             <div>
-                <Menu.Button className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100">
+                <Menu.Button className="inline-flex justify-center rounded-md border border-gray-300 bg-white px-1 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100">
                     {isSaved ? `Editing '${savedListName}'` : "Save List"}
                     <ChevronDownIcon
                         className="-mr-1 ml-2 h-5 w-5"

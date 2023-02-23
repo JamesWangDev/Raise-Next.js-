@@ -12,13 +12,8 @@ html,
 body,
 .MuiDataGrid-root,
 code {
-    /* font-family: Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
-    Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif !important; */
-    /* font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif !important; */
-    font-family: -apple-system, BlinkMacSystemFont, Segoe UI !important;
-    font-family: Inter !important;
-    /* font-family: "Open Sans" !important; */
+    /* font-family: -apple-system, BlinkMacSystemFont, Segoe UI !important; */
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI" !important;
 }
 
 .btn {
@@ -59,7 +54,7 @@ h3 {
 }
 
 code {
-    @apply block font-mono text-center italic font-thin text-gray-700 p-3 py-2 my-1 bg-white;
+    @apply block text-center italic text-sm font-light text-gray-500 p-3 py-2 my-1 bg-white;
     @apply ring-1 ring-black shadow-sm rounded-sm py-1.5 ring-opacity-10 mt-1.5;
     /* @apply shadow */
 }
