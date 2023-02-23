@@ -30,8 +30,8 @@ export default function SpecificListPage() {
     var interactions = person?.interactions || [];
 
     return person ? (
-        <div className="">
-            <div>
+        <div className="mx-auto max-w-7xl px-2">
+            <div className="">
                 <Breadcrumbs
                     pages={[
                         { name: "People", href: "/people", current: false },
@@ -78,7 +78,7 @@ export default function SpecificListPage() {
                     </div>
                 </div>
             </div>
-            <div className="max-w-7xl px-2 grid grid-flow-col grid-cols-12 gap-x-10 bg-white border-t px-6 py-6 mt-6 -mx-6">
+            <div className="max-w-7xl px-2 grid grid-flow-col grid-cols-12 gap-x-10 bg-white border-t px-8 py-6 mt-6 -mx-8">
                 <div className="col-span-3">
                     <PersonContactInfo person={person} />
                 </div>
