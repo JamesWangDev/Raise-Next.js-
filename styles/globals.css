@@ -311,13 +311,13 @@ main button[disabled]:not(.MuiButtonBase-root) {
 .nav-item.current *,
 .nav-item:hover,
 .nav-item:hover * {
-    @apply bg-slate-100 font-medium;
+    @apply bg-gray-50 font-medium;
 }
 
-.nav-item.current,
+/* .nav-item.current,
 .nav-item.current *,
 .nav-item:hover,
-.nav-item:hover *,
+.nav-item:hover *, */
 .brand,
 .brand * {
     color: #2d28ff !important;
@@ -325,4 +325,15 @@ main button[disabled]:not(.MuiButtonBase-root) {
 
 .page-title-descriptor {
     @apply text-gray-400 text-base font-light -mt-4 mb-3;
+}
+
+.nav-item {
+    @apply border-l-2;
+    border-radius: 0;
+    border-color: white;
+}
+
+.nav-item.current,
+.nav-item:hover {
+    border-color: #eee;
 }
