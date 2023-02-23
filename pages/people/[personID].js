@@ -28,50 +28,54 @@ export default function SpecificListPage() {
     }, [personID]);
 
     var interactions = person?.interactions || [];
-    console.log(interactions);
 
     return person ? (
-        <div className="py-2">
+        <div className="">
+            <div>
+                <Breadcrumbs
+                    pages={[
+                        { name: "People", href: "/people", current: false },
+                        {
+                            name: person.first_name + " " + person.last_name,
+                            href: "/people/" + person.id,
+                            current: true,
+                        },
+                    ]}
+                />
+            </div>
             <div id="person-header" className="grid grid-cols-2 gap-16">
                 <div id="">
-                    <Breadcrumbs
-                        pages={[
-                            { name: "People", href: "/people", current: false },
-                            {
-                                name:
-                                    person.first_name + " " + person.last_name,
-                                href: "/people/" + person.id,
-                                current: true,
-                            },
-                        ]}
-                    />
-                    <h1 className="text-2xl font-semibold text-gray-900">
+                    <h1 className="text-2xl font-semibold text-gray-900 mb-0">
                         {person.first_name} {person.last_name}
-                    </h1>{" "}
-                    <h2 className="text-base font-semibold text-gray-700">
+                    </h1>
+                    <h2 className="text-sm font-normal text-gray-600">
                         {person.occupation} | {person.employer} | {person.state}
                     </h2>
-                    <p className="text-sm">Person ID: {person.id}</p>
+                    <p className="text-sm text-gray-400">
+                        Person ID: {person.id}
+                    </p>
                 </div>
                 <div className="text-right">
-                    {person.phone ? (
-                        <button type="button">
-                            <PhoneIcon
-                                className="-ml-1 mr-2 h-5 w-5 text-gray-400"
-                                aria-hidden="true"
-                            />
-                            Call
-                        </button>
-                    ) : (
-                        <button type="button" disabled>
-                            <PhoneIcon
-                                className="-ml-1 mr-2 h-5 w-5 text-gray-400"
-                                aria-hidden="true"
-                            />
-                            Call
-                        </button>
-                    )}
-                    <button type="button">Merge Records</button>
+                    <div className=" flex-row gap-3 inline-flex">
+                        {person.phone ? (
+                            <button type="button">
+                                <PhoneIcon
+                                    className="-ml-1 mr-2 h-5 w-5 text-gray-400"
+                                    aria-hidden="true"
+                                />
+                                Call
+                            </button>
+                        ) : (
+                            <button type="button" disabled>
+                                <PhoneIcon
+                                    className="-ml-1 mr-2 h-5 w-5 text-gray-400"
+                                    aria-hidden="true"
+                                />
+                                Call
+                            </button>
+                        )}
+                        <button type="button">Merge Records</button>
+                    </div>
                 </div>
             </div>
             <div className="max-w-7xl px-2 grid grid-flow-col grid-cols-4 gap-x-12 bg-white border-t px-6 py-6 mt-6 -mx-6">
@@ -84,11 +88,42 @@ export default function SpecificListPage() {
                         interactions={interactions}
                     />
                 </div>
-                <div className="col-span-1">Last column</div>
+                <div className="col-span-1">
+                    <PledgeHistory donations={person?.pledges} />
+                    <DonationHistory donations={person?.donations} />
+                </div>
             </div>
         </div>
     ) : (
         <></>
+    );
+}
+
+function PledgeHistory({ pledges }) {
+    return (
+        <div>
+            <h2>Pledge History</h2>
+            {pledges?.map((pledge) => (
+                <>{JSON.stringify(pledge, 0, 2)}</>
+            ))}
+            {!pledges?.length && <p className="text-sm">No pledges found.</p>}
+            {/* Add pledge button */}
+        </div>
+    );
+}
+
+function DonationHistory({ donations }) {
+    return (
+        <div>
+            <h2 className="mt-5">Donation History</h2>
+            {donations?.map((donation) => (
+                <>{JSON.stringify(donation, 0, 2)}</>
+            ))}
+            {!donations?.length && (
+                <p className="text-sm">No donations found.</p>
+            )}
+            {/* Add donation button */}
+        </div>
     );
 }
 
@@ -101,10 +136,16 @@ function PersonContactInfo({ person }) {
                     Phone Numbers
                 </dt>
                 <dd className="mt-1 text-sm text-gray-900">{person.phone}</dd>
+                <button className="mt-2 button-xs" type="button">
+                    Add Phone
+                </button>
             </div>
             <div className="sm:col-span-1 mt-3">
                 <dt className="text-sm font-medium text-gray-500">Emails</dt>
                 <dd className="mt-1 text-sm text-gray-900">{person.email}</dd>
+                <button className="mt-2 button-xs" type="button">
+                    Add Email
+                </button>
             </div>
             <div className="sm:col-span-1 mt-3">
                 <dt className="text-sm font-medium text-gray-500">Addresses</dt>
@@ -115,6 +156,9 @@ function PersonContactInfo({ person }) {
                     {person.addr2 ? <br /> : null}
                     {person.city}, {person.state} {person.zip}
                 </dd>
+                <button className="mt-2 button-xs" type="button">
+                    Add Address
+                </button>
             </div>
         </div>
     );

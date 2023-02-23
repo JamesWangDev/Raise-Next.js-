@@ -13,11 +13,13 @@ import {
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
+import AddInteractionButtonGroup from "../components/AddInteractionButtonGroup";
 
 export default function InteractionHistory({ person, interactions }) {
     return (
         <div className="flow-root">
             <h2>Interaction History</h2>
+            <AddInteractionButtonGroup person={person} />
             <ul role="list" className="-mb-8 mt-6">
                 {interactions?.map((interaction, eventIdx) => {
                     interaction.iconBackground = "bg-gray-400";
