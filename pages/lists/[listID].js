@@ -11,7 +11,7 @@ export default function SpecificListPage() {
     const router = useRouter();
     const { listID } = router.query;
     return (
-        <div className="py-2">
+        <div className="">
             <div className="mx-auto max-w-7xl px-2 ">
                 <Breadcrumbs
                     pages={[
