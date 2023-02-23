@@ -125,7 +125,7 @@ pre {
 }
 
 .brand span {
-    @apply text-xl font-semibold mx-3;
+    @apply text-xl font-normal mx-3;
     /* @apply text-gray-800; */
 }
 
