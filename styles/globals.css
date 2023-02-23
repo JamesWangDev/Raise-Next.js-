@@ -130,7 +130,7 @@ pre {
 }
 
 .brand span {
-    @apply text-2xl font-semibold mx-3;
+    @apply text-xl font-semibold mx-3;
     /* @apply text-gray-800; */
 }
 
@@ -172,6 +172,8 @@ body {
 
 .cl-organizationPreviewAvatarBox {
     @apply bg-gray-300;
+}
+.DocSearch.DocSearch-Button {
 }
 
 /* Dark mode */
