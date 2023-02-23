@@ -317,7 +317,7 @@ main button[type="button"]:not(.MuiButtonBase-root).button-xs {
 .nav-item.current *,
 .nav-item:hover,
 .nav-item:hover * {
-    @apply bg-gray-50 font-medium;
+    @apply bg-gray-100 font-medium;
 }
 
 /* .nav-item.current,
@@ -334,12 +334,12 @@ main button[type="button"]:not(.MuiButtonBase-root).button-xs {
 }
 
 .nav-item {
-    @apply border-l-2;
+    border-left-width: 3px;
     border-radius: 0;
     border-color: white;
 }
 
 .nav-item.current,
 .nav-item:hover {
-    border-color: #eee;
+    border-color: #ddd;
 }
