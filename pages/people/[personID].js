@@ -78,17 +78,17 @@ export default function SpecificListPage() {
                     </div>
                 </div>
             </div>
-            <div className="max-w-7xl px-2 grid grid-flow-col grid-cols-4 gap-x-12 bg-white border-t px-6 py-6 mt-6 -mx-6">
-                <div className="col-span-1">
+            <div className="max-w-7xl px-2 grid grid-flow-col grid-cols-12 gap-x-10 bg-white border-t px-6 py-6 mt-6 -mx-6">
+                <div className="col-span-3">
                     <PersonContactInfo person={person} />
                 </div>
-                <div className="col-span-2">
+                <div className="col-span-6">
                     <InteractionHistory
                         person={person}
                         interactions={interactions}
                     />
                 </div>
-                <div className="col-span-1">
+                <div className="col-span-3">
                     <PledgeHistory donations={person?.pledges} />
                     <DonationHistory donations={person?.donations} />
                 </div>
