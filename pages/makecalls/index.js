@@ -30,9 +30,11 @@ export default function MakeCallsPage() {
             </div>
             <div className="mx-auto max-w-7xl px-2">
                 {/* A button for starting a new calling session */}
-                <button className="button mt-2" type="button">
-                    Start a new session
-                </button>{" "}
+                <Link href="/savedlists">
+                    <button className="button mt-2" type="button">
+                        Start a new session
+                    </button>
+                </Link>{" "}
                 {/* List currently active "calling sessions" as cards. */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
                     {sessions?.map((session) => (
