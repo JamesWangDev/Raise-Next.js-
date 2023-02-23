@@ -115,7 +115,7 @@ function PledgeHistory({ pledges }) {
 function DonationHistory({ donations }) {
     return (
         <div>
-            <h2 className="mt-5">Donation History</h2>
+            <h2 className="mt-7">Donation History</h2>
             {donations?.map((donation) => (
                 <>{JSON.stringify(donation, 0, 2)}</>
             ))}
@@ -140,14 +140,14 @@ function PersonContactInfo({ person }) {
                     Add Phone
                 </button>
             </div>
-            <div className="sm:col-span-1 mt-3">
+            <div className="sm:col-span-1 mt-5">
                 <dt className="text-sm font-medium text-gray-500">Emails</dt>
                 <dd className="mt-1 text-sm text-gray-900">{person.email}</dd>
                 <button className="mt-2 button-xs" type="button">
                     Add Email
                 </button>
             </div>
-            <div className="sm:col-span-1 mt-3">
+            <div className="sm:col-span-1 mt-5">
                 <dt className="text-sm font-medium text-gray-500">Addresses</dt>
                 <dd className="mt-1 text-sm text-gray-900">
                     {person.addr1}
