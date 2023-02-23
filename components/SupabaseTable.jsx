@@ -79,7 +79,7 @@ export default function SupabaseTable({
 
     return (
         <>
-            <Box sx={{ height: "60vh", width: "100%" }}>
+            <Box sx={{ height: "55vh", width: "100%" }}>
                 <DataGrid
                     paginationMode="server"
                     rowCount={rowCountState}

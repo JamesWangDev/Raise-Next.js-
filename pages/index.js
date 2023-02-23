@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import supabase from "../utils/supabase";
 import SupabaseTable from "../components/SupabaseTable";
 import Breadcrumbs from "../components/Breadcrumbs";
+import PageTitle from "../components/PageTitle";
 
 import {
     useAuth,
@@ -172,15 +173,17 @@ export default function Page() {
     const { isSignedIn, isLoading, user } = useUser();
 
     return (
-        <div className="py-2">
+        <div className="">
             <div className="mx-auto max-w-7xl px-2">
                 <Breadcrumbs
                     pages={[{ name: "Dashboard", href: "/", current: false }]}
                 />
-                <h1>Dashboard</h1>
-                <h3>A real time picture of your fundraising so far.</h3>
+                <PageTitle
+                    title="Dashboard"
+                    descriptor="A real time picture of your fundraising so far."
+                />
             </div>
-            <div className="mx-auto max-w-7xl px-2  ">
+            <div className="mx-auto max-w-7xl px-2">
                 <HomepageCards />
             </div>
         </div>

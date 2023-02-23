@@ -40,7 +40,7 @@ h2 {
 }
 
 h3 {
-    @apply font-semibold leading-tight tracking-tight text-gray-900 mb-3 text-lg mt-2;
+    @apply font-semibold leading-tight tracking-tight text-gray-900 mb-3 text-lg mt-5;
 }
 
 .queryBuilder .form-control,
@@ -123,7 +123,7 @@ pre {
 
 .brand,
 .brand * {
-    color: #2d28ff !important;
+    /* color: #2d28ff !important; */
     /* @apply text-black; */
     /* color: #0738d2; */
     /* @apply font-semibold; */
@@ -311,7 +311,18 @@ main button[disabled]:not(.MuiButtonBase-root) {
 .nav-item.current *,
 .nav-item:hover,
 .nav-item:hover * {
+    @apply bg-slate-100 font-medium;
+}
+
+.nav-item.current,
+.nav-item.current *,
+.nav-item:hover,
+.nav-item:hover *,
+.brand,
+.brand * {
     color: #2d28ff !important;
-    @apply bg-gray-50;
-    @apply font-medium;
+}
+
+.page-title-descriptor {
+    @apply text-gray-400 text-base font-light -mt-4 mb-3;
 }
