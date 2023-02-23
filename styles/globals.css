@@ -113,7 +113,8 @@ pre {
 .nav-item.current,
 /* .nav-item.current svg, */
 .nav-item:hover {
-    @apply bg-gray-100 text-gray-400;
+    @apply bg-gray-100 
+    /* text-gray-400; */;
 }
 
 .brand,
