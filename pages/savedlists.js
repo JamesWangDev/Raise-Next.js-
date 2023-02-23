@@ -17,7 +17,7 @@ export default function Dashboard() {
                 />
                 <PageTitle
                     title="Lists"
-                    descriptor="Saved search queries and lists."
+                    descriptor="Edit existing saved lists or start a calling session."
                 />
             </div>
             <div className="mx-auto max-w-7xl px-2">

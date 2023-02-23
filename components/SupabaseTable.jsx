@@ -138,7 +138,7 @@ const MakeCallsButton = (params) => {
                 onClick={(e) => {
                     e.stopPropagation();
                     console.log(params, params.row);
-                    router.push("/dial-list/" + params.row.id);
+                    router.push("/makecalls/start/" + params.row.id);
                 }}
             >
                 Dial List
