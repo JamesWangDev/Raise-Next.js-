@@ -56,14 +56,14 @@ export default function SupabaseTable({
     console.log("columns", columns);
     if (table == "saved_lists") {
         columns.push({
-            field: "View/Edit Query",
-            headerName: "View/Edit Query",
+            field: "Edit Query",
+            headerName: "Edit Query",
             renderCell: LoadListButton,
             width: 150,
         });
         columns.push({
-            field: "Make Calls",
-            headerName: "Make Calls",
+            field: "Launch Dialer",
+            headerName: "Launch Dialer",
             renderCell: MakeCallsButton,
             width: 150,
         });
@@ -121,7 +121,7 @@ const LoadListButton = (params) => {
                     router.push("/lists/" + params.row.id);
                 }}
             >
-                View/Edit Query
+                Edit Query
             </button>
         </strong>
     );
@@ -141,7 +141,7 @@ const MakeCallsButton = (params) => {
                     router.push("/makecalls/start/" + params.row.id);
                 }}
             >
-                Dial List
+                New Call Session
             </button>
         </strong>
     );
