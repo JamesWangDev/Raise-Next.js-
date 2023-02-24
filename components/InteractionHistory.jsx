@@ -25,7 +25,7 @@ function AddModal() {
 
 export default function InteractionHistory({ person, interactions }) {
     // showModal and addModalType are states that are used to control the display of the modal
-    const [showModal, showModal] = useState(false);
+    const [isModalShowing, showModal] = useState(false);
     const [addModalType, setAddModalType] = useState("");
 
     return (
@@ -36,7 +36,7 @@ export default function InteractionHistory({ person, interactions }) {
                 showAddModal={showModal}
                 setAddModalType={setAddModalType}
             />
-            <AddModal type={addModalType} show={showModal} />
+            {isModalShowing ? <AddModal type={addModalType} /> : null}
             <ul role="list" className="-mb-8 mt-6">
                 {interactions?.map((interaction, eventIdx) => {
                     interaction.iconBackground = "bg-gray-400";

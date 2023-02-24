@@ -119,30 +119,19 @@ export default function StartCallingSession() {
                     setDialedIn(false);
                 else setDialedIn(true);
 
-                console.log({ outbound });
-
-                // // Enable hangup button when outbound call is active, disable dial button
+                // Enable hangup button when outbound call is active, disable dial button
                 if (
                     allUpdates[0].StatusCallbackEvent == "participant-join" &&
                     allUpdates[0].ParticipantLabel == "outboundCall"
-                ) {
-                    console.log("outbound call is active");
+                )
                     setOutbound(true);
-                    //     //dialerAdvance();
-                }
 
-                // // Disable hangup button when outbound call ends, enable dial button
+                // Disable hangup button when outbound call ends, enable dial button
                 if (
                     allUpdates[0].StatusCallbackEvent == "participant-leave" &&
                     allUpdates[0].ParticipantLabel == "outboundCall"
-                ) {
-                    console.log("outbound call ended");
+                )
                     setOutbound(false);
-                    //     $('button:contains("Hangup")').prop("disabled", true);
-                    //     $('button:contains("Dial")').prop("disabled", false);
-                }
-
-                console.log({ outbound });
             }
         );
         return () => {
