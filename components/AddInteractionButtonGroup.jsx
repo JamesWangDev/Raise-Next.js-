@@ -1,12 +1,12 @@
 // A react component returning a taiwlind button group of add-interaction buttons, "add pledge", "add donation", "add note", etc.
-export default function AddInteractionButtonGroup({ person }) {
+export default function AddInteractionButtonGroup({ person, showAddModal }) {
     return (
         <div className="flex flex-row gap-2">
             <button
                 type="button"
                 className="button-sm"
                 onClick={() => {
-                    console.log("add note");
+                    showAddModal("note");
                 }}
             >
                 New Note
@@ -15,7 +15,7 @@ export default function AddInteractionButtonGroup({ person }) {
                 type="button"
                 className="button-sm"
                 onClick={() => {
-                    console.log("add pledge");
+                    showAddModal("pledge");
                 }}
             >
                 New Pledge
@@ -24,7 +24,7 @@ export default function AddInteractionButtonGroup({ person }) {
                 type="button"
                 className="button-sm"
                 onClick={() => {
-                    console.log("add donation");
+                    showAddModal("donation");
                 }}
             >
                 New Donation

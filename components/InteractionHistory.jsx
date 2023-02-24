@@ -15,11 +15,28 @@ function classNames(...classes) {
 }
 import AddInteractionButtonGroup from "./AddInteractionButtonGroup";
 
+function AddModal() {
+    return (
+        <>
+            <p>Add</p>
+        </>
+    );
+}
+
 export default function InteractionHistory({ person, interactions }) {
+    // showModal and addModalType are states that are used to control the display of the modal
+    const [showModal, showModal] = useState(false);
+    const [addModalType, setAddModalType] = useState("");
+
     return (
         <div className="flow-root">
             <h2>Interaction History</h2>
-            <AddInteractionButtonGroup person={person} />
+            <AddInteractionButtonGroup
+                person={person}
+                showAddModal={showModal}
+                setAddModalType={setAddModalType}
+            />
+            <AddModal type={addModalType} show={showModal} />
             <ul role="list" className="-mb-8 mt-6">
                 {interactions?.map((interaction, eventIdx) => {
                     interaction.iconBackground = "bg-gray-400";
