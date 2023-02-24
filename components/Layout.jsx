@@ -467,7 +467,7 @@ const Layout = ({ children }) => {
                     </div>
 
                     <main className="flex-1">
-                        <div className="py-6">
+                        <div className="py-4">
                             {isSignedIn ? (
                                 hasOrg ? (
                                     children
@@ -490,8 +490,12 @@ const Layout = ({ children }) => {
                                         <SignUp
                                             appearance={{
                                                 layout: {
-                                                    // socialButtonsVariant: "iconButton",
+                                                    // socialButtonsVariant:
+                                                    // "blockButton",
                                                     // socialButtonsPlacement: "bottom",
+                                                },
+                                                variables: {
+                                                    colorPrimary: "#2d28ff",
                                                 },
                                             }}
                                         />

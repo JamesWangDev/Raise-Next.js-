@@ -81,7 +81,8 @@ pre {
 
 .cl-userButtonPopoverFooter,
 .cl-internal-b3fm6y,
-.cl-organizationSwitcherPopoverFooter {
+.cl-organizationSwitcherPopoverFooter,
+.cl-internal-1w7h4oz {
     display: none !important;
 }
 
@@ -343,4 +344,12 @@ main button[type="button"]:not(.MuiButtonBase-root).button-xs {
 .nav-item.current,
 .nav-item:hover {
     border-color: #ddd;
+}
+
+.cl-socialButtonsBlockButton {
+    background: #2d28ff !important;
+}
+.cl-socialButtonsBlockButton span {
+    color: white !important;
+    @apply font-semibold !important;
 }
