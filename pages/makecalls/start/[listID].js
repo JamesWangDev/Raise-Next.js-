@@ -52,7 +52,9 @@ export default function StartCallingSession() {
     let hasNext = peopleList?.indexOf(personID) < peopleList?.length - 1;
     console.log();
 
-    function leave() {}
+    function leave() {
+        router.push("/makecalls");
+    }
 
     function dialCurrentNumber() {
         dial(nextNumber);
