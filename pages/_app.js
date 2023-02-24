@@ -8,10 +8,12 @@ import "../styles/globals.css";
 
 import Layout from "../components/Layout";
 import { ClerkProvider } from "@clerk/nextjs";
+import { isLoaded, useUser, SignIn } from "@clerk/clerk-react";
 // import { IntercomProvider } from "../utils/IntercomProvider";
 import { ChatWidget } from "@papercups-io/chat-widget";
 
 function App({ Component, pageProps }) {
+    const { isLoaded, isSignedIn, user } = useUser();
     return (
         <ClerkProvider {...pageProps}>
             {/* <IntercomProvider> */}
@@ -36,15 +38,12 @@ function App({ Component, pageProps }) {
                 requireEmailUpfront={false}
                 iconVariant="outlined"
                 baseUrl="https://app.papercups.io"
-                // Optionally include data about your customer here to identify them
-                // customer={{
-                //   name: __CUSTOMER__.name,
-                //   email: __CUSTOMER__.email,
-                //   external_id: __CUSTOMER__.id,
-                //   metadata: {
-                //     plan: "premium"
-                //   }
-                // }}
+                customer={{
+                    name: user.firstName + " " + user.lastName,
+                    email: user.email,
+                    external_id: user.id,
+                    metadata: {},
+                }}
             />
             {/* </IntercomProvider> */}
         </ClerkProvider>
