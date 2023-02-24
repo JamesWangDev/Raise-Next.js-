@@ -38,7 +38,7 @@ function ChatWidgetWrapper() {
             metadata: {},
         };
 
-    console.log({ user });
+    // console.log({ user });
 
     return (
         <ChatWidget
@@ -51,7 +51,7 @@ function ChatWidgetWrapper() {
             title="Welcome to RaiseMore"
             subtitle="Ask us anything in the chat window below 😊"
             primaryColor="#2d28ff"
-            greeting="Hello! Any questions?"
+            greeting="Hi there! Send us a message and we'll get back to you as soon as we can."
             newMessagePlaceholder="Start typing..."
             showAgentAvailability={false}
             agentAvailableText="We're online right now!"
