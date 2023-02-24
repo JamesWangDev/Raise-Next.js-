@@ -66,23 +66,21 @@ export default function PersonProfile({
                 </div>
                 <div className="text-right">
                     <div className=" flex-row gap-3 inline-flex">
-                        {person.phone ? (
-                            <button type="button" onClick={() => dial()}>
+                        {
+                            <button
+                                type="button"
+                                onClick={() => dial(person.phone)}
+                                {...(!person?.phone || outbound
+                                    ? { disabled: true }
+                                    : {})}
+                            >
                                 <PhoneIcon
                                     className="-ml-1 mr-2 h-5 w-5 text-gray-400"
                                     aria-hidden="true"
                                 />
                                 Call
                             </button>
-                        ) : (
-                            <button type="button" disabled>
-                                <PhoneIcon
-                                    className="-ml-1 mr-2 h-5 w-5 text-gray-400"
-                                    aria-hidden="true"
-                                />
-                                Call
-                            </button>
-                        )}
+                        }
                         {/* <button type="button">Merge Records</button> */}
                         <button
                             type="button"

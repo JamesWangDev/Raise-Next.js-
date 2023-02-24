@@ -38,7 +38,7 @@ export default function StartCallingSession() {
     const [conferenceUpdates, updateConference] = useState();
     const [dialedIn, setDialedIn] = useState(false);
     const [personID, setPersonID] = useState();
-    const [outbound, setOutbound] = useState();
+    const [outbound, setOutbound] = useState(false);
     const [peopleList, setPeopleList] = useState();
 
     function nextPerson() {
@@ -54,10 +54,6 @@ export default function StartCallingSession() {
 
     function leave() {
         router.push("/makecalls");
-    }
-
-    function dialCurrentNumber() {
-        dial(nextNumber);
     }
 
     useEffect(() => {
@@ -122,6 +118,31 @@ export default function StartCallingSession() {
                 )
                     setDialedIn(false);
                 else setDialedIn(true);
+
+                console.log({ outbound });
+
+                // // Enable hangup button when outbound call is active, disable dial button
+                if (
+                    allUpdates[0].StatusCallbackEvent == "participant-join" &&
+                    allUpdates[0].ParticipantLabel == "outboundCall"
+                ) {
+                    console.log("outbound call is active");
+                    setOutbound(true);
+                    //     //dialerAdvance();
+                }
+
+                // // Disable hangup button when outbound call ends, enable dial button
+                if (
+                    allUpdates[0].StatusCallbackEvent == "participant-leave" &&
+                    allUpdates[0].ParticipantLabel == "outboundCall"
+                ) {
+                    console.log("outbound call ended");
+                    setOutbound(false);
+                    //     $('button:contains("Hangup")').prop("disabled", true);
+                    //     $('button:contains("Dial")').prop("disabled", false);
+                }
+
+                console.log({ outbound });
             }
         );
         return () => {
@@ -161,7 +182,7 @@ export default function StartCallingSession() {
             </div>
             <PersonProfile
                 personID={personID}
-                dial={dialCurrentNumber}
+                dial={dial}
                 hangup={hangup}
                 next={nextPerson}
                 hasNext={hasNext}
