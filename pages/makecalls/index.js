@@ -5,6 +5,7 @@ import PageTitle from "../../components/PageTitle";
 
 import { useState, useEffect } from "react";
 import supabase from "../../utils/supabase";
+import Breadcrumbs from "../../components/Breadcrumbs";
 
 export default function MakeCallsPage() {
     const [sessions, setSessions] = useState([]);
@@ -23,6 +24,15 @@ export default function MakeCallsPage() {
     return (
         <div className="">
             <div className="mx-auto max-w-7xl px-2 ">
+                <Breadcrumbs
+                    pages={[
+                        {
+                            name: "Make Calls",
+                            href: "/makecalls",
+                            current: false,
+                        },
+                    ]}
+                />
                 <PageTitle
                     title="Make Calls"
                     descriptor="Join or start a calling session."

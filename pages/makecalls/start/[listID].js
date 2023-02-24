@@ -11,6 +11,7 @@ import { PhoneIcon } from "@heroicons/react/24/outline";
 import { useState, useEffect } from "react";
 import supabase from "../../../utils/supabase";
 import { parseSQL } from "react-querybuilder";
+import Breadcrumbs from "../../../components/Breadcrumbs";
 
 import PersonProfile from "../../../components/PersonProfile";
 
@@ -127,6 +128,20 @@ export default function StartCallingSession() {
     ) : (
         <div className="">
             <div className="mx-auto max-w-7xl px-2 ">
+                <Breadcrumbs
+                    pages={[
+                        {
+                            name: "Make Calls",
+                            href: "/makecalls",
+                            current: false,
+                        },
+                        {
+                            name: "Launch New Call Session with Saved List",
+                            href: "/makecalls/start/[listID]",
+                            current: false,
+                        },
+                    ]}
+                />
                 <PageTitle
                     title="Start a new calling session"
                     descriptor="Dial in to connect."
