@@ -42,7 +42,7 @@ function dial(number) {
         console.log("firebase func dialOutAndPlaceInConference() returns:");
         console.log(result.data);
     });
-    dialerAdvance();
+    // dialerAdvance();
 }
 
 function hangup() {

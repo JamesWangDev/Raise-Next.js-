@@ -45,8 +45,17 @@ export default function StartCallingSession() {
         // Find the current person in the list, and move to the next one.
         let currentIndex = peopleList.indexOf(personID);
         let nextIndex = currentIndex + 1;
-        if (nextIndex >= peopleList.length) nextIndex = 0;
+        if (nextIndex >= peopleList.length) return false;
         setPersonID(peopleList[nextIndex]);
+    }
+
+    let hasNext = peopleList?.indexOf(personID) < peopleList?.length - 1;
+    console.log();
+
+    function leave() {}
+
+    function dialCurrentNumber() {
+        dial(nextNumber);
     }
 
     useEffect(() => {
@@ -121,9 +130,41 @@ export default function StartCallingSession() {
 
     return dialedIn ? (
         <>
-            You&apos;re dialed in!
-            <DialingControls personID={personID} outbound={outbound} />
-            <PersonProfile personID={personID} />
+            <div className="mx-auto max-w-7xl mb-4 px-5 p-3 shadow-sm rounded rounded-lg bg-white ">
+                <span className="flex-grow">
+                    You&apos;re dialed in to the call session!
+                </span>
+                {/* Leave call session button */}
+                <button
+                    className="text-sm button-sm"
+                    type="button"
+                    onClick={leave}
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-6 w-6 text-red-500"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M6 18L18 6M6 6l12 12"
+                        />
+                    </svg>
+                    &nbsp; Leave Session
+                </button>
+            </div>
+            <PersonProfile
+                personID={personID}
+                dial={dialCurrentNumber}
+                hangup={hangup}
+                next={nextPerson}
+                hasNext={hasNext}
+                outbound={outbound}
+            />
         </>
     ) : (
         <div className="">
@@ -167,37 +208,6 @@ export default function StartCallingSession() {
                     </div>
                 </div> */}
             </div>
-        </div>
-    );
-}
-
-function DialingControls({ personID, outbound }) {
-    // A react component that returns a tailwind button group for dial, hangup, and next person.
-    return (
-        <div className="flex justify-center">
-            <button
-                type="button"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                onClick={() => dial(outbound)}
-            >
-                Dial
-            </button>
-            <button
-                type="button"
-                className="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                onClick={() => hangup()}
-                {...(outbound ? {} : { disabled: true })}
-            >
-                Hang Up
-            </button>
-            <button
-                type="button"
-                className="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
-                onClick={() => nextPerson()}
-                {...(!outbound ? {} : { disabled: true })}
-            >
-                Next
-            </button>
         </div>
     );
 }

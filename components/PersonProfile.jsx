@@ -17,7 +17,14 @@ import PledgeHistory from "./PledgeHistory";
 import DonationHistory from "./DonationHistory";
 import PersonContactInfo from "./PersonContactInfo";
 
-export default function PersonProfile({ personID }) {
+export default function PersonProfile({
+    personID,
+    dial,
+    hangup,
+    outbound,
+    hasNext,
+    next,
+}) {
     const [person, setPerson] = useState();
 
     useEffect(() => {
@@ -60,7 +67,7 @@ export default function PersonProfile({ personID }) {
                 <div className="text-right">
                     <div className=" flex-row gap-3 inline-flex">
                         {person.phone ? (
-                            <button type="button">
+                            <button type="button" onClick={() => dial()}>
                                 <PhoneIcon
                                     className="-ml-1 mr-2 h-5 w-5 text-gray-400"
                                     aria-hidden="true"
@@ -76,7 +83,25 @@ export default function PersonProfile({ personID }) {
                                 Call
                             </button>
                         )}
-                        <button type="button">Merge Records</button>
+                        {/* <button type="button">Merge Records</button> */}
+                        <button
+                            type="button"
+                            className="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                            onClick={() => hangup()}
+                            {...(outbound ? {} : { disabled: true })}
+                        >
+                            Hang Up
+                        </button>
+                        <button
+                            type="button"
+                            className="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
+                            onClick={() => next()}
+                            {...(!outbound && hasNext
+                                ? {}
+                                : { disabled: true })}
+                        >
+                            Next
+                        </button>
                     </div>
                 </div>
             </div>

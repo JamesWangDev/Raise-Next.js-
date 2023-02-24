@@ -17,9 +17,19 @@ export default function DonationHistory({ donations }) {
     return (
         <div>
             <h2 className="mt-7">Donation History</h2>
-            {donations?.map((donation) => (
-                <>{JSON.stringify(donation, 0, 2)}</>
-            ))}
+            <ul role="list" className="divide-y divide-gray-200">
+                {donations?.map((donation) => (
+                    <>
+                        {/* {JSON.stringify(donation, 0, 2)} */}
+                        <li
+                            key={donation.id}
+                            className="flex py-4 text-sm text-gray-600"
+                        >
+                            ${donation.amount} - {donation.date.split(" ")[0]}
+                        </li>
+                    </>
+                ))}
+            </ul>
             {!donations?.length && (
                 <p className="text-sm">No donations found.</p>
             )}
