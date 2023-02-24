@@ -27,6 +27,19 @@ function App({ Component, pageProps }) {
 
 function ChatWidgetWrapper() {
     const { isLoaded, isSignedIn, user } = useUser();
+
+    let customer = null;
+    if (isSignedIn)
+        customer = {
+            name: user.fullName,
+            email: user.primaryEmailAddress.emailAddress,
+            phone: user.primaryPhoneNumber.phoneNumber,
+            external_id: user.id,
+            metadata: {},
+        };
+
+    console.log({ user });
+
     return (
         <ChatWidget
             // `accountId` is used instead of `token` in older versions
@@ -46,12 +59,7 @@ function ChatWidgetWrapper() {
             requireEmailUpfront={false}
             iconVariant="outlined"
             baseUrl="https://app.papercups.io"
-            customer={{
-                name: user.firstName + " " + user.lastName,
-                email: user.email,
-                external_id: user.id,
-                metadata: {},
-            }}
+            customer={customer}
         />
     );
 }
