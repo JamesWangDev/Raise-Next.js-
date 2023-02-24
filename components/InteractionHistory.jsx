@@ -13,7 +13,7 @@ import {
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
-import AddInteractionButtonGroup from "../components/AddInteractionButtonGroup";
+import AddInteractionButtonGroup from "./AddInteractionButtonGroup";
 
 export default function InteractionHistory({ person, interactions }) {
     return (
