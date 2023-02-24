@@ -17,8 +17,6 @@ import {
     SignUp,
 } from "@clerk/nextjs";
 
-import PleaseLogin from "../components/PleaseLogin";
-
 import { ArrowDownIcon, ArrowUpIcon } from "@heroicons/react/20/solid";
 import {
     CursorArrowRaysIcon,
