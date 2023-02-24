@@ -74,7 +74,7 @@ export function StatCard({ query, table, key, item }) {
                 setData(data.data);
                 setLoading(false);
             });
-    }, []);
+    }, [query, table]);
 
     item.stat = data ? (Object.keys(data) ? data[Object.keys(data)[0]] : 0) : 0;
 

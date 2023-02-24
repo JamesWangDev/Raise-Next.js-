@@ -79,7 +79,7 @@ export default function StartCallingSession() {
                     setPersonID(temporaryPeopleList[0]);
                 });
             });
-    }, []);
+    }, [listID]);
 
     useEffect(() => {
         // Subscribe to the conference updates snapshot listener.
@@ -120,7 +120,7 @@ export default function StartCallingSession() {
 
     return dialedIn ? (
         <>
-            You're dialed in!
+            You&apos;re dialed in!
             <DialingControls personID={personID} outbound={outbound} />
             <PersonProfile personID={personID} />
         </>
