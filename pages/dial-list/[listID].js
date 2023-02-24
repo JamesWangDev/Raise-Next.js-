@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import supabase from "../../utils/supabase";
+import supabase from "utils/supabase";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import {
@@ -10,8 +10,8 @@ import {
     UserIcon,
     PhoneIcon,
 } from "@heroicons/react/20/solid";
-import InteractionHistory from "../../components/InteractionHistory";
-import Breadcrumbs from "../../components/Breadcrumbs";
+import InteractionHistory from "components/InteractionHistory";
+import Breadcrumbs from "components/Breadcrumbs";
 
 export default function SpecificListPage() {
     const router = useRouter();

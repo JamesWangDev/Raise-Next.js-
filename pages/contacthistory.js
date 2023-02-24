@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import SupabaseTable from "../components/SupabaseTable";
+import SupabaseTable from "components/SupabaseTable";
 import { useState, useEffect } from "react";
 
 export default function Dashboard() {

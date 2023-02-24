@@ -1,5 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import supabase from "../../utils/supabase";
+import supabase from "utils/supabase";
 
 export default async function handler(req, res) {
     console.time("supabase req timer");

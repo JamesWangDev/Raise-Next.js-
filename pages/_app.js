@@ -3,13 +3,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
-import "../styles/globals.css";
+import "styles/globals.css";
 // import "@docsearch/css";
 
-import Layout from "../components/Layout";
+import Layout from "components/Layout";
 import { ClerkProvider } from "@clerk/nextjs";
 import { isLoaded, useUser, SignIn } from "@clerk/clerk-react";
-// import { IntercomProvider } from "../utils/IntercomProvider";
+// import { IntercomProvider } from "utils/IntercomProvider";
 import { ChatWidget } from "@papercups-io/chat-widget";
 
 function App({ Component, pageProps }) {

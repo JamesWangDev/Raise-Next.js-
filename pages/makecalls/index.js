@@ -1,11 +1,11 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import PageTitle from "../../components/PageTitle";
+import PageTitle from "components/PageTitle";
 
 import { useState, useEffect } from "react";
-import supabase from "../../utils/supabase";
-import Breadcrumbs from "../../components/Breadcrumbs";
+import supabase from "utils/supabase";
+import Breadcrumbs from "components/Breadcrumbs";
 
 export default function MakeCallsPage() {
     const [sessions, setSessions] = useState([]);

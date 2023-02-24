@@ -1,6 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 // Postgres client
-import { connectToDatabase } from "../../utils/db";
+import { connectToDatabase } from "utils/db";
 const db = connectToDatabase();
 
 export default async function handler(req, res) {

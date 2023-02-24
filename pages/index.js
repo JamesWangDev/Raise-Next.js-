@@ -2,10 +2,10 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import supabase from "../utils/supabase";
-import SupabaseTable from "../components/SupabaseTable";
-import Breadcrumbs from "../components/Breadcrumbs";
-import PageTitle from "../components/PageTitle";
+import supabase from "utils/supabase";
+import SupabaseTable from "components/SupabaseTable";
+import Breadcrumbs from "components/Breadcrumbs";
+import PageTitle from "components/PageTitle";
 
 import {
     useAuth,

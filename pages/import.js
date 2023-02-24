@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 // Import React FilePond
 import { FilePond, registerPlugin } from "react-filepond";
 import "filepond/dist/filepond.min.css";
-import supabase from "../utils/supabase";
+import supabase from "utils/supabase";
 import { data } from "autoprefixer";
 
 const server = {

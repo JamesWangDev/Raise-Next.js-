@@ -4,7 +4,7 @@ import { Fragment } from "react";
 import { Menu, Transition, Button } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
-import supabase from "../utils/supabase";
+import supabase from "utils/supabase";
 
 import { useOrganization } from "@clerk/nextjs";
 

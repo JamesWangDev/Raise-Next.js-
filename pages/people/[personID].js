@@ -1,4 +1,4 @@
-import PersonProfile from "../../components/PersonProfile";
+import PersonProfile from "components/PersonProfile";
 import { useRouter } from "next/router";
 
 export default function PersonPage() {

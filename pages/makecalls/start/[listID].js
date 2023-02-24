@@ -6,14 +6,14 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import PageTitle from "../../../components/PageTitle";
+import PageTitle from "components/PageTitle";
 import { PhoneIcon } from "@heroicons/react/24/outline";
 import { useState, useEffect } from "react";
-import supabase from "../../../utils/supabase";
+import supabase from "utils/supabase";
 import { parseSQL } from "react-querybuilder";
-import Breadcrumbs from "../../../components/Breadcrumbs";
+import Breadcrumbs from "components/Breadcrumbs";
 
-import PersonProfile from "../../../components/PersonProfile";
+import PersonProfile from "components/PersonProfile";
 
 // Import firebase utils
 import {
@@ -28,7 +28,7 @@ import {
     query,
     collection,
     orderBy,
-} from "../../../utils/firebase";
+} from "utils/firebase";
 
 export default function StartCallingSession() {
     const router = useRouter();

@@ -1,9 +1,9 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import QueryBuilderProvider from "../components/QueryBuilderProvider";
+import QueryBuilderProvider from "components/QueryBuilderProvider";
 import { useState, useEffect } from "react";
-import Breadcrumbs from "../components/Breadcrumbs";
+import Breadcrumbs from "components/Breadcrumbs";
 
 export default function Dashboard() {
     return (

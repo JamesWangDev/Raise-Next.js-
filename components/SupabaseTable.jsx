@@ -6,7 +6,7 @@ const fetcher = (url) => axios.get(url).then((res) => res.data);
 import { useState, useEffect } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import Box from "@mui/material/Box";
-import supabase from "../utils/supabase";
+import supabase from "utils/supabase";
 
 import Button from "@mui/material/Button";
 import { DataGrid, GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
