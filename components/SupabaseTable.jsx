@@ -1,4 +1,4 @@
-import useSWR from "swr";
+import useSWR, { preload } from "swr";
 import axios from "axios";
 const fetcher = (url) => axios.get(url).then((res) => res.data);
 // const fetcher = (url) => fetch(url).then((res) => res.json());
@@ -20,19 +20,44 @@ export default function SupabaseTable({
     currentQuery,
     setFilterColumns = () => {},
 }) {
-    var rowCount = 0;
-    const [rowCountState, setRowCountState] = useState(rowCount);
     const [page, setPage] = useState(0);
+    console.log({ page });
+    let perPage = 25;
+    let offset = page > 0 ? " OFFSET " + page * perPage : 0;
 
     const SWRquery =
         `select * from ${table}` +
         (!!currentQuery ? ` where ${currentQuery}` : "") +
-        ` limit 25`;
+        ` limit ${perPage}` +
+        offset;
+
     const { data, error } = useSWR(
-        `/api/rq?start=${encodeURI(page * 25)}&query=${encodeURI(SWRquery)}`,
+        `/api/rq?query=${encodeURI(SWRquery)}`,
         fetcher
     );
-    if (error) console.log(error); // "An error has occurred.";
+    if (error) console.log(error);
+
+    // Preload the next result using SWR, too
+    preload(
+        `/api/rq?query=${encodeURI(
+            `select * from ${table}` +
+                (!!currentQuery ? ` where ${currentQuery}` : "") +
+                ` limit ${perPage}` +
+                (page + 1 > 0 ? " OFFSET " + (page + 1) * perPage : 0)
+        )}`,
+        fetcher
+    );
+
+    // useSWR to get the count of rows in the table
+    const { data: rowCountData, error: rowCountError } = useSWR(
+        `/api/rq?start=0&query=${encodeURI(
+            `select count(*) from ${table}` +
+                (!!currentQuery ? ` where ${currentQuery}` : "")
+        )}`,
+        fetcher
+    );
+    if (rowCountError) console.log(rowCountError);
+    let rowCount = rowCountData ? rowCountData[0].count : null;
 
     // Make the first row an id column if none present because mui datatable requires it
     // ...&if there is no data, then pass a blank rows array
@@ -77,12 +102,18 @@ export default function SupabaseTable({
         });
     }
 
+    columns = columns.map((column) => ({
+        ...column,
+        sortable: false,
+        filterable: false,
+    }));
+
     return (
         <>
             <Box sx={{ height: "55vh", width: "100%" }}>
                 <DataGrid
                     paginationMode="server"
-                    rowCount={rowCountState}
+                    rowCount={rowCount}
                     loading={!data}
                     rows={rows}
                     columns={columns}
@@ -91,7 +122,11 @@ export default function SupabaseTable({
                     // checkboxSelection
                     onPageChange={setPage}
                     className="bg-white"
+                    // disable sorting and filtering
+                    disableColumnMenu
+                    rowHeight={44}
                     sx={{
+                        "font-size": "0.85rem",
                         my: 2,
                         "& .MuiDataGrid-columnHeader .MuiDataGrid-columnSeparator":
                             {
