@@ -132,10 +132,6 @@ export default function Import() {
         <>
             <div className="py-2 shadow-sm bg-white rounded-lg p-6 py-6 mx-12">
                 <div className="mx-auto max-w-7xl px-2 ">
-                    <PageTitle
-                        title="Import Donors"
-                        descriptor="Import donors, donation history, prospects, and pledges."
-                    />
                     <Breadcrumbs
                         pages={[
                             {
@@ -144,6 +140,10 @@ export default function Import() {
                                 current: true,
                             },
                         ]}
+                    />{" "}
+                    <PageTitle
+                        title="Import Donors"
+                        descriptor="Import donors, donation history, prospects, and pledges."
                     />
                 </div>
                 <div className="mx-auto max-w-7xl px-2 ">
