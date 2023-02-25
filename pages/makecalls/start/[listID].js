@@ -137,6 +137,7 @@ export default function StartCallingSession() {
         return () => {
             // Unsubscribe from the conference updates snapshot listener.
             conferenceUpdatesRef();
+            //
         };
     }, []);
 
