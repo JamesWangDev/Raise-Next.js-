@@ -21,9 +21,9 @@ export default function SupabaseTable({
     setFilterColumns = () => {},
 }) {
     const [page, setPage] = useState(0);
-    console.log({ page });
+    // console.log({ page });
     let perPage = 25;
-    let offset = page > 0 ? " OFFSET " + page * perPage : 0;
+    let offset = page > 0 ? " OFFSET " + page * perPage : "";
 
     const SWRquery =
         `select * from ${table}` +
