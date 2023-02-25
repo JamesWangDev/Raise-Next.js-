@@ -22,16 +22,14 @@ export default function CallingSessionsGrid() {
             {sessions?.map((session) => (
                 <>
                     <div className="bg-white rounded-lg shadow-sm p-6 pt-0 hover:shadow-lg hover:cursor-pointer border">
-                        <h3 className="text-lg font-bold">
-                            List ID: {session.list_id}
-                        </h3>
-                        <p className="text-gray-500 mt-2">
+                        <h3>List ID: {session.list_id}</h3>
+                        <p className="text-gray-400 mt-2 font-normal">
                             Started on:{" "}
                             {new Date(session.started).toLocaleDateString()}
                         </p>
                         <Link
                             href="/call/1"
-                            className="block mt-4 text-blue-600 hover:underline"
+                            className="block mt-4 text-blue-600 hover:underline underline underline-offset-4 text-base font-normal"
                         >
                             Join this session
                         </Link>
