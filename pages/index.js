@@ -6,6 +6,7 @@ import supabase from "utils/supabase";
 import SupabaseTable from "components/SupabaseTable";
 import Breadcrumbs from "components/Breadcrumbs";
 import PageTitle from "components/PageTitle";
+import CallingSessionsGrid from "components/CallingSessionsGrid";
 
 import {
     useAuth,
@@ -149,21 +150,31 @@ export function StatCard({ query, table, key, item }) {
 
 export function HomepageCards() {
     return (
-        <div>
-            <h3 className="text-lg font-medium leading-6 text-gray-900">
-                All Time
-            </h3>
-            <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {stats.map((item, i) => (
-                    <StatCard
-                        key={i}
-                        item={item}
-                        query={item.query}
-                        table="dashboard_by_account"
-                    />
-                ))}
-            </dl>
-        </div>
+        <>
+            <div>
+                <h3 className="text-lg font-medium leading-6 text-gray-900">
+                    All Time
+                </h3>
+                <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                    {stats.map((item, i) => (
+                        <StatCard
+                            key={i}
+                            item={item}
+                            query={item.query}
+                            table="dashboard_by_account"
+                        />
+                    ))}
+                </dl>
+            </div>
+            <div>
+                <h3 className="text-lg font-medium leading-6 text-gray-900 mt-8">
+                    Join an Active Calling Session
+                </h3>
+
+                {/* map callingSessions to devs/cards in the same way as done in makecalls/start/... */}
+                <CallingSessionsGrid />
+            </div>
+        </>
     );
 }
 
