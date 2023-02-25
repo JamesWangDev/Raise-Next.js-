@@ -33,7 +33,8 @@ export default function SupabaseTable({
 
     const { data, error } = useSWR(
         `/api/rq?query=${encodeURI(SWRquery)}`,
-        fetcher
+        fetcher,
+        { suspense: true }
     );
     if (error) console.log(error);
 
