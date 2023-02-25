@@ -8,6 +8,9 @@ import { FilePond, registerPlugin } from "react-filepond";
 import "filepond/dist/filepond.min.css";
 import supabase from "utils/supabase";
 import { data } from "autoprefixer";
+//import pagetitle and breadcrumbs
+import Breadcrumbs from "components/Breadcrumbs";
+import PageTitle from "components/PageTitle";
 
 const server = {
     process: (
@@ -129,9 +132,19 @@ export default function Import() {
         <>
             <div className="py-2 shadow-sm bg-white rounded-lg p-6 py-6 mx-12">
                 <div className="mx-auto max-w-7xl px-2 ">
-                    <h1 className="text-2xl font-semibold text-gray-900">
-                        Import Donors
-                    </h1>
+                    <PageTitle
+                        title="Import Donors"
+                        descriptor="Import donors, donation history, prospects, and pledges."
+                    />
+                    <Breadcrumbs
+                        pages={[
+                            {
+                                name: "Import Donors",
+                                href: "/import",
+                                current: true,
+                            },
+                        ]}
+                    />
                 </div>
                 <div className="mx-auto max-w-7xl px-2 ">
                     <h2>
