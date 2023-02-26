@@ -178,7 +178,7 @@ export function HomepageCards() {
     );
 }
 
-export default function Page() {
+export default function Home() {
     const { isSignedIn, isLoading, user } = useUser();
 
     return (

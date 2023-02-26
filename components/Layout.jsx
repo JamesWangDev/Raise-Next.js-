@@ -49,7 +49,8 @@ import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 //   process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_ONLY_API_KEY
 // );
 import { DocSearch } from "@docsearch/react";
-import "@docsearch/css";
+// Commented out for Jest testing
+// import "@docsearch/css";
 import { Breadcrumb } from "react-instantsearch-dom";
 
 const navigation = [
