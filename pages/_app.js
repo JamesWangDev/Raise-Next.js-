@@ -1,3 +1,5 @@
+import { Analytics } from "@vercel/analytics/react";
+
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,12 +17,11 @@ import { ChatWidget } from "@papercups-io/chat-widget";
 function App({ Component, pageProps }) {
     return (
         <ClerkProvider {...pageProps}>
-            {/* <IntercomProvider> */}
             <Layout>
                 <Component {...pageProps} />
             </Layout>
             <ChatWidgetWrapper />
-            {/* </IntercomProvider> */}
+            <Analytics />
         </ClerkProvider>
     );
 }

@@ -9,6 +9,9 @@ const nextConfig = {
     reactStrictMode: true,
     compiler: {
         styledComponents: true,
+        // removeConsole: {
+        //     exclude: ["error"],
+        // },
     },
     images: {
         // formats: ["image/avif", "image/webp"],
