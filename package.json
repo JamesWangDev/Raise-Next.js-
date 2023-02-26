@@ -7,7 +7,10 @@
         "build": "next build",
         "start": "next start",
         "lint": "next lint",
-        "test": "jest"
+        "test": "jest",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "deploy": "vercel --prod"
     },
     "dependencies": {
         "@clerk/nextjs": "^4.8.2",
