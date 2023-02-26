@@ -1,3 +1,4 @@
+// jest.config.js
 const nextJest = require("next/jest");
 
 const createJestConfig = nextJest({
@@ -6,24 +7,29 @@ const createJestConfig = nextJest({
 });
 
 // Add any custom config to be passed to Jest
+/** @type {import('jest').Config} */
 const customJestConfig = {
-    moduleDirectories: ["<rootDir>/", "node_modules"],
     setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
-    moduleNameMapper: {
-        // Handle module aliases (this will be automatically configured for you soon)
 
-        "^@/components/(.*)$": "<rootDir>/components/$1",
-        "^@/pages/(.*)$": "<rootDir>/pages/$1",
-        "\\.(css|less)$": "identity-obj-proxy",
-    },
+    // Add more setup options before each test is run
+    // setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+    // if using TypeScript with a baseUrl set to the root directory then you need the below for alias' to work
+    moduleDirectories: ["node_modules", "<rootDir>/"],
+
+    // If you're using [Module Path Aliases](https://nextjs.org/docs/advanced-features/module-path-aliases),
+    // you will have to add the moduleNameMapper in order for jest to resolve your absolute paths.
+    // The paths have to be matching with the paths option within the compilerOptions in the tsconfig.json
+    // For example:
+
+    // moduleNameMapper: {
+    //     "@/(.*)$": "<rootDir>/src/$1",
+    // },
     testEnvironment: "jest-environment-jsdom",
-    // Indicates whether the coverage information should be collected while executing the test
-    collectCoverage: true,
-
-    // The directory where Jest should output its coverage files
-    coverageDirectory: "coverage",
-
-    testMatch: ["**/tests/**/*.[jt]s?(x)", "**/?(*.)+(spec|test).[tj]s?(x)"],
+    testMatch: [
+        "**/tests/**/*.[jt]s?(x)",
+        "**/__tests__/**/*.[jt]s?(x)",
+        "**/?(*.)+(spec|test).[tj]s?(x)",
+    ],
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

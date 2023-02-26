@@ -1,17 +1,16 @@
-import { Analytics } from "@vercel/analytics/react";
-
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
+// for some reason vercel analytics breask jest
+// import { Analytics } from "@vercel/analytics/react";
+
 import "styles/globals.css";
-// import "@docsearch/css";
 
 import Layout from "components/Layout";
 import { ClerkProvider } from "@clerk/nextjs";
 import { isLoaded, useUser, SignIn } from "@clerk/clerk-react";
-// import { IntercomProvider } from "utils/IntercomProvider";
 import { ChatWidget } from "@papercups-io/chat-widget";
 
 function App({ Component, pageProps }) {
@@ -21,7 +20,7 @@ function App({ Component, pageProps }) {
                 <Component {...pageProps} />
             </Layout>
             <ChatWidgetWrapper />
-            <Analytics />
+            {/* <Analytics /> */}
         </ClerkProvider>
     );
 }
