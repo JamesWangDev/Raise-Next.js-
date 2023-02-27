@@ -63,3 +63,9 @@ next.config.original.js
 
 # Sentry
 next.config.wizardcopy.js
+
+#  Testing
+coverage/
+test-results/
+tests/results/
+e2e/results/
