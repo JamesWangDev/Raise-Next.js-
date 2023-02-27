@@ -69,3 +69,6 @@ coverage/
 test-results/
 tests/results/
 e2e/results/
+
+# Ignore on purpose
+*.ignore
