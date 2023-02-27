@@ -20,4 +20,4 @@ Live at [www.raisemore.app](https://www.raisemore.app)
 
 -   Client side & API monitoring with Sentry and Logflare.
 
-![](https://github.com/zachblume/raisemore/blob/main/public/screenshot-rm.png?raw=true)
+![](public/raisemore-screenshot-logged-in-homepage.png?raw=true)
