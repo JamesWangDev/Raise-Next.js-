@@ -7,7 +7,7 @@
         "build": "next build",
         "start": "next start",
         "lint": "next lint",
-        "test": "jest",
+        "test": "env NODE_ENV=test jest --ci",
         "test:e2e": "playwright test",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
