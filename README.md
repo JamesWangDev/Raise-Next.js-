@@ -1,6 +1,6 @@
 # Raise More
 
-#### A database and phone dialer for political fundraising:
+### A database and phone dialer for political fundraising:
 
 -   Syncs with Actblue.
 -   Easy spreadsheet uploads of prospects and pledges.
@@ -10,7 +10,7 @@
 -   Lets you send a followup text + email to pledges.
 -   Lets you dial your lists from the browser, and conference in your principal on their phone.
 
-#### Technical details:
+### Technical details:
 
 -   Built with NextJS deployed to Vercel (just like Netflix).
 
