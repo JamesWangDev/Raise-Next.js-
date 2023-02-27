@@ -1,5 +1,7 @@
 # Raise More
 
+Live at [www.raisemore.app](https://www.raisemore.app)
+
 ## A database and phone dialer for political fundraising:
 
 -   Syncs with Actblue.
@@ -17,7 +19,5 @@
 -   Automated continuous testing with Jest, Playwright, and Checkly.
 
 -   Client side & API monitoring with Sentry and Logflare.
-
-Live at [www.raisemore.app](https://www.raisemore.app)
 
 ![](https://github.com/zachblume/raisemore/blob/main/public/screenshot-rm.png?raw=true)
