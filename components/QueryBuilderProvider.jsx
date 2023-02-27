@@ -13,7 +13,6 @@ function classNames(...classes) {
 
 import { QueryBuilderBootstrap } from "@react-querybuilder/bootstrap";
 import { useState, useEffect } from "react";
-import { useSession, signIn, signOut } from "next-auth/react";
 
 import supabase from "utils/supabase";
 import SaveList from "./SaveList";

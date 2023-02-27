@@ -4,7 +4,6 @@ const fetcher = (url) => axios.get(url).then((res) => res.data);
 // const fetcher = (url) => fetch(url).then((res) => res.json());
 
 import { useState, useEffect } from "react";
-import { useSession, signIn, signOut } from "next-auth/react";
 import Box from "@mui/material/Box";
 import supabase from "utils/supabase";
 
