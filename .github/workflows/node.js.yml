@@ -27,7 +27,7 @@ env:
   SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
   SUPABASE_JWT_SECRET: ${{ secrets.SUPABASE_JWT_SECRET }}
   SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-  SENTRY_LOG_LEVEL=debug
+  SENTRY_LOG_LEVEL: "debug"
 
 jobs:
   build:
