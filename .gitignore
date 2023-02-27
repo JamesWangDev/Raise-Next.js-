@@ -50,13 +50,13 @@ next-env.d.ts
 test.js
 test.sql
 # Sentry
-.sentryclirc
+# .sentryclirc
 
 # Sentry
 next.config.original.js
 
 # Sentry
-.sentryclirc
+# .sentryclirc
 
 # Sentry
 next.config.original.js
