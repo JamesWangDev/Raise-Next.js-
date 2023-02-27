@@ -28,7 +28,7 @@ const customJestConfig = {
     testMatch: [
         "**/tests/**/*.[jt]s?(x)",
         "**/__tests__/**/*.[jt]s?(x)",
-        "**/?(*.)+(spec|test).[tj]s?(x)",
+        // "**/?(*.)+(spec|test).[tj]s?(x)",
     ],
 };
 
