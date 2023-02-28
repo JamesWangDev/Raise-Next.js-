@@ -79,6 +79,15 @@ pre {
     @apply my-3;
 }
 
+.filepond--panel[data-scalable="true"],
+.filepond--panel-root {
+    @apply bg-gray-100 ring-1 ring-black ring-opacity-5 shadow-sm !important;
+}
+
+.filepond--panel-root {
+    @apply ring-opacity-0 !important;
+}
+
 .cl-userButtonPopoverFooter,
 .cl-internal-b3fm6y,
 .cl-organizationSwitcherPopoverFooter,
@@ -336,9 +345,13 @@ main button[type="button"]:not(.MuiButtonBase-root).button-xs {
 }
 
 .nav-item {
-    border-left-width: 3px;
-    border-radius: 0;
+    /* border-left-width: 3px; */
+    /* border-radius: 0; */
     border-color: white;
+    @apply p-2.5 text-gray-700;
+}
+.nav-item * {
+    @apply text-gray-400;
 }
 
 .nav-item.current,
