@@ -120,7 +120,6 @@ export default function SupabaseTable({
         if (!column.renderCell) {
             // Add a fulltext tooltip
             column.renderCell = (params) => {
-                console.log({ params });
                 return (
                     <Tooltip title={params.value}>
                         <div className="MuiDataGrid-cellContent">
@@ -149,7 +148,7 @@ export default function SupabaseTable({
                         ),
                     }}
                     paginationMode="server"
-                    rowCount={rowCount}
+                    rowCount={rowCount || 0}
                     loading={!data}
                     rows={rows}
                     columns={columns}

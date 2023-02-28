@@ -77,9 +77,11 @@ export default async function loadProspectsCSV(req, res) {
 
     console.time("edit file");
 
-    // // Grab the people collection as an array of rows
+    // Grab the people collection as an array of rows
     console.time("people get direct query");
-    const people = (await db.query("select * from people")).rows;
+    const people = (
+        await db.query(`select * from people where organization_id='${orgID}'`)
+    ).rows;
     console.timeEnd("people get direct query");
 
     // Add the batch ID
@@ -209,7 +211,10 @@ export default async function loadProspectsCSV(req, res) {
     console.time("upsert records into people");
 
     // Insert differences...actually for now just upsert the whole table
-    const { error: error4 } = await supabase.from("people").upsert(people);
+    const { error: error4 } = await supabase
+        .from("people")
+        .upsert(people)
+        .select();
     console.timeEnd("upsert records into people");
     console.log("people insert error4:", error4);
 

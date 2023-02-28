@@ -61,7 +61,7 @@ export default function QueryBuilderProvider({ table, children, listID }) {
                     setList(list);
                 });
         }
-    }, [listID]);
+    }, [listID, organization]);
 
     const [list, setList] = useState({});
     const [query, setQuery] = useState(initialQuery);
