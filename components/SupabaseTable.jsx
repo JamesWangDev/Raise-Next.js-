@@ -9,6 +9,7 @@ import supabase from "utils/supabase";
 
 import Button from "@mui/material/Button";
 import { DataGrid, GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
+import { Stack } from "@mui/material";
 import { InstallMobileRounded } from "@mui/icons-material";
 
 import { useRouter } from "next/router";
@@ -117,6 +118,17 @@ export default function SupabaseTable({
         <>
             <Box sx={{ height: "55vh", width: "100%" }}>
                 <DataGrid
+                    components={{
+                        NoRowsOverlay: () => (
+                            <Stack
+                                height="100%"
+                                alignItems="center"
+                                justifyContent="center"
+                            >
+                                No records
+                            </Stack>
+                        ),
+                    }}
                     paginationMode="server"
                     rowCount={rowCount}
                     loading={!data}
