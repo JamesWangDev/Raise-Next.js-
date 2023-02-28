@@ -9,7 +9,7 @@ import supabase from "utils/supabase";
 
 import Button from "@mui/material/Button";
 import { DataGrid, GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
-import { Stack } from "@mui/material";
+import { Stack, Tooltip } from "@mui/material";
 import { InstallMobileRounded } from "@mui/icons-material";
 
 import { useRouter } from "next/router";
@@ -110,9 +110,28 @@ export default function SupabaseTable({
 
     columns = columns.map((column) => ({
         ...column,
+        width: 150,
         sortable: false,
         filterable: false,
     }));
+
+    // add a renderCell method on columns that don't have that method already
+    columns = columns.map((column) => {
+        if (!column.renderCell) {
+            // Add a fulltext tooltip
+            column.renderCell = (params) => {
+                console.log({ params });
+                return (
+                    <Tooltip title={params.value}>
+                        <div className="MuiDataGrid-cellContent">
+                            {params.value}
+                        </div>
+                    </Tooltip>
+                );
+            };
+        }
+        return column;
+    });
 
     return (
         <>
