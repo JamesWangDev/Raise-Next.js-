@@ -30,6 +30,9 @@ import {
     orderBy,
 } from "utils/firebase";
 
+// import useorganization from clerk.dev
+import { useOrganization } from "@clerk/nextjs";
+
 export default function StartCallingSession() {
     const router = useRouter();
     const { listID } = router.query;
@@ -40,6 +43,9 @@ export default function StartCallingSession() {
     const [personID, setPersonID] = useState();
     const [outbound, setOutbound] = useState(false);
     const [peopleList, setPeopleList] = useState();
+
+    //get orgid using clerk
+    const { organization } = useOrganization();
 
     function nextPerson() {
         // Find the current person in the list, and move to the next one.
@@ -61,6 +67,7 @@ export default function StartCallingSession() {
         supabase
             .from("call_sessions")
             .select("*")
+            .eq("organization_id", organization.id)
             .then(({ data, error }) => {
                 if (error) console.log("Error fetching sessions", error);
                 else setSessions(data);
@@ -70,6 +77,7 @@ export default function StartCallingSession() {
         supabase
             .from("saved_lists")
             .select("*")
+            .eq("organization_id", organization.id)
             .eq("id", listID)
             .single()
             .limit(1)

@@ -17,6 +17,9 @@ import PledgeHistory from "./PledgeHistory";
 import DonationHistory from "./DonationHistory";
 import PersonContactInfo from "./PersonContactInfo";
 
+// import useorganization from clerk.dev
+import { useOrganization } from "@clerk/nextjs";
+
 export default function PersonProfile({
     personID,
     dial,
@@ -26,11 +29,14 @@ export default function PersonProfile({
     next,
 }) {
     const [person, setPerson] = useState();
+    //get orgid using clerk
+    const { organization } = useOrganization();
 
     useEffect(() => {
         supabase
             .from("people")
             .select("*, interactions ( * ), donations ( * ), pledges ( * )")
+            .eq("organization_id", organization.id)
             .eq("id", personID)
             .single()
             .then((result) => setPerson(result.data));

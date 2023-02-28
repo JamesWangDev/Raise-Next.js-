@@ -26,11 +26,13 @@ export default function SaveList({ formattedQuery, listName, listID }) {
 
         setSavedListName(listNameTemp);
         const listObject = {
-            account_id: organization.id,
+            organization_id: organization.id,
             name: listNameTemp,
             query: formattedQuery,
         };
-        console.log(await supabase.from("saved_lists").upsert(listObject));
+        let response = await supabase.from("saved_lists").upsert(listObject);
+
+        console.log(response);
     };
 
     var isSaved = !!savedListName;

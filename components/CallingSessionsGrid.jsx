@@ -3,7 +3,13 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import supabase from "utils/supabase";
 
+// import useorganization from clerk.dev
+import { useOrganization } from "@clerk/nextjs";
+
 export default function CallingSessionsGrid() {
+    // get orgid using clerk
+    const { organization } = useOrganization();
+
     const [sessions, setSessions] = useState([]);
 
     useEffect(() => {
@@ -11,6 +17,7 @@ export default function CallingSessionsGrid() {
         supabase
             .from("call_sessions")
             .select("*")
+            .eq("organization_id", organization.id)
             .then(({ data, error }) => {
                 if (error) console.log("Error fetching sessions", error);
                 else setSessions(data);

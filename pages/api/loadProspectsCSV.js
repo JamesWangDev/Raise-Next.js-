@@ -15,6 +15,7 @@ import supabase from "utils/supabase";
 let permitTheseColumns = [
     "id",
     "batch_id",
+    "organization_id",
     "first_name",
     "last_name",
     "zip",
@@ -25,6 +26,9 @@ let permitTheseColumns = [
 
 // Load csv of new people table
 export default async function loadProspectsCSV(req, res) {
+    // Get the user's orgID and userID (clerk.dev's capitalization is weird so rename it)
+    const { userId: userID, orgId: orgID } = getAuth(req);
+
     // Assign a unique batch ID for transaction integrity
     const batchID = uuid();
 
@@ -80,6 +84,7 @@ export default async function loadProspectsCSV(req, res) {
     fileParsedToJSON = fileParsedToJSON.map((row) => ({
         ...row,
         batch_id: batchID,
+        organization_id: orgID,
         // id: uuid(),
     }));
 
@@ -164,6 +169,7 @@ export default async function loadProspectsCSV(req, res) {
         const newPerson = {
             ...newPersonFromPersonObject(person),
             batch_id: batchID,
+            organization_id: orgID,
         };
 
         // Placeholder for matching person's id to inject back into donation

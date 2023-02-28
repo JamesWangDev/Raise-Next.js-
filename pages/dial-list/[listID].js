@@ -13,15 +13,22 @@ import {
 import InteractionHistory from "components/InteractionHistory";
 import Breadcrumbs from "components/Breadcrumbs";
 
+// import useorganization from clerk.dev
+import { useOrganization } from "@clerk/nextjs";
+
 export default function SpecificListPage() {
     const router = useRouter();
     const { personID } = router.query;
     const [person, setPerson] = useState();
 
+    //get orgid using clerk
+    const { organization } = useOrganization();
+
     useEffect(() => {
         supabase
             .from("people")
             .select("*, interactions ( * )")
+            .eq("organization_id", organization.id)
             .eq("id", personID)
             .single()
             .then((result) => setPerson(result.data));

@@ -1,3 +1,6 @@
+// Clerk auth
+import { getAuth } from "@clerk/nextjs/server";
+
 // UUID!
 const { v4: uuid } = require("uuid");
 
@@ -15,6 +18,7 @@ import supabase from "utils/supabase";
 let permitTheseColumns = [
     "id",
     "batch_id",
+    "organization_id",
     "receipt_id",
     "date",
     "amount",
@@ -104,6 +108,9 @@ let permitTheseColumns = [
 // Load csv of donations to donation and people table
 // 12/19/22 Currently loading 60k donations from a 45mb file in 34 seconds
 export default async function loadDonationsCSV(req, res) {
+    // Get the user's orgID and userID (clerk.dev's capitalization is weird so rename it)
+    const { userId: userID, orgId: orgID } = getAuth(req);
+
     // Assign a unique batch ID for transaction integrity
     const batchID = uuid();
 
@@ -154,6 +161,7 @@ export default async function loadDonationsCSV(req, res) {
     fileParsedToJSON = fileParsedToJSON.map((row) => ({
         ...row,
         batch_id: batchID,
+        organization_id: orgID,
         // id: uuid(),
     }));
 
@@ -229,7 +237,10 @@ export default async function loadDonationsCSV(req, res) {
         let matchingIndex = passThrough.matchingIndex;
 
         // Create an object to hold new information
-        const newPerson = newPersonFromDonationObject(donation);
+        const newPerson = {
+            ...newPersonFromDonationObject(donation),
+            batch_id: batchID,
+        };
 
         // Placeholder for matching person's id to inject back into donation
         let personID;

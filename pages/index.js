@@ -8,6 +8,9 @@ import Breadcrumbs from "components/Breadcrumbs";
 import PageTitle from "components/PageTitle";
 import CallingSessionsGrid from "components/CallingSessionsGrid";
 
+// import useorganization from clerk.dev
+import { useOrganization } from "@clerk/nextjs";
+
 import {
     useAuth,
     useUser,
@@ -64,12 +67,16 @@ export function StatCard({ query, table, key, item }) {
     const [isLoading, setLoading] = useState(false);
     const [data, setData] = useState(null);
 
+    //get orgid using clerk
+    const { organization } = useOrganization();
+
     useEffect(() => {
         setLoading(true);
 
         supabase
             .from(table)
             .select(query)
+            .eq("organization_id", organization.id)
             .single()
             .then((data) => {
                 setData(data.data);
