@@ -84,7 +84,7 @@ export default function SupabaseTable({
               }))
             : [];
     else var columns = [];
-    console.log("columns", columns);
+    // console.log("columns", columns);
     if (table == "saved_lists") {
         columns.push({
             field: "Edit Query",
@@ -228,7 +228,11 @@ const ViewPersonButton = (params) => {
                 onClick={(e) => {
                     e.stopPropagation();
                     console.log(params, params.row);
-                    router.push(router.asPath + "/people/" + params.row.id);
+                    router.push(
+                        router.asPath == "/people"
+                            ? ""
+                            : router.asPath + "/people/" + params.row.id
+                    );
                 }}
             >
                 View Person

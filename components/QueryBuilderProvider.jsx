@@ -71,7 +71,7 @@ export default function QueryBuilderProvider({ table, children, listID }) {
         parseNumbers: true,
     });
     // .replaceAll("like '%", "like '%");
-    console.log("formatted", formatted);
+    // console.log("formatted", formatted);
 
     const { data: rowsForColumns, error } = useSWR(
         `/api/rq?start=0&orgID=${organization?.id}&query=${encodeURI(
