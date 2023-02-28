@@ -128,7 +128,7 @@ pre {
 
 .brand span {
     @apply text-xl mx-3;
-    font-weight: 500 !important;
+    font-weight: 600 !important;
     /* @apply text-gray-800; */
 }
 

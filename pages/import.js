@@ -135,14 +135,14 @@ export default function Import() {
                     <Breadcrumbs
                         pages={[
                             {
-                                name: "Import Donors",
+                                name: "Import",
                                 href: "/import",
                                 current: true,
                             },
                         ]}
                     />{" "}
                     <PageTitle
-                        title="Import Donors"
+                        title="Import"
                         descriptor="Import donors, donation history, prospects, and pledges."
                     />
                 </div>
