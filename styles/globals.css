@@ -348,9 +348,12 @@ main button[type="button"]:not(.MuiButtonBase-root).button-xs {
     /* border-left-width: 3px; */
     /* border-radius: 0; */
     border-color: white;
-    @apply p-2.5 text-gray-700;
+    @apply p-2 text-gray-600;
+    @apply px-2.5;
+    /* @apply py-2.5; */
+    @apply mx-1 !important;
 }
-.nav-item * {
+.nav-item svg {
     @apply text-gray-400;
 }
 
