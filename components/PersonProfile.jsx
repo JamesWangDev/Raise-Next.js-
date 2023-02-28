@@ -113,7 +113,7 @@ export default function PersonProfile({
                 <div className="col-span-3">
                     <PersonContactInfo person={person} />
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-6 -ml-10">
                     <InteractionHistory
                         person={person}
                         interactions={interactions}

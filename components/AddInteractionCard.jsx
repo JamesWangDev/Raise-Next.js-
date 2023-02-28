@@ -27,7 +27,6 @@ export default function ({ person, showAddModal }) {
                     <img
                         className="inline-block h-10 w-10 rounded-full"
                         src={user.profileImageUrl}
-                        alt=""
                     />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -37,7 +36,7 @@ export default function ({ person, showAddModal }) {
                                 Add your note
                             </label>
                             <textarea
-                                rows={3}
+                                rows={4}
                                 name="note"
                                 id="note"
                                 className="block w-full resize-none border-0 py-3 focus:ring-0 sm:text-sm"
@@ -54,53 +53,8 @@ export default function ({ person, showAddModal }) {
                             </div>
                         </div>
 
-                        <div className="absolute inset-x-0 bottom-0 flex justify-between py-2 pl-3 pr-2">
-                            <div className="flex items-center space-x-5">
-                                <div className="flex items-center">
-                                    {/* <button
-                                        type="button"
-                                        className="do-not-global-style -m-2.5 flex h-10 w-10 items-center justify-center rounded-full text-gray-400 hover:text-gray-500"
-                                    >
-                                        <PaperClipIcon
-                                            className="h-5 w-5"
-                                            aria-hidden="true"
-                                        />
-                                        <span className="sr-only">
-                                            Attach a file
-                                        </span>
-                                    </button> */}
-                                    {/* an input for pledge amount in tailwind */}
-                                    {/* <div className="flex items-center">
-                                        <label
-                                            htmlFor="pledge-amount"
-                                            className="sr-only"
-                                        >
-                                            Pledge Amount
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="pledge-amount"
-                                            id="pledge-amount"
-                                            className="text-xs border border-gray-300 relative inline-flex items-center whitespace-nowrap rounded-lg bg-gray-50 py-2 px-2  font-normal text-gray-500 hover:bg-gray-100 sm:px-3 mx-1 w-24"
-                                            placeholder="$Pledge?"
-                                        />
-                                        <label
-                                            htmlFor="pledge-amount"
-                                            className="sr-only"
-                                        >
-                                            Pledge Amount
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="pledge-amount"
-                                            id="pledge-amount"
-                                            className="text-xs  border border-gray-300 relative inline-flex items-center whitespace-nowrap rounded-lg bg-gray-50 py-2 px-2  font-normal text-gray-500 hover:bg-gray-100 sm:px-3 mx-1 w-24"
-                                            placeholder="$Donation?"
-                                        />
-                                    </div> */}
-                                </div>
-                                <div className="flex items-center"></div>
-                            </div>
+                        <div className="absolute inset-x-0 bottom-0 flex justify-between py-0 px-3 border-t">
+                            <div className="placeholder-justify-the-rest-to-right"></div>
                             <div className="flex-shrink-0">
                                 <button type="submit" className="btn">
                                     Make Pledge
