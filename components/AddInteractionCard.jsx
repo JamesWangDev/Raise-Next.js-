@@ -6,6 +6,7 @@ import {
     HandThumbUpIcon,
     HeartIcon,
     PaperClipIcon,
+    PlusIcon,
     XMarkIcon,
 } from "@heroicons/react/20/solid";
 import { Listbox, Transition } from "@headlessui/react";
@@ -56,17 +57,21 @@ export default function ({ person, showAddModal }) {
                         <div className="absolute inset-x-0 bottom-0 flex justify-between py-0 px-3 border-t">
                             <div className="placeholder-justify-the-rest-to-right"></div>
                             <div className="flex-shrink-0">
+                                <PlusIcon
+                                    className="h-5 w-5 text-gray-500 -ml-1 inline-block mr-3"
+                                    aria-hidden="true"
+                                />
                                 <button type="submit" className="btn">
-                                    Make Pledge
+                                    Pledge
                                 </button>
                                 <button type="submit" className="btn mx-2">
-                                    Make Donation
+                                    Donation
                                 </button>
                                 <button
                                     type="submit"
                                     className="btn button-primary btn-primary"
                                 >
-                                    Add Note
+                                    Note
                                 </button>
                             </div>
                         </div>

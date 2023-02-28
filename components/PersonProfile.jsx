@@ -19,6 +19,7 @@ import PersonContactInfo from "./PersonContactInfo";
 
 // import useorganization from clerk.dev
 import { useOrganization } from "@clerk/nextjs";
+import { Tooltip } from "@mui/material";
 
 export default function PersonProfile({
     personID,
@@ -60,15 +61,17 @@ export default function PersonProfile({
             </div>
             <div id="person-header" className="grid grid-cols-2 gap-16">
                 <div id="">
-                    <h1 className="text-2xl font-semibold text-gray-900 mb-0">
-                        {person.first_name} {person.last_name}
-                    </h1>
+                    <Tooltip title={"Person ID: " + person.id} arrow>
+                        <h1 className="text-2xl font-semibold text-gray-900 mb-0">
+                            {person.first_name} {person.last_name}
+                        </h1>
+                    </Tooltip>
                     <h2 className="text-sm font-normal text-gray-600">
                         {person.occupation} | {person.employer} | {person.state}
                     </h2>
-                    <p className="text-sm text-gray-400">
+                    {/* <p className="text-sm text-gray-400">
                         Person ID: {person.id}
-                    </p>
+                    </p> */}
                 </div>
                 <div className="text-right">
                     <div className=" flex-row gap-3 inline-flex">
@@ -109,7 +112,7 @@ export default function PersonProfile({
                     </div>
                 </div>
             </div>
-            <div className="max-w-7xl px-2 grid grid-flow-col grid-cols-12 gap-x-10 bg-white border-t px-8 py-6 mt-6 -mx-8">
+            <div className="max-w-7xl px-2 grid grid-flow-col grid-cols-12 gap-x-10 bg-white border-t px-8 py-6 mt-2 -mx-8">
                 <div className="col-span-3">
                     <PersonContactInfo person={person} />
                 </div>
