@@ -1,4 +1,4 @@
-import { UserProfile } from "@clerk/clerk-react";
+import { UserProfile } from "@clerk/nextjs";
 
 const UserProfilePage = () => {
     return (

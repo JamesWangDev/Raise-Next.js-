@@ -10,7 +10,7 @@ import "styles/globals.css";
 
 import Layout from "components/Layout";
 import { ClerkProvider } from "@clerk/nextjs";
-import { isLoaded, useUser, SignIn, useOrganization } from "@clerk/clerk-react";
+import { isLoaded, useUser, SignIn, useOrganization } from "@clerk/nextjs";
 import { ChatWidget } from "@papercups-io/chat-widget";
 
 function App({ Component, pageProps }) {

@@ -1,4 +1,4 @@
-import { OrganizationProfile } from "@clerk/clerk-react";
+import { OrganizationProfile } from "@clerk/nextjs";
 
 const OrganizationProfilePage = () => {
     return (
