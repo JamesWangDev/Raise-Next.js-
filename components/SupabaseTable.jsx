@@ -228,7 +228,7 @@ const ViewPersonButton = (params) => {
                 onClick={(e) => {
                     e.stopPropagation();
                     console.log(params, params.row);
-                    router.push("/people/" + params.row.id);
+                    router.push(router.asPath + "/people/" + params.row.id);
                 }}
             >
                 View Person
