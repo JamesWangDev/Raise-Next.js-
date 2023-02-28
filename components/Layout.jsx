@@ -466,6 +466,7 @@ const Layout = ({ children }) => {
                       </Transition> */}
                                         <OrganizationSwitcher
                                             hidePersonal={true}
+                                            afterSwitchOrganizationUrl="/"
                                         />
                                         <UserButton />
                                         {/* </Menu> */}
