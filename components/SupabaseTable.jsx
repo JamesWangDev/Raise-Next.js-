@@ -227,11 +227,11 @@ const ViewPersonButton = (params) => {
                 size="small"
                 onClick={(e) => {
                     e.stopPropagation();
-                    console.log(params, params.row);
+                    console.log(router.asPath);
                     router.push(
-                        router.asPath == "/people"
-                            ? ""
-                            : router.asPath + "/people/" + params.row.id
+                        (router.asPath == "/people" ? "" : router.asPath) +
+                            "/people/" +
+                            params.row.id
                     );
                 }}
             >
