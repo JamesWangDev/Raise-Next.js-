@@ -13,7 +13,7 @@ import {
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
-import AddInteractionButtonGroup from "./AddInteractionButtonGroup";
+import AddInteractionCard from "./AddInteractionCard";
 
 function AddModal() {
     return (
@@ -23,18 +23,18 @@ function AddModal() {
     );
 }
 
-export default function InteractionHistory({ person, interactions }) {
+export default function InteractionHistory({ person, passedInteractions }) {
     // showModal and addModalType are states that are used to control the display of the modal
     const [isModalShowing, showModal] = useState(false);
     const [addModalType, setAddModalType] = useState("");
+    const [interactions, setInteractions] = useState(passedInteractions);
 
     return (
         <div className="flow-root">
             <h2>Interaction History</h2>
-            <AddInteractionButtonGroup
+            <AddInteractionCard
                 person={person}
-                showAddModal={showModal}
-                setAddModalType={setAddModalType}
+                setInteractions={setInteractions}
             />
             {isModalShowing ? <AddModal type={addModalType} /> : null}
             <ul role="list" className="-mb-8 mt-6">
