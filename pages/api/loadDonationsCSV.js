@@ -113,6 +113,7 @@ export default async function loadDonationsCSV(req, res) {
 
     // Assign a unique batch ID for transaction integrity
     const batchID = uuid();
+    console.log({ batchID });
 
     // Log the time of function execution
     console.time("functionexectime");
@@ -177,7 +178,9 @@ export default async function loadDonationsCSV(req, res) {
 
     // // Grab the people collection as an array of rows
     console.time("people get direct query");
-    const people = (await db.query("select * from people")).rows;
+    const people = (
+        await db.query(`select * from people where organization_id='${orgID}'`)
+    ).rows;
     console.timeEnd("people get direct query");
     const oldPeople = JSON.parse(JSON.stringify(people));
 
@@ -223,7 +226,7 @@ export default async function loadDonationsCSV(req, res) {
             // console.log("howManyMatchingPeople", howManyMatchingPeople);
 
             if (howManyMatchingPeople > 1) {
-                // Email isn't unique! Throw error
+                // Table people contains multiple people with email isn't unique! Throw error
                 console.error(donation);
                 throw new Error("Email should be unique but was not");
             }
@@ -240,6 +243,7 @@ export default async function loadDonationsCSV(req, res) {
         const newPerson = {
             ...newPersonFromDonationObject(donation),
             batch_id: batchID,
+            organization_id: orgID,
         };
 
         // Placeholder for matching person's id to inject back into donation
@@ -299,6 +303,14 @@ export default async function loadDonationsCSV(req, res) {
 
     console.timeEnd("resave file and get url");
 
+    // OK we are actually going to insert People first
+    // since now there is a foreign key constraint on donations
+    console.time("upsert 7k records into people");
+    // Need  .select() at the end to await until upsert is completed :)
+    const { error4 } = await supabase.from("people").upsert(people).select();
+    console.timeEnd("upsert 7k records into people");
+    console.log("people insert error4:", error4);
+
     console.time("donations queries");
 
     // Get the target columns parsed from csv into array
@@ -342,14 +354,6 @@ export default async function loadDonationsCSV(req, res) {
     console.log("b");
 
     console.timeEnd("donations queries");
-
-    console.time("upsert 7k records into people");
-
-    // Insert differences
-    // console.log("differences.length", differences.length);
-    const { error4 } = await supabase.from("people").upsert(people);
-    console.timeEnd("upsert 7k records into people");
-    console.log("people insert error4:", error4);
 
     // //////////////////////////////////////////
     // // End handleDonationsCSVImport()
