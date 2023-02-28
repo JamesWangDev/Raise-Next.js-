@@ -40,7 +40,7 @@ import {
     Cog6ToothIcon,
     ChevronUpDownIcon,
     ChevronDownIcon,
-} from "@heroicons/react/24/outline";
+} from "@heroicons/react/24/solid";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 
 // import algoliasearch from "algoliasearch/lite";
