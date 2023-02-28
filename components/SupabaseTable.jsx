@@ -62,7 +62,7 @@ export default function SupabaseTable({
         fetcher
     );
     if (rowCountError) console.log(rowCountError);
-    let rowCount = rowCountData ? rowCountData[0].count : null;
+    let rowCount = rowCountData?.length ? rowCountData[0]?.count : null;
 
     // Make the first row an id column if none present because mui datatable requires it
     // ...&if there is no data, then pass a blank rows array
