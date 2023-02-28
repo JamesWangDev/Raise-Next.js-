@@ -7,10 +7,20 @@ module.exports = {
         "./components/**/*.{js,ts,jsx,tsx}",
     ],
     theme: {
-        color: { "bg-gray-100": "#ebedf0" },
+        // color: { "bg-gray-100": "#ebedf0" },
         extend: {
             fontFamily: {
                 sans: ["Inter var", ...defaultTheme.fontFamily.sans],
+            },
+            colors: {
+                indigo: {
+                    300: "#2d28ff",
+                    400: "#2d28ff",
+                    500: "#2d28ff",
+                    600: "#2d28ff",
+                    700: "#2d28ff",
+                    800: "#2d28ff",
+                },
             },
         },
     },
