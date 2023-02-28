@@ -40,7 +40,7 @@ export default function PersonProfile({
             .eq("id", personID)
             .single()
             .then((result) => setPerson(result.data));
-    }, [personID]);
+    }, [personID, organization]);
 
     var interactions = person?.interactions || [];
 

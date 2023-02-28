@@ -95,7 +95,7 @@ export default function StartCallingSession() {
                     setPersonID(temporaryPeopleList[0]);
                 });
             });
-    }, [listID]);
+    }, [listID, organization]);
 
     useEffect(() => {
         // Subscribe to the conference updates snapshot listener.
@@ -147,7 +147,7 @@ export default function StartCallingSession() {
             conferenceUpdatesRef();
             //
         };
-    }, []);
+    }, [organization]);
 
     return dialedIn ? (
         <>

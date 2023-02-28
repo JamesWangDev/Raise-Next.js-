@@ -10,7 +10,7 @@ import "styles/globals.css";
 
 import Layout from "components/Layout";
 import { ClerkProvider } from "@clerk/nextjs";
-import { isLoaded, useUser, SignIn } from "@clerk/clerk-react";
+import { isLoaded, useUser, SignIn, useOrganization } from "@clerk/clerk-react";
 import { ChatWidget } from "@papercups-io/chat-widget";
 
 function App({ Component, pageProps }) {
@@ -27,6 +27,8 @@ function App({ Component, pageProps }) {
 
 function ChatWidgetWrapper() {
     const { isLoaded, isSignedIn, user } = useUser();
+    // useorg
+    const { organization } = useOrganization();
 
     let customer = null;
     if (isSignedIn)

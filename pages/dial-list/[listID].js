@@ -32,7 +32,7 @@ export default function SpecificListPage() {
             .eq("id", personID)
             .single()
             .then((result) => setPerson(result.data));
-    }, [personID]);
+    }, [personID, organization]);
 
     var interactions = person?.interactions || [];
     console.log(interactions);
