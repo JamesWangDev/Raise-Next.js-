@@ -475,7 +475,7 @@ const Layout = ({ children }) => {
                                 ) : (
                                     <>
                                         <div className="block min-h-full flex-col justify-center sm:px-6 lg:px-8">
-                                            <div className="sm:mx-auto w-50">
+                                            <div className="sm:mx-auto w-75">
                                                 <CreateOrganization />
                                             </div>
                                         </div>
