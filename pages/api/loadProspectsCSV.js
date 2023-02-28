@@ -1,3 +1,5 @@
+import { getAuth } from "@clerk/nextjs/server";
+
 // UUID!
 const { v4: uuid } = require("uuid");
 
