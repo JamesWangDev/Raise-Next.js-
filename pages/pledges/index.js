@@ -12,7 +12,7 @@ export default function Dashboard() {
         <div className="">
             <div className="mx-auto max-w-7xl px-2">
                 <Breadcrumbs pages={[{ name: "Pledges", href: "/pledges" }]} />
-                <div className="grid grid-cols-2 gap-16">
+                <div className="grid grid-cols-2 gap-16 -mb-3">
                     <div>
                         {" "}
                         <PageTitle
