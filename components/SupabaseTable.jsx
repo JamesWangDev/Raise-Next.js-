@@ -158,7 +158,7 @@ const LoadListButton = (params) => {
                 onClick={(e) => {
                     e.stopPropagation();
                     console.log(params, params.row);
-                    router.push("/lists/" + params.row.id);
+                    router.push("/savedlists/" + params.row.id);
                 }}
             >
                 Edit Query

@@ -18,7 +18,7 @@ export default function SpecificListPage() {
                         { name: "Lists", href: "/savedlists", current: false },
                         {
                             name: listID,
-                            href: "/lists/" + listID,
+                            href: "/savedlists/" + listID,
                             current: true,
                         },
                     ]}

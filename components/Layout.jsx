@@ -158,13 +158,19 @@ const Layout = ({ children }) => {
     // Set the right page as active link using router
     const router = useRouter();
     navigation.forEach((page, i) => (navigation[i].current = false));
-    const activeIndex =
+    let basePath = "/" + router.pathname.split("/")[1];
+
+    let activeIndex =
         router.pathname == "/"
             ? 0
             : navigation.findIndex(
                   (element) => element.href == router.pathname
               );
-
+    // If the page is not found, set the parent page as active
+    if (activeIndex == -1)
+        activeIndex = navigation.findIndex(
+            (element) => element.href == basePath
+        );
     if (activeIndex in navigation) navigation[activeIndex].current = true;
 
     const hasOrg = user ? !!user.organizationMemberships.length : false;
