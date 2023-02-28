@@ -26,7 +26,7 @@ export default function SaveList({ formattedQuery, listName, listID }) {
 
         setSavedListName(listNameTemp);
         const listObject = {
-            organization_id: organization.id,
+            organization_id: organization?.id,
             name: listNameTemp,
             query: formattedQuery,
         };

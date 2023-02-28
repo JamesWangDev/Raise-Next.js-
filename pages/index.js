@@ -76,7 +76,7 @@ export function StatCard({ query, table, key, item }) {
         supabase
             .from(table)
             .select(query)
-            .eq("organization_id", organization.id)
+            .eq("organization_id", organization?.id)
             .single()
             .then((data) => {
                 setData(data.data);

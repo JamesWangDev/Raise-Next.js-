@@ -11,8 +11,8 @@ export default async function handler(req, res) {
     const { userId: userID, orgId: orgID } = getAuth(req);
 
     let rawQuery = req.query.query;
-    let scopedQuery =
-        "SELECT * FROM (" + rawQuery + ") WHERE organization_id = '${orgID}'";
+    let scopedQuery = `SELECT * FROM (${rawQuery}) unscoped WHERE unscoped.organization_id = '${orgID}'`;
+    // console.log(scopedQuery);
     const results = (await db.query(scopedQuery)).rows;
     res.status(200).json(results);
 }

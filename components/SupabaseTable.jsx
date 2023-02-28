@@ -13,12 +13,17 @@ import { InstallMobileRounded } from "@mui/icons-material";
 
 import { useRouter } from "next/router";
 
+import { useOrganization } from "@clerk/nextjs";
+
 export default function SupabaseTable({
     table,
     query = "*",
     currentQuery,
     setFilterColumns = () => {},
 }) {
+    //useorg
+    const { organization } = useOrganization();
+
     const [page, setPage] = useState(0);
     // console.log({ page });
     let perPage = 25;
@@ -31,14 +36,14 @@ export default function SupabaseTable({
         offset;
 
     const { data, error } = useSWR(
-        `/api/rq?query=${encodeURI(SWRquery)}`,
+        `/api/rq?orgID=${organization?.id}&query=${encodeURI(SWRquery)}`,
         fetcher
     );
     if (error) console.log(error);
 
     // Preload the next result using SWR, too
     preload(
-        `/api/rq?query=${encodeURI(
+        `/api/rq?orgID=${organization?.id}&query=${encodeURI(
             `select * from ${table}` +
                 (!!currentQuery ? ` where ${currentQuery}` : "") +
                 ` limit ${perPage}` +
@@ -49,9 +54,10 @@ export default function SupabaseTable({
 
     // useSWR to get the count of rows in the table
     const { data: rowCountData, error: rowCountError } = useSWR(
-        `/api/rq?start=0&query=${encodeURI(
-            `select count(*) from ${table}` +
-                (!!currentQuery ? ` where ${currentQuery}` : "")
+        `/api/rq?start=0&orgID=${organization?.id}&query=${encodeURI(
+            `select count(*), organization_id from ${table}` +
+                (!!currentQuery ? ` where ${currentQuery}` : "") +
+                " GROUP BY organization_id"
         )}`,
         fetcher
     );

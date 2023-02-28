@@ -67,7 +67,7 @@ export default function StartCallingSession() {
         supabase
             .from("call_sessions")
             .select("*")
-            .eq("organization_id", organization.id)
+            .eq("organization_id", organization?.id)
             .then(({ data, error }) => {
                 if (error) console.log("Error fetching sessions", error);
                 else setSessions(data);
@@ -77,7 +77,7 @@ export default function StartCallingSession() {
         supabase
             .from("saved_lists")
             .select("*")
-            .eq("organization_id", organization.id)
+            .eq("organization_id", organization?.id)
             .eq("id", listID)
             .single()
             .limit(1)

@@ -17,7 +17,7 @@ export default function CallingSessionsGrid() {
         supabase
             .from("call_sessions")
             .select("*")
-            .eq("organization_id", organization.id)
+            .eq("organization_id", organization?.id)
             .then(({ data, error }) => {
                 if (error) console.log("Error fetching sessions", error);
                 else setSessions(data);

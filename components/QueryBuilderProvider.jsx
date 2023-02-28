@@ -51,7 +51,7 @@ export default function QueryBuilderProvider({ table, children, listID }) {
             supabase
                 .from("saved_lists")
                 .select()
-                .eq("organization_id", organization.id)
+                .eq("organization_id", organization?.id)
                 .eq("id", listID)
                 .single()
                 .then((result) => {
@@ -74,7 +74,7 @@ export default function QueryBuilderProvider({ table, children, listID }) {
     console.log("formatted", formatted);
 
     const { data: rowsForColumns, error } = useSWR(
-        `/api/rq?start=0&orgID=${organization.id}&query=${encodeURI(
+        `/api/rq?start=0&orgID=${organization?.id}&query=${encodeURI(
             `select * from ${table} where (1 = 1) limit 25`
         )}`,
         fetcher

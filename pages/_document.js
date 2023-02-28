@@ -5,12 +5,6 @@ export default function Document() {
     return (
         <Html>
             <Head>
-                <link
-                    rel="preload"
-                    href="/api/rq?start=0&query=select%20*%20from%20people_for_user_display%20where%20(1%20=%201)%20limit%2025"
-                    as="fetch"
-                    crossOrigin="anonymous"
-                />
                 {/* <link
           rel="preload"
           href="https://clerk.prompt.meerkat-85.lcl.dev/npm/@clerk/clerk-js@4/dist/clerk.browser.js"

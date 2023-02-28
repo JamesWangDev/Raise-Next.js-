@@ -36,7 +36,7 @@ export default function PersonProfile({
         supabase
             .from("people")
             .select("*, interactions ( * ), donations ( * ), pledges ( * )")
-            .eq("organization_id", organization.id)
+            .eq("organization_id", organization?.id)
             .eq("id", personID)
             .single()
             .then((result) => setPerson(result.data));
