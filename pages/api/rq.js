@@ -16,7 +16,11 @@ export default async function handler(req, res) {
     let scopedQuery = `SELECT * FROM (${rawQuery}) unscoped WHERE unscoped.organization_id = '${orgID}'`;
     // console.log(scopedQuery);
     // console.log(scopedQuery);
-    const results = (await db.query(scopedQuery)).rows;
-    // console.timeLog(random);
-    res.status(200).json(results);
+    try {
+        const results = (await db.query(scopedQuery)).rows;
+        res.status(200).json(results);
+    } catch (err) {
+        console.error(err);
+        res.status(200).json({ error: err });
+    }
 }
