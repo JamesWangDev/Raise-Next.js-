@@ -11,7 +11,7 @@ import { connectToDatabase } from "utils/db";
 const db = connectToDatabase();
 
 // Supabase storage client
-import { useSupabase } from "utils/supabaseHooks";
+import { createSupabaseClient } from "utils/supabaseHooks";
 
 // List of columns in order from csv file
 let permitTheseColumns = [
@@ -30,6 +30,13 @@ let permitTheseColumns = [
 export default async function loadProspectsCSV(req, res) {
     // Get the user's orgID and userID (clerk.dev's capitalization is weird so rename it)
     const { userId: userID, orgId: orgID } = getAuth(req);
+
+    // Clerk and supabase
+    const supabase = createSupabaseClient(
+        await getToken({
+            template: "supabase",
+        })
+    );
 
     // Assign a unique batch ID for transaction integrity
     const batchID = uuid();

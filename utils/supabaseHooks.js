@@ -7,15 +7,21 @@ export function createSupabaseClient(supabaseAccessToken) {
     // const supabaseAccessToken = await getToken({ template: "supabase" });
 
     // Create a new Supabase client passing alnog the clerk.dev JWT as Authorization header
-    return createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-        {
-            global: {
-                headers: { Authorization: `Bearer ${supabaseAccessToken}` },
-            },
-        }
-    );
+    if (supabaseAccessToken)
+        return createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+            {
+                global: {
+                    headers: { Authorization: `Bearer ${supabaseAccessToken}` },
+                },
+            }
+        );
+    else
+        return createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+        );
 }
 
 // context
