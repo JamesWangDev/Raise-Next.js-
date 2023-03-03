@@ -17,7 +17,7 @@ function classNames(...classes) {
 
 import { useUser } from "@clerk/nextjs";
 
-export default function ({ person, appendInteraction }) {
+export default function AddInteractionCard({ person, appendInteraction }) {
     // note state
     const [note, setNote] = useState("");
 
