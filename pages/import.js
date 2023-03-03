@@ -6,75 +6,77 @@ import { useState, useEffect } from "react";
 // Import React FilePond
 import { FilePond, registerPlugin } from "react-filepond";
 import "filepond/dist/filepond.min.css";
-import supabase from "utils/supabase";
+import { useSupabase } from "utils/supabaseHooks";
 import { data } from "autoprefixer";
 //import pagetitle and breadcrumbs
 import Breadcrumbs from "components/Breadcrumbs";
 import PageTitle from "components/PageTitle";
 
-const server = (apiRoute) => ({
-    process: (
-        fieldName,
-        file,
-        metadata,
-        load,
-        error,
-        progress,
-        abort,
-        transfer,
-        options
-    ) => {
-        //   progress(e.lengthComputable, e.loaded, e.total);
-        console.log("start process", file);
-        console.time("upload and process");
-
-        // Create a root reference
-        var filepath = `${Date.now()}.csv`;
-        //var storageRef = firebase.storage().ref();
-        //var uploadTask = storageRef.child(filepath).put(file);
-
-        // Supabase upload!
-        supabase.storage
-            .from("imports")
-            .upload(filepath, file, {
-                cacheControl: "3600",
-                upsert: false,
-            })
-            .then(({ data, error }) => {
-                console.log(data, error);
-                console.log("File available at", data.path);
-                load("done");
-
-                fetch(
-                    "/api/" +
-                        apiRoute +
-                        "?fileName=" +
-                        encodeURIComponent(data.path)
-                )
-                    .then((res) => res.text())
-                    .then((data) => {
-                        console.log(data);
-                        console.timeEnd("upload and process");
-                    });
-            });
-
-        // Should expose an abort method so the request can be cancelled
-        return {
-            abort: () => {
-                // This function is entered if the user has tapped the cancel button
-                request.abort();
-
-                // Let FilePond know the request has been cancelled
-                abort();
-            },
-        };
-    },
-});
-const loadDonationsCSV = server("loadDonationsCSV");
-const loadProspectsCSV = server("loadProspectsCSV");
-const loadPledgesCSV = server("loadPledgesCSV");
-
 export default function Import() {
+    const supabase = useSupabase();
+
+    const server = (apiRoute) => ({
+        process: (
+            fieldName,
+            file,
+            metadata,
+            load,
+            error,
+            progress,
+            abort,
+            transfer,
+            options
+        ) => {
+            //   progress(e.lengthComputable, e.loaded, e.total);
+            console.log("start process", file);
+            console.time("upload and process");
+
+            // Create a root reference
+            var filepath = `${Date.now()}.csv`;
+            //var storageRef = firebase.storage().ref();
+            //var uploadTask = storageRef.child(filepath).put(file);
+
+            // Supabase upload!
+            supabase.storage
+                .from("imports")
+                .upload(filepath, file, {
+                    cacheControl: "3600",
+                    upsert: false,
+                })
+                .then(({ data, error }) => {
+                    console.log(data, error);
+                    console.log("File available at", data.path);
+                    load("done");
+
+                    fetch(
+                        "/api/" +
+                            apiRoute +
+                            "?fileName=" +
+                            encodeURIComponent(data.path)
+                    )
+                        .then((res) => res.text())
+                        .then((data) => {
+                            console.log(data);
+                            console.timeEnd("upload and process");
+                        });
+                });
+
+            // Should expose an abort method so the request can be cancelled
+            return {
+                abort: () => {
+                    // This function is entered if the user has tapped the cancel button
+                    request.abort();
+
+                    // Let FilePond know the request has been cancelled
+                    abort();
+                },
+            };
+        },
+    });
+    const loadDonationsCSV = server("loadDonationsCSV");
+    const loadProspectsCSV = server("loadProspectsCSV");
+    const loadPledgesCSV = server("loadPledgesCSV");
+
     return (
         <>
             <div className="">

@@ -1,7 +1,7 @@
 // necessary imports
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import supabase from "utils/supabase";
+import { useSupabase } from "utils/supabaseHooks";
 
 // import useorganization from clerk.dev
 import { useOrganization } from "@clerk/nextjs";
@@ -9,6 +9,7 @@ import { useOrganization } from "@clerk/nextjs";
 export default function CallingSessionsGrid() {
     // get orgid using clerk
     const { organization } = useOrganization();
+    const supabase = useSupabase();
 
     const [sessions, setSessions] = useState([]);
 

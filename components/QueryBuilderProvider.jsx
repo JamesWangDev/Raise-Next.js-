@@ -1,23 +1,15 @@
 import useSWR from "swr";
 import axios from "axios";
 const fetcher = (url) => axios.get(url).then((res) => res.data);
-// const fetcher = (url) => fetch(url).then((res) => res.json());
 
-import { Fragment } from "react";
-import { Menu, Transition } from "@headlessui/react";
-import { ChevronDownIcon } from "@heroicons/react/20/solid";
-
-function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-}
+const className = (...classes) => classes.filter(Boolean).join(" ");
 
 import { QueryBuilderBootstrap } from "@react-querybuilder/bootstrap";
-import { useState, useEffect } from "react";
-
-import supabase from "utils/supabase";
+import { useState, useEffect, useCallback } from "react";
+import { useSupabase } from "utils/supabaseHooks";
+import { useOrganization } from "@clerk/nextjs";
 import SaveList from "./SaveList";
 import SupabaseTable from "./SupabaseTable";
-import { useOrganization } from "@clerk/nextjs";
 
 import {
     formatQuery,
@@ -36,14 +28,14 @@ let fields = [];
 
 const initialQuery = {
     combinator: "and",
-    rules: [
-        // { field: "firstName", operator: "beginsWith", value: "Stev" },
-        // { field: "lastName", operator: "in", value: "Vai,Vaughan" },
-    ],
+    rules: [],
 };
 
 export default function QueryBuilderProvider({ table, children, listID }) {
     const { organization } = useOrganization();
+    const supabase = useSupabase();
+    const [list, setList] = useState({});
+    const [query, setQuery] = useState(initialQuery);
 
     // Load the list id, name, and query if present on page load
     useEffect(() => {
@@ -62,9 +54,6 @@ export default function QueryBuilderProvider({ table, children, listID }) {
                 });
         }
     }, [listID, organization]);
-
-    const [list, setList] = useState({});
-    const [query, setQuery] = useState(initialQuery);
 
     var formatted = formatQuery(query, {
         format: "sql",
@@ -88,7 +77,7 @@ export default function QueryBuilderProvider({ table, children, listID }) {
     else fields = [];
 
     // add a filter rule
-    const addRule = () =>
+    const addRule = useCallback(() => {
         setQuery(
             add(
                 query,
@@ -96,6 +85,7 @@ export default function QueryBuilderProvider({ table, children, listID }) {
                 []
             )
         );
+    });
 
     return (
         <>

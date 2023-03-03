@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import PageTitle from "components/PageTitle";
 import { PhoneIcon } from "@heroicons/react/24/outline";
 import { useState, useEffect } from "react";
-import supabase from "utils/supabase";
+import { useSupabase } from "utils/supabaseHooks";
 import { parseSQL } from "react-querybuilder";
 import Breadcrumbs from "components/Breadcrumbs";
 
@@ -46,6 +46,7 @@ export default function StartCallingSession() {
 
     //get orgid using clerk
     const { organization } = useOrganization();
+    const supabase = useSupabase();
 
     function nextPerson() {
         // Find the current person in the list, and move to the next one.
@@ -151,7 +152,7 @@ export default function StartCallingSession() {
 
     return dialedIn ? (
         <>
-            <div className="mx-auto max-w-7xl mb-4 px-5 p-3 shadow-sm rounded rounded-lg bg-white ">
+            <div className="mx-auto max-w-7xl mb-4 px-5 p-3 shadow-sm rounded-lg bg-white ">
                 <span className="flex-grow">
                     You&apos;re dialed in to the call session!
                 </span>
@@ -213,7 +214,7 @@ export default function StartCallingSession() {
                 <div className="p-12">
                     <div className="relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-12 text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                         <p className="mb-5 text-gray-400 text-xl font-medium">
-                            <PhoneIcon className="inline h-10 w-10 text-gray-400 align-center inline-flex mx-auto mr-2" />{" "}
+                            <PhoneIcon className="h-10 w-10 text-gray-400 align-center inline-flex mx-auto mr-2" />{" "}
                             (667) 242-9611
                         </p>
                         <span className="mt-2 block text-base text-gray-900">

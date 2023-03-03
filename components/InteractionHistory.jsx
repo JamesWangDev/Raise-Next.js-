@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import supabase from "utils/supabase";
+import { useSupabase } from "utils/supabaseHooks";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import {
@@ -9,6 +9,9 @@ import {
     HandThumbUpIcon,
     UserIcon,
 } from "@heroicons/react/20/solid";
+
+// useUser and useOrganization are used to get the current user and organization
+import { useUser, useOrganization } from "@clerk/nextjs";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -23,18 +26,50 @@ function AddModal() {
     );
 }
 
-export default function InteractionHistory({ person, passedInteractions }) {
+export default function InteractionHistory({
+    person,
+    interactions: passedInteractions,
+}) {
+    const supabase = useSupabase();
+
     // showModal and addModalType are states that are used to control the display of the modal
     const [isModalShowing, showModal] = useState(false);
     const [addModalType, setAddModalType] = useState("");
-    const [interactions, setInteractions] = useState(passedInteractions);
+    const [interactions, setInteractions] = useState(
+        passedInteractions?.length > 0 ? passedInteractions : []
+    );
+    // get current org
+    const { organization } = useOrganization();
+    const { user } = useUser();
+
+    const appendInteraction = (newInteraction) => {
+        // Prepare interaction for inserting
+        let newInteractionPrepared = {
+            ...newInteraction,
+            person_id: person.id,
+            organization_id: organization.id,
+            user_id: user.id,
+        };
+
+        // Amalgate into state
+        setInteractions([...interactions, newInteractionPrepared]);
+
+        // Update supabase
+        console.log({ newInteractionPrepared });
+        supabase.from("interactions").insert(newInteractionPrepared);
+        // .select();
+        // .then((newInteractionResponse) => {
+        //     console.log("New interaction added!");
+        //     // console.log({ newInteractionResponse });
+        // });
+    };
 
     return (
         <div className="flow-root">
             <h2>Interaction History</h2>
             <AddInteractionCard
                 person={person}
-                setInteractions={setInteractions}
+                appendInteraction={appendInteraction}
             />
             {isModalShowing ? <AddModal type={addModalType} /> : null}
             <ul role="list" className="-mb-8 mt-6">

@@ -2,7 +2,7 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import supabase from "utils/supabase";
+import { useSupabase } from "utils/supabaseHooks";
 import SupabaseTable from "components/SupabaseTable";
 import Breadcrumbs from "components/Breadcrumbs";
 import PageTitle from "components/PageTitle";
@@ -66,6 +66,7 @@ function classNames(...classes) {
 export function StatCard({ query, table, key, item }) {
     const [isLoading, setLoading] = useState(false);
     const [data, setData] = useState(null);
+    const supabase = useSupabase();
 
     //get orgid using clerk
     const { organization } = useOrganization();

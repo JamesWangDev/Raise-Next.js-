@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import supabase from "utils/supabase";
+import { useSupabase } from "utils/supabaseHooks";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import {
@@ -23,6 +23,7 @@ export default function SpecificListPage() {
 
     //get orgid using clerk
     const { organization } = useOrganization();
+    const supabase = useSupabase();
 
     useEffect(() => {
         supabase
@@ -81,7 +82,7 @@ export default function SpecificListPage() {
                     <button type="button">Merge Records</button>
                 </div>
             </div>
-            <div className="max-w-7xl px-2 grid grid-flow-col grid-cols-4 gap-x-12 bg-white border-t-2 px-6 py-6 mt-6 -mx-6">
+            <div className="max-w-7xl grid grid-flow-col grid-cols-4 gap-x-12 bg-white border-t-2 px-6 py-6 mt-6 -mx-6">
                 <div className="col-span-1">
                     <PersonContactInfo person={person} />
                 </div>

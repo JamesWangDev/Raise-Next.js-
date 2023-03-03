@@ -5,7 +5,6 @@ const fetcher = (url) => axios.get(url).then((res) => res.data);
 
 import { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
-import supabase from "utils/supabase";
 
 import Button from "@mui/material/Button";
 import { DataGrid, GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
@@ -161,7 +160,7 @@ export default function SupabaseTable({
                     disableColumnMenu
                     rowHeight={44}
                     sx={{
-                        "font-size": "0.85rem",
+                        fontSize: "0.85rem",
                         my: 2,
                         "& .MuiDataGrid-columnHeader .MuiDataGrid-columnSeparator":
                             {

@@ -2,7 +2,8 @@ import { Tooltip } from "@mui/material";
 
 function phoneNumberDisplayFormatter(input) {
     let number = input.toString().replaceAll(/[^0-9]/g, "");
-    if (number.length === 10) {
+    if (number?.length < 1) return null;
+    if (number?.length === 10) {
         return (
             "(" +
             number.substring(0, 3) +

@@ -17,9 +17,20 @@ function classNames(...classes) {
 
 import { useUser } from "@clerk/nextjs";
 
-export default function ({ person, showAddModal }) {
+export default function ({ person, appendInteraction }) {
+    // note state
+    const [note, setNote] = useState("");
+
     // get user from clerk
     const { isSignedIn, isLoading, user } = useUser();
+
+    const newNote = () => {
+        appendInteraction({
+            note: note,
+        });
+    };
+    const newPledge = () => {};
+    const newDonation = () => {};
 
     return (
         <div className="interaction-card">
@@ -43,6 +54,9 @@ export default function ({ person, showAddModal }) {
                                 className="block w-full resize-none border-0 py-3 focus:ring-0 sm:text-sm"
                                 placeholder="Add your note..."
                                 defaultValue={""}
+                                onChange={(event) => {
+                                    setNote(event.target.value);
+                                }}
                             />
 
                             {/* Spacer element to match the height of the toolbar */}
@@ -57,19 +71,29 @@ export default function ({ person, showAddModal }) {
                         <div className="absolute inset-x-0 bottom-0 flex justify-between py-0 px-3 border-t">
                             <div className="placeholder-justify-the-rest-to-right"></div>
                             <div className="flex-shrink-0">
-                                <PlusIcon
+                                {/* <PlusIcon
                                     className="h-5 w-5 text-gray-500 -ml-1 inline-block mr-3"
                                     aria-hidden="true"
-                                />
-                                <button type="submit" className="btn">
+                                /> */}
+                                <span className="text-sm mr-2">Add: </span>
+                                <button
+                                    type="button"
+                                    className="btn"
+                                    onClick={newPledge}
+                                >
                                     Pledge
                                 </button>
-                                <button type="submit" className="btn mx-2">
+                                <button
+                                    type="button"
+                                    className="btn mx-2"
+                                    onClick={newDonation}
+                                >
                                     Donation
                                 </button>
                                 <button
-                                    type="submit"
-                                    className="btn button-primary btn-primary"
+                                    type="button"
+                                    className="btn btn-primary"
+                                    onClick={newNote}
                                 >
                                     Note
                                 </button>

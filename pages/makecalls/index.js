@@ -4,7 +4,7 @@ import Link from "next/link";
 import PageTitle from "components/PageTitle";
 
 import { useState, useEffect } from "react";
-import supabase from "utils/supabase";
+import { useSupabase } from "utils/supabaseHooks";
 import Breadcrumbs from "components/Breadcrumbs";
 import CallingSessionsGrid from "components/CallingSessionsGrid";
 

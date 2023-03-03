@@ -11,7 +11,7 @@ import { connectToDatabase } from "utils/db";
 const db = connectToDatabase();
 
 // Supabase storage client
-import supabase from "utils/supabase";
+import { useSupabase } from "utils/supabaseHooks";
 
 // List of columns in order from csv file
 let permitTheseColumns = [

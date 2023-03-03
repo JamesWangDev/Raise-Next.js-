@@ -13,15 +13,40 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { isLoaded, useUser, SignIn, useOrganization } from "@clerk/nextjs";
 import { ChatWidget } from "@papercups-io/chat-widget";
 
+import { createSupabaseClient, SupabaseProvider } from "utils/supabaseHooks";
+import { useAuth } from "@clerk/nextjs";
+
 function App({ Component, pageProps }) {
     return (
         <ClerkProvider {...pageProps}>
-            <Layout>
+            <SupabaseWrapper>
                 <Component {...pageProps} />
-            </Layout>
+            </SupabaseWrapper>
+        </ClerkProvider>
+    );
+}
+
+function SupabaseWrapper({ children }) {
+    let [supabaseClient, setSupabaseClient] = useState();
+    const { getToken, userId, sessionId, orgId } = useAuth();
+    useEffect(() => {
+        let now = async () => {
+            // Get the clerk.dev JWT
+            const supabaseAccessToken = await getToken({
+                template: "supabase",
+            });
+            // Create and set the client
+            setSupabaseClient(createSupabaseClient(supabaseAccessToken));
+        };
+        now();
+    }, [userId, sessionId, orgId]);
+    // if (!supabaseClient) return <></>;
+    return (
+        <SupabaseProvider value={supabaseClient}>
+            <Layout>{supabaseClient ? children : null}</Layout>
             <ChatWidgetWrapper />
             {/* <Analytics /> */}
-        </ClerkProvider>
+        </SupabaseProvider>
     );
 }
 

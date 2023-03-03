@@ -4,7 +4,7 @@ import { Fragment } from "react";
 import { Menu, Transition, Button } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
-import supabase from "utils/supabase";
+import { useSupabase } from "utils/supabaseHooks";
 
 import { useOrganization } from "@clerk/nextjs";
 
@@ -19,6 +19,7 @@ export default function SaveList({ formattedQuery, listName, listID }) {
 
     const [listNameTemp, setListNameTemp] = useState(listName ?? "");
     const [savedListName, setSavedListName] = useState(!!listName);
+    const supabase = useSupabase();
 
     const saveList = async (event) => {
         // listNameTemp
@@ -79,7 +80,7 @@ export default function SaveList({ formattedQuery, listName, listID }) {
                                 <input
                                     type="submit"
                                     value="Save"
-                                    className="block w-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 block px-4 py-2 text-sm text-left my-0"
+                                    className="w-full hover:bg-gray-100 hover:text-gray-900 text-gray-700 block px-4 py-2 text-sm text-left my-0"
                                 />
                             </Menu.Item>
                         </div>

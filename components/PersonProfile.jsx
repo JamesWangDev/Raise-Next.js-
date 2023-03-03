@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import supabase from "utils/supabase";
+import { useSupabase } from "utils/supabaseHooks";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import {
@@ -32,6 +32,7 @@ export default function PersonProfile({
     const [person, setPerson] = useState();
     //get orgid using clerk
     const { organization } = useOrganization();
+    const supabase = useSupabase();
 
     useEffect(() => {
         supabase
@@ -112,7 +113,7 @@ export default function PersonProfile({
                     </div>
                 </div>
             </div>
-            <div className="max-w-7xl px-2 grid grid-flow-col grid-cols-12 gap-x-10 bg-white border-t px-8 py-6 mt-2 -mx-8">
+            <div className="max-w-7xl  grid grid-flow-col grid-cols-12 gap-x-10 bg-white border-t px-8 py-6 mt-2 -mx-8">
                 <div className="col-span-3">
                     <PersonContactInfo person={person} />
                 </div>
