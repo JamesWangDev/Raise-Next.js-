@@ -1,0 +1,229 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model call_sessions {
+  id              BigInt    @id @default(autoincrement())
+  created_at      DateTime? @default(now()) @db.Timestamptz(6)
+  list_id         String?   @db.Uuid
+  started         DateTime? @default(now()) @db.Timestamptz(6)
+  last_call       DateTime? @db.Timestamptz(6)
+  organization_id String?
+}
+
+model donations {
+  id                               String    @id @db.Uuid
+  person_id                        String?   @db.Uuid
+  batch_id                         String?   @db.Uuid
+  created_at                       DateTime? @db.Timestamptz(6)
+  inserted_at                      DateTime? @db.Timestamptz(6)
+  updated_at                       DateTime? @db.Timestamptz(6)
+  receipt_id                       String?
+  date                             String?
+  amount                           Decimal?  @db.Decimal
+  recurring_total_months           String?
+  recurrence_number                String?
+  recipient                        String?
+  fundraising_page                 String?
+  fundraising_partner              String?
+  reference_code_2                 String?
+  reference_code                   String?
+  donor_first_name                 String?
+  donor_last_name                  String?
+  donor_addr1                      String?
+  donor_addr2                      String?
+  donor_city                       String?
+  donor_state                      String?
+  donor_zip                        String?
+  donor_country                    String?
+  donor_occupation                 String?
+  donor_employer                   String?
+  donor_email                      String?
+  donor_phone                      String?
+  new_express_signup               String?
+  comments                         String?
+  check_number                     String?
+  check_date                       String?
+  employer_addr1                   String?
+  employer_addr2                   String?
+  employer_city                    String?
+  employer_state                   String?
+  employer_zip                     String?
+  employer_country                 String?
+  donor_id                         String?
+  fundraiser_id                    String?
+  fundraiser_recipient_id          String?
+  fundraiser_contact_email         String?
+  fundraiser_contact_first_name    String?
+  fundraiser_contact_last_name     String?
+  partner_id                       String?
+  partner_contact_email            String?
+  partner_contact_first_name       String?
+  partner_contact_last_name        String?
+  reserved1                        String?
+  lineitem_id                      String?
+  ab_test_name                     String?
+  ab_variation                     String?
+  recipient_committee              String?
+  recipient_id                     String?
+  recipient_gov_id                 String?
+  recipient_election               String?
+  reserved2                        String?
+  payment_id                       String?
+  payment_date                     String?
+  disbursement_id                  String?
+  disbursement_date                String?
+  recovery_id                      String?
+  recovery_date                    String?
+  refund_id                        String?
+  refund_date                      String?
+  fee                              String?
+  recur_weekly                     String?
+  actblue_express_lane             String?
+  reserved3                        String?
+  card_type                        String?
+  reserved4                        String?
+  reserved5                        String?
+  reserved6                        String?
+  reserved7                        String?
+  mobile                           String?
+  recurring_upsell_shown           String?
+  recurring_upsell_succeeded       String?
+  double_down                      String?
+  smart_recurring                  String?
+  monthly_recurring_amount         String?
+  apple_pay                        String?
+  card_replaced_by_account_updater String?
+  actblue_express_donor            String?
+  custom_field_1_label             String?
+  custom_field_1_value             String?
+  donor_us_passport_number         String?
+  text_message_opt_in              String?
+  gift_identifier                  String?
+  gift_declined                    String?
+  shipping_addr1                   String?
+  shipping_city                    String?
+  shipping_state                   String?
+  shipping_zip                     String?
+  shipping_country                 String?
+  weekly_recurring_amount          String?
+  smart_boost_amount               String?
+  smart_boost_shown                String?
+  organization_id                  String?
+  people                           people?   @relation(fields: [person_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model emails {
+  id              String    @id @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  created_at      DateTime? @default(now()) @db.Timestamptz(6)
+  email           String
+  person_id       String    @db.Uuid
+  organization_id String
+  batch_id        String?   @db.Uuid
+}
+
+model files {
+  filename        String?
+  organization_id String?
+  id              String  @id @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+}
+
+model import_batches {
+  id               String    @id @db.Uuid
+  created_at       DateTime  @default(now()) @db.Timestamptz(6)
+  finalized        DateTime? @db.Timestamptz(6)
+  success          Boolean?
+  records_affected Int?
+  file_url         String
+  user_id          String
+  organization_id  String
+}
+
+model indiv20b {
+  concatenated_zip_and_name String  @id @unique
+  donations_made_in_2020    BigInt?
+  total_donated_2020        BigInt?
+  list_of_committees_2020   String?
+  number_of_committees_2020 BigInt?
+}
+
+model interactions {
+  id                 String    @id @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  created_at         DateTime? @default(now()) @db.Timestamptz(6)
+  inserted_at        DateTime? @db.Timestamptz(6)
+  updated_at         DateTime? @db.Timestamptz(6)
+  batch_id           String?   @db.Uuid
+  person_id          String?   @db.Uuid
+  contact_type       String?
+  disposition        String?
+  disposition_more   String?
+  resulted_in_pledge Boolean?  @default(false)
+  pledge_id          String?   @db.Uuid
+  note               String?
+  organization_id    String?
+  people             people?   @relation(fields: [person_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model people {
+  batch_id        String?        @db.Uuid
+  id              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at      DateTime       @default(dbgenerated("timezone('utc'::text, now())")) @db.Timestamptz(6)
+  inserted_at     DateTime       @default(dbgenerated("timezone('utc'::text, now())")) @db.Timestamptz(6)
+  updated_at      DateTime       @default(dbgenerated("timezone('utc'::text, now())")) @db.Timestamptz(6)
+  organization_id String?
+  first_name      String?
+  last_name       String?
+  addr1           String?
+  addr2           String?
+  city            String?
+  state           String?
+  zip             String?
+  country         String?
+  occupation      String?
+  employer        String?
+  email           String?
+  phone           String?
+  tags            String[]
+  custom_field_1  String?
+  custom_field_2  String?
+  custom_field_3  String?
+  donations       donations[]
+  interactions    interactions[]
+  pledges         pledges[]
+}
+
+model phone_numbers {
+  id              String    @id @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  created_at      DateTime? @default(now()) @db.Timestamptz(6)
+  phone           Int
+  person_id       String    @db.Uuid
+  organization_id String
+  batch_id        String?   @db.Uuid
+}
+
+model pledges {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  person_id       String?  @db.Uuid
+  batch_id        String?  @db.Uuid
+  created_at      DateTime @default(dbgenerated("timezone('utc'::text, now())")) @db.Timestamptz(6)
+  inserted_at     DateTime @default(dbgenerated("timezone('utc'::text, now())")) @db.Timestamptz(6)
+  updated_at      DateTime @default(dbgenerated("timezone('utc'::text, now())")) @db.Timestamptz(6)
+  date            String?
+  amount          Decimal? @db.Decimal
+  fufilled        Boolean?
+  organization_id String?
+  people          people?  @relation(fields: [person_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model saved_lists {
+  name            String
+  id              String    @id @unique @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  created_at      DateTime? @default(now()) @db.Timestamptz(6)
+  query           String
+  organization_id String?
+}
