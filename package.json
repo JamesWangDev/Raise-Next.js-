@@ -5,6 +5,8 @@
     "scripts": {
         "dev": "next dev",
         "build": "next build",
+        "vercel-build": "test && build && migrate",
+        "migrate": "prisma migrate deploy",
         "start": "next start",
         "lint": "next lint",
         "test": "env NODE_ENV=test jest --ci",
