@@ -116,7 +116,7 @@ CREATE TABLE "donations" (
 
 -- CreateTable
 CREATE TABLE "emails" (
-    "id" UUID NOT NULL DEFAULT extensions.uuid_generate_v4(),
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "email" TEXT NOT NULL,
     "person_id" UUID NOT NULL,
@@ -130,7 +130,7 @@ CREATE TABLE "emails" (
 CREATE TABLE "files" (
     "filename" TEXT,
     "organization_id" TEXT,
-    "id" UUID NOT NULL DEFAULT extensions.uuid_generate_v4(),
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
 
     CONSTRAINT "files_pkey" PRIMARY KEY ("id")
 );
@@ -162,7 +162,7 @@ CREATE TABLE "indiv20b" (
 
 -- CreateTable
 CREATE TABLE "interactions" (
-    "id" UUID NOT NULL DEFAULT extensions.uuid_generate_v4(),
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "inserted_at" TIMESTAMPTZ(6),
     "updated_at" TIMESTAMPTZ(6),
@@ -209,7 +209,7 @@ CREATE TABLE "people" (
 
 -- CreateTable
 CREATE TABLE "phone_numbers" (
-    "id" UUID NOT NULL DEFAULT extensions.uuid_generate_v4(),
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "phone" INTEGER NOT NULL,
     "person_id" UUID NOT NULL,
@@ -238,7 +238,7 @@ CREATE TABLE "pledges" (
 -- CreateTable
 CREATE TABLE "saved_lists" (
     "name" TEXT NOT NULL,
-    "id" UUID NOT NULL DEFAULT extensions.uuid_generate_v4(),
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "query" TEXT NOT NULL,
     "organization_id" TEXT,
