@@ -58,10 +58,10 @@ function ChatWidgetWrapper() {
     let customer = null;
     if (isSignedIn)
         customer = {
-            name: user.fullName,
-            email: user.primaryEmailAddress.emailAddress,
-            phone: user.primaryPhoneNumber.phoneNumber,
-            external_id: user.id,
+            name: user?.fullName,
+            email: user?.primaryEmailAddress?.emailAddress,
+            // phone: user.primaryPhoneNumber.phoneNumber, // No longer provided by
+            external_id: user?.id,
             metadata: {},
         };
 
