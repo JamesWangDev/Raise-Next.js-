@@ -108,8 +108,8 @@ let permitTheseColumns = [
 // Load csv of donations to donation and people table
 // 12/19/22 Currently loading 60k donations from a 45mb file in 34 seconds
 export default async function loadDonationsCSV(req, res) {
-    // Get the user's orgID and userID (clerk.dev's capitalization is weird so rename it)
-    const { userId: userID, orgId: orgID } = getAuth(req);
+    // Get the user's orgID (clerk.dev's capitalization is weird so rename it)
+    const { orgId: orgID } = getAuth(req);
 
     // Clerk and supabase
     const supabase = createSupabaseClient(

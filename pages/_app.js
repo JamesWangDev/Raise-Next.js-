@@ -36,7 +36,13 @@ function SupabaseWrapper({ children }) {
                 template: "supabase",
             });
             // Create and set the client
-            setSupabaseClient(createSupabaseClient(supabaseAccessToken));
+            let client = createSupabaseClient(supabaseAccessToken);
+            setSupabaseClient(client);
+            const { data, error } = await client
+                .from("donations")
+                .select("*")
+                .limit(25);
+            console.log({ data, error });
         };
         now();
     }, [userId, sessionId, orgId]);
