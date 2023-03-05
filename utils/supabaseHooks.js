@@ -7,13 +7,12 @@ export function createSupabaseClient(supabaseAccessToken) {
     if (supabaseAccessToken)
         return createClient(
             process.env.NEXT_PUBLIC_SUPABASE_URL,
-            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-            // ,
-            // {
-            //     global: {
-            //         headers: { Authorization: `Bearer ${supabaseAccessToken}` },
-            //     },
-            // }
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+            {
+                global: {
+                    headers: { Authorization: `Bearer ${supabaseAccessToken}` },
+                },
+            }
         );
     else
         return createClient(
