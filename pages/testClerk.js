@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useSupabase } from "utils/supabaseHooks";
 import { useAuth } from "@clerk/nextjs";
 
-export default function testClerk() {
+export default function TestClerk() {
     const supabase = useSupabase();
     const [response, setResponse] = useState();
 
