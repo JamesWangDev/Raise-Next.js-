@@ -11,16 +11,16 @@ export default function testClerk() {
             .from("donations")
             .select("*")
             .limit(25);
-        response({ data, error });
+        setResponse({ data, error });
     };
 
     useEffect(() => {
         example();
-    });
+    }, []);
 
     return (
         <>
-            {JSON.stringify(data || "nothing", 0, 02)}
+            {JSON.stringify(response || "nothing", 0, 2)}
             <button
                 className="btn button btn-primary button-primary"
                 onClick={() => {
