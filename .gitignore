@@ -72,3 +72,6 @@ e2e/results/
 
 # Ignore on purpose
 *.ignore
+
+# Hmmm.
+.swc

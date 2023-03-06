@@ -109,12 +109,15 @@ let permitTheseColumns = [
 // 12/19/22 Currently loading 60k donations from a 45mb file in 34 seconds
 export default async function loadDonationsCSV(req, res) {
     // Get the user's orgID (clerk.dev's capitalization is weird so rename it)
-    const { orgId: orgID } = getAuth(req);
+    const { orgId: orgID, getToken } = getAuth(req);
 
     // Clerk and supabase
     const supabase = createSupabaseClient(
         await getToken({
-            template: "supabase",
+            template:
+                process.env.NEXT_PUBLIC_ENVIRONMENT != "development"
+                    ? "supabase"
+                    : "supabase-local-development",
         })
     );
 
@@ -302,7 +305,7 @@ export default async function loadDonationsCSV(req, res) {
     console.log("updatedFileUploadResult", updatedFileUploadResult);
 
     // Store a signed URL to pass to PG as fileURL
-    const {
+    let {
         data: { publicUrl: fileURL },
     } = await supabase.storage.from("imports").getPublicUrl(sanitzedFileName);
 
@@ -324,13 +327,18 @@ export default async function loadDonationsCSV(req, res) {
     let columns = updatedFileContents.split("\n", 1)[0].trim().split(",");
     var concatColumns = '"' + columns.join('", "') + '"';
 
+    // Woof, this is a hack to get outgoing connections to localhost to work in dockerized postgres
+    if (process.env.NEXT_PUBLIC_ENVIRONMENT == "development")
+        fileURL = fileURL.replace("localhost", "host.docker.internal");
+
     // Setup query
     let query = `
-    COPY staging.donations(${concatColumns})
+    COPY donations(${concatColumns})
       FROM PROGRAM 'curl "${fileURL}"'
       DELIMITER ','
       CSV HEADER;
   `;
+    console.log(query);
 
     // Open PG connection and safely close connection
     let result = await db.query(query);
@@ -345,20 +353,20 @@ export default async function loadDonationsCSV(req, res) {
         res.status(500).send(error2);
     }
 
-    // Setup query to copy staging to production
-    let stageToProductionQuery = `
-      INSERT INTO public.donations
-        SELECT * FROM staging.donations
-        WHERE batch_id='${batchID}';
-      DELETE FROM staging.donations WHERE batch_id='${batchID}';
-    `;
+    // // Setup query to copy staging to production
+    // let stageToProductionQuery = `
+    //   INSERT INTO public.donations
+    //     SELECT * FROM staging.donations
+    //     WHERE batch_id='${batchID}';
+    //   DELETE FROM staging.donations WHERE batch_id='${batchID}';
+    // `;
 
-    console.log(stageToProductionQuery);
+    // console.log(stageToProductionQuery);
 
-    // Open PG connection and safely close connection
-    let result2 = await db.query(stageToProductionQuery);
-    console.log(result2);
-    console.log("b");
+    // // Open PG connection and safely close connection
+    // let result2 = await db.query(stageToProductionQuery);
+    // console.log(result2);
+    // console.log("b");
 
     console.timeEnd("donations queries");
 
