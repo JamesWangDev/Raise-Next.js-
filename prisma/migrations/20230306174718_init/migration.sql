@@ -26,7 +26,7 @@ CREATE TABLE "call_sessions" (
 
 -- CreateTable
 CREATE TABLE "donations" (
-    "id" UUID NOT NULL DEFAULT uuid_generate_v4(),
+    "id" UUID NOT NULL DEFAULT extensions.uuid_generate_v4(),
     "person_id" UUID,
     "batch_id" UUID,
     "created_at" TIMESTAMPTZ(6),
@@ -130,7 +130,7 @@ CREATE TABLE "donations" (
 
 -- CreateTable
 CREATE TABLE "emails" (
-    "id" UUID NOT NULL DEFAULT uuid_generate_v4(),
+    "id" UUID NOT NULL DEFAULT extensions.uuid_generate_v4(),
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "email" TEXT NOT NULL,
     "person_id" UUID NOT NULL,
@@ -144,14 +144,14 @@ CREATE TABLE "emails" (
 CREATE TABLE "files" (
     "filename" TEXT,
     "organization_id" TEXT,
-    "id" UUID NOT NULL DEFAULT uuid_generate_v4(),
+    "id" UUID NOT NULL DEFAULT extensions.uuid_generate_v4(),
 
     CONSTRAINT "files_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "import_batches" (
-    "id" UUID NOT NULL DEFAULT uuid_generate_v4(),
+    "id" UUID NOT NULL DEFAULT extensions.uuid_generate_v4(),
     "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "finalized" TIMESTAMPTZ(6),
     "success" BOOLEAN,
@@ -176,7 +176,7 @@ CREATE TABLE "indiv20b" (
 
 -- CreateTable
 CREATE TABLE "interactions" (
-    "id" UUID NOT NULL DEFAULT uuid_generate_v4(),
+    "id" UUID NOT NULL DEFAULT extensions.uuid_generate_v4(),
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "inserted_at" TIMESTAMPTZ(6),
     "updated_at" TIMESTAMPTZ(6),
@@ -196,7 +196,7 @@ CREATE TABLE "interactions" (
 -- CreateTable
 CREATE TABLE "people" (
     "batch_id" UUID,
-    "id" UUID NOT NULL DEFAULT uuid_generate_v4(),
+    "id" UUID NOT NULL DEFAULT extensions.uuid_generate_v4(),
     "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT timezone('utc'::text, now()),
     "inserted_at" TIMESTAMPTZ(6) NOT NULL DEFAULT timezone('utc'::text, now()),
     "updated_at" TIMESTAMPTZ(6) NOT NULL DEFAULT timezone('utc'::text, now()),
@@ -223,7 +223,7 @@ CREATE TABLE "people" (
 
 -- CreateTable
 CREATE TABLE "phone_numbers" (
-    "id" UUID NOT NULL DEFAULT uuid_generate_v4(),
+    "id" UUID NOT NULL DEFAULT extensions.uuid_generate_v4(),
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "phone" INTEGER NOT NULL,
     "person_id" UUID NOT NULL,
@@ -235,7 +235,7 @@ CREATE TABLE "phone_numbers" (
 
 -- CreateTable
 CREATE TABLE "pledges" (
-    "id" UUID NOT NULL DEFAULT uuid_generate_v4(),
+    "id" UUID NOT NULL DEFAULT extensions.uuid_generate_v4(),
     "person_id" UUID,
     "batch_id" UUID,
     "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT timezone('utc'::text, now()),
@@ -252,7 +252,7 @@ CREATE TABLE "pledges" (
 -- CreateTable
 CREATE TABLE "saved_lists" (
     "name" TEXT NOT NULL,
-    "id" UUID NOT NULL DEFAULT uuid_generate_v4(),
+    "id" UUID NOT NULL DEFAULT extensions.uuid_generate_v4(),
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "query" TEXT NOT NULL,
     "organization_id" TEXT,
@@ -420,4 +420,5 @@ ALTER TABLE storage.buckets ALTER COLUMN owner SET DATA TYPE text;
 ALTER TABLE storage.objects DROP CONSTRAINT objects_owner_fkey;
 ALTER TABLE storage.objects ALTER COLUMN owner SET DATA TYPE text;
 ALTER TABLE storage.objects DISABLE ROW LEVEL SECURITY;
-INSERT INTO storage.buckets (id,name,created_at,updated_at,public,avif_autodetection) VALUES ('imports','imports',now(),now(),TRUE,FALSE);
+INSERT INTO storage.buckets (id,name,created_at,updated_at,public,avif_autodetection) VALUES ('imports','imports',now(),now(),TRUE,FALSE)
+ON CONFLICT (id) DO NOTHING;
