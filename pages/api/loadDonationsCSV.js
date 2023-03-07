@@ -1,17 +1,8 @@
-// Clerk auth
 import { getAuth } from "@clerk/nextjs/server";
-
-// UUID!
 const { v4: uuid } = require("uuid");
-
-// Papa parse for csv handling
-const Papa = require("papaparse");
-
-// Postgres client
-import { connectToDatabase } from "utils/db";
+const Papa = require("papaparse"); // Handles csvs
+import { connectToDatabase } from "utils/db"; // Postgres client
 const db = connectToDatabase();
-
-// Supabase storage client
 import { createSupabaseClient } from "utils/supabaseHooks";
 
 // List of columns in order from csv file
@@ -111,6 +102,9 @@ export default async function loadDonationsCSV(req, res) {
     // Get the user's orgID (clerk.dev's capitalization is weird so rename it)
     const { orgId: orgID, getToken } = getAuth(req);
 
+    // No unauthorized access
+    if (!orgID) return res.status(401).send();
+
     // Clerk and supabase
     const supabase = createSupabaseClient(
         await getToken({
@@ -139,7 +133,7 @@ export default async function loadDonationsCSV(req, res) {
     } = req;
 
     // For testing
-    // fileName = "rana-ab-backup.csv";
+    // fileName = "example-ab-backup.csv";
     console.log("fileName", fileName);
 
     // Get the file from supabase storage
@@ -281,77 +275,133 @@ export default async function loadDonationsCSV(req, res) {
 
         fileParsedToJSON[index]["person_id"] = personID;
     }
-
     console.timeEnd("edit file");
+    /*
+    // console.time("unparse JSON to file");
 
-    console.time("unparse JSON to file");
+    // let updatedFileContents = Papa.unparse(fileParsedToJSON);
 
-    let updatedFileContents = Papa.unparse(fileParsedToJSON);
+    // console.timeEnd("unparse JSON to file");
 
-    console.timeEnd("unparse JSON to file");
-
-    console.time("resave file and get url");
+    // console.time("resave file and get url");
 
     // Write the CSV back to storage
     // ..now that we're sure it's compatible
     // and replace fileName with these cleaned file
-    const updatedFileUploadResult = await supabase.storage
-        .from("imports")
-        .upload(batchID + ".csv", updatedFileContents, {
-            upsert: true,
-        });
-    let sanitzedFileName = updatedFileUploadResult.data.path;
+    // const updatedFileUploadResult = await supabase.storage
+    //     .from("imports")
+    //     .upload(batchID + ".csv", updatedFileContents, {
+    //         upsert: true,
+    //     });
+    // let sanitzedFileName = updatedFileUploadResult.data.path;
 
-    console.log("updatedFileUploadResult", updatedFileUploadResult);
+    // console.log("updatedFileUploadResult", updatedFileUploadResult);
 
-    // Store a signed URL to pass to PG as fileURL
-    let {
-        data: { publicUrl: fileURL },
-    } = await supabase.storage.from("imports").getPublicUrl(sanitzedFileName);
+    // // Store a signed URL to pass to PG as fileURL
+    // let {
+    //     data: { publicUrl: fileURL },
+    // } = await supabase.storage.from("imports").getPublicUrl(sanitzedFileName);
 
-    console.log("fileURL", fileURL);
+    // console.log("fileURL", fileURL);
 
-    console.timeEnd("resave file and get url");
+    // console.timeEnd("resave file and get url");
 
     // OK we are actually going to insert People first
     // since now there is a foreign key constraint on donations
-    console.time("upsert 7k records into people");
+    */
+
+    console.time("upsert records into people");
     // Need  .select() at the end to await until upsert is completed :)
     const { error4 } = await supabase.from("people").upsert(people).select();
-    console.timeEnd("upsert 7k records into people");
+    console.timeEnd("upsert records into people");
     console.log("people insert error4:", error4);
 
-    console.time("donations queries");
+    // console.time("upload donations to db");
+    // const chunkSize = 25;
+    // let responses = [];
+    // for (let i = 0; i < fileParsedToJSON.length; i += chunkSize) {
+    //     // do whatever
+    //     responses.push(
+    //         supabase
+    //             .from("donations")
+    //             .insert(fileParsedToJSON.slice(i, i + chunkSize))
+    //     );
+    //     // console.log({ response });
+    //     console.log("upload loop " + i);
+    // }
+    // let response = await Promise.allSettled(responses);
+    // console.log({ response });
+    // console.timeEnd("upload donations to db");
 
-    // Get the target columns parsed from csv into array
-    let columns = updatedFileContents.split("\n", 1)[0].trim().split(",");
-    var concatColumns = '"' + columns.join('", "') + '"';
+    console.time("upload donations to db");
+    const chunkSize = 250;
+    let responses = [];
 
-    // Woof, this is a hack to get outgoing connections to localhost to work in dockerized postgres
-    if (process.env.NEXT_PUBLIC_ENVIRONMENT == "development")
-        fileURL = fileURL.replace("localhost", "host.docker.internal");
+    var concatColumns =
+        '"' + Object.keys(fileParsedToJSON[0]).join('", "') + '"';
 
-    // Setup query
-    let query = `
-    COPY donations(${concatColumns})
-      FROM PROGRAM 'curl "${fileURL}"'
-      DELIMITER ','
-      CSV HEADER;
-  `;
-    console.log(query);
+    const client = await db.connect();
 
-    // Open PG connection and safely close connection
-    let result = await db.query(query);
+    for (let i = 0; i < fileParsedToJSON.length; i += chunkSize) {
+        // do whatever
+        let chunk = fileParsedToJSON.slice(i, i + chunkSize);
 
-    // next js test lines
-    let successfulCopies = "rowCount" in result ? result.rowCount : 0;
-    console.log("successfulCopies", successfulCopies);
+        // console.log({ chunk });
 
-    if (!(successfulCopies > 0)) {
-        var error2 = "";
-        console.error(error2);
-        res.status(500).send(error2);
+        let query = `INSERT INTO DONATIONS (${concatColumns}) VALUES `;
+
+        // comma seperated and quoted each value from the chunk[index] object
+        query += chunk
+            .map(
+                (row) =>
+                    "(" +
+                    Object.values(row)
+                        .map((needsEscape) => client.escapeLiteral(needsEscape))
+                        .join(", ") +
+                    ") "
+            )
+            .join(", ");
+
+        // console.log(query + ";");
+
+        let result = await client.query(query + ";");
+        // console.log({ result });
+        console.log("upload loop " + i);
     }
+    // let response = await Promise.allSettled(responses);
+    client.release();
+    // console.log({ response });
+    console.timeEnd("upload donations to db");
+
+    //     // Get the target columns parsed from csv into array
+    //     let columns = updatedFileContents.split("\n", 1)[0].trim().split(",");
+    //     var concatColumns = '"' + columns.join('", "') + '"';
+
+    //     // Woof, this is a hack to get outgoing connections to localhost to work in dockerized postgres
+    //     if (process.env.NEXT_PUBLIC_ENVIRONMENT == "development")
+    //         fileURL = fileURL.replace("localhost", "host.docker.internal");
+
+    //     // Setup query
+    //     let query = `
+    //     COPY donations(${concatColumns})
+    //       FROM PROGRAM 'curl "${fileURL}"'
+    //       DELIMITER ','
+    //       CSV HEADER;
+    //   `;
+    //     console.log(query);
+
+    //     // Open PG connection and safely close connection
+    //     let result = await db.query(query);
+
+    //     // next js test lines
+    //     let successfulCopies = "rowCount" in result ? result.rowCount : 0;
+    //     console.log("successfulCopies", successfulCopies);
+
+    //     if (!(successfulCopies > 0)) {
+    //         var error2 = "";
+    //         console.error(error2);
+    //         res.status(500).send(error2);
+    //     }
 
     // // Setup query to copy staging to production
     // let stageToProductionQuery = `
@@ -367,8 +417,6 @@ export default async function loadDonationsCSV(req, res) {
     // let result2 = await db.query(stageToProductionQuery);
     // console.log(result2);
     // console.log("b");
-
-    console.timeEnd("donations queries");
 
     // //////////////////////////////////////////
     // // End handleDonationsCSVImport()

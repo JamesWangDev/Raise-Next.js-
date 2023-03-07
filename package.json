@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {
         "dev": "npm run devdatabase && npm run migrate && next dev",
-        "devdatabase": "supabase stop && supabase start && docker exec supabase_db_raisemore apt-get update && docker exec supabase_db_raisemore apt-get install curl --yes",
+        "devdatabase": "supabase stop && supabase start --exclude gotrue,imgproxy,pgadmin-schema-diff,migra,deno-relay",
         "build": "next build",
         "vercel-build": "npm run test && npm run build && npm run migrate",
         "migrate": "prisma migrate deploy",
