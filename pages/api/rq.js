@@ -40,5 +40,4 @@ export default async function handler(req, res) {
         client.release();
         res.status(200).json({ error: err });
     }
-    client.release();
 }
