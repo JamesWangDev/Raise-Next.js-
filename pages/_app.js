@@ -33,10 +33,7 @@ function SupabaseWrapper({ children }) {
             // Create and set the client
             let client = createSupabaseClient(supabaseAccessToken);
             setSupabaseClient(client);
-            const { data, error } = await client
-                .from("donations")
-                .select("*")
-                .limit(25);
+            const { data, error } = await client.from("donations").select("*").limit(25);
             console.log({ data, error });
         };
         now();

@@ -4,11 +4,7 @@ import Link from "next/link";
 import { useSupabase } from "utils/supabaseHooks";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import {
-    CheckIcon,
-    HandThumbUpIcon,
-    UserIcon,
-} from "@heroicons/react/20/solid";
+import { CheckIcon, HandThumbUpIcon, UserIcon } from "@heroicons/react/20/solid";
 
 // useUser and useOrganization are used to get the current user and organization
 import { useUser, useOrganization } from "@clerk/nextjs";
@@ -26,10 +22,7 @@ function AddModal() {
     );
 }
 
-export default function InteractionHistory({
-    person,
-    interactions: passedInteractions,
-}) {
+export default function InteractionHistory({ person, interactions: passedInteractions }) {
     const supabase = useSupabase();
 
     // showModal and addModalType are states that are used to control the display of the modal
@@ -67,25 +60,18 @@ export default function InteractionHistory({
     return (
         <div className="flow-root">
             <h2>Interaction History</h2>
-            <AddInteractionCard
-                person={person}
-                appendInteraction={appendInteraction}
-            />
+            <AddInteractionCard person={person} appendInteraction={appendInteraction} />
             {isModalShowing ? <AddModal type={addModalType} /> : null}
             <ul role="list" className="-mb-8 mt-6">
                 {interactions?.map((interaction, eventIdx) => {
                     interaction.iconBackground = "bg-gray-400";
                     interaction.icon = UserIcon;
 
-                    interaction.date = new Date(
-                        interaction.created_at
-                    ).toLocaleString("en-US", {
+                    interaction.date = new Date(interaction.created_at).toLocaleString("en-US", {
                         month: "short",
                         day: "numeric",
                     });
-                    interaction.datetime = new Date(
-                        interaction.created_at
-                    ).toString();
+                    interaction.datetime = new Date(interaction.created_at).toString();
                     interaction.href = "";
 
                     interaction.content =
@@ -131,9 +117,7 @@ export default function InteractionHistory({
                                             </p>
                                         </div>
                                         <div className="whitespace-nowrap text-right text-sm text-gray-500">
-                                            <time
-                                                dateTime={interaction.datetime}
-                                            >
+                                            <time dateTime={interaction.datetime}>
                                                 {interaction.date}
                                             </time>
                                         </div>

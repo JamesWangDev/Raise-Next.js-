@@ -15,10 +15,7 @@ export default function Dashboard() {
                 <div className="grid grid-cols-2 gap-16 -mb-3">
                     <div>
                         {" "}
-                        <PageTitle
-                            title="Pledges"
-                            descriptor="From all donors/prospects"
-                        />
+                        <PageTitle title="Pledges" descriptor="From all donors/prospects" />
                         {/* New pledge button as primary btn */}
                     </div>
                     <div className="text-right">

@@ -16,17 +16,7 @@ export default function Import() {
     const supabase = useSupabase();
 
     const server = (apiRoute) => ({
-        process: (
-            fieldName,
-            file,
-            metadata,
-            load,
-            error,
-            progress,
-            abort,
-            transfer,
-            options
-        ) => {
+        process: (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
             //   progress(e.lengthComputable, e.loaded, e.total);
             console.log("start process", file);
             console.time("upload and process");
@@ -48,12 +38,7 @@ export default function Import() {
                     console.log("File available at", data.path);
                     load("done");
 
-                    fetch(
-                        "/api/" +
-                            apiRoute +
-                            "?fileName=" +
-                            encodeURIComponent(data.path)
-                    )
+                    fetch("/api/" + apiRoute + "?fileName=" + encodeURIComponent(data.path))
                         .then((res) => res.text())
                         .then((data) => {
                             console.log(data);
@@ -126,12 +111,8 @@ export default function Import() {
             </div>
             <div className="">
                 <div className="mx-auto max-w-7xl px-2 ">
-                    <h2 className="mt-6 mb-0">
-                        Upload a prospect file for donor research:
-                    </h2>
-                    <p className="font-light">
-                        (required: first_name, last_name, and zip){" "}
-                    </p>
+                    <h2 className="mt-6 mb-0">Upload a prospect file for donor research:</h2>
+                    <p className="font-light">(required: first_name, last_name, and zip) </p>
                     <div className="md:grid md:grid-cols-2">
                         <div className="col-span-1">
                             <FilePond
@@ -147,9 +128,7 @@ export default function Import() {
             <div className="">
                 <div className="mx-auto max-w-7xl px-2 ">
                     <h2 className="mt-6 mb-0">Upload pledges</h2>
-                    <p className="font-light">
-                        (required: first_name, last_name, zip, amount){" "}
-                    </p>
+                    <p className="font-light">(required: first_name, last_name, zip, amount) </p>
                     <div className="md:grid md:grid-cols-2">
                         <div className="col-span-1">
                             <FilePond
@@ -189,10 +168,7 @@ function Steps() {
                 {steps.map((step, stepIdx) => (
                     <li key={step.name} className="relative md:flex md:flex-1">
                         {step.status === "complete" ? (
-                            <a
-                                href={step.href}
-                                className="group flex w-full items-center"
-                            >
+                            <a href={step.href} className="group flex w-full items-center">
                                 <span className="flex items-center px-6 py-4 text-sm font-medium">
                                     <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-indigo-600 group-hover:bg-indigo-800">
                                         <CheckIcon
@@ -212,19 +188,14 @@ function Steps() {
                                 aria-current="step"
                             >
                                 <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border-2 border-indigo-600">
-                                    <span className="text-indigo-600">
-                                        {step.id}
-                                    </span>
+                                    <span className="text-indigo-600">{step.id}</span>
                                 </span>
                                 <span className="ml-4 text-sm font-medium text-indigo-600">
                                     {step.name}
                                 </span>
                             </a>
                         ) : (
-                            <a
-                                href={step.href}
-                                className="group flex items-center"
-                            >
+                            <a href={step.href} className="group flex items-center">
                                 <span className="flex items-center px-6 py-4 text-sm font-medium">
                                     <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border-2 border-gray-300 group-hover:border-gray-400">
                                         <span className="text-gray-500 group-hover:text-gray-900">
@@ -284,16 +255,13 @@ const mailingLists = [
     {
         id: 3,
         title: "Pledges",
-        description:
-            "Use a spreadsheet with first_name, last_name, zip, and amount",
+        description: "Use a spreadsheet with first_name, last_name, zip, and amount",
         users: "2740 users",
     },
 ];
 
 function Choices() {
-    const [selectedMailingLists, setSelectedMailingLists] = useState(
-        mailingLists[0]
-    );
+    const [selectedMailingLists, setSelectedMailingLists] = useState(mailingLists[0]);
 
     return (
         <RadioGroup
@@ -312,12 +280,8 @@ function Choices() {
                         value={mailingList}
                         className={({ checked, active }) =>
                             classNames(
-                                checked
-                                    ? "border-transparent"
-                                    : "border-gray-300",
-                                active
-                                    ? "border-indigo-500 ring-2 ring-indigo-500"
-                                    : "",
+                                checked ? "border-transparent" : "border-gray-300",
+                                active ? "border-indigo-500 ring-2 ring-indigo-500" : "",
                                 "relative flex cursor-pointer rounded-lg border bg-white p-4 shadow-sm focus:outline-none"
                             )
                         }
@@ -356,9 +320,7 @@ function Choices() {
                                 <span
                                     className={classNames(
                                         active ? "border" : "border-2",
-                                        checked
-                                            ? "border-indigo-500"
-                                            : "border-transparent",
+                                        checked ? "border-indigo-500" : "border-transparent",
                                         "pointer-events-none absolute -inset-px rounded-lg"
                                     )}
                                     aria-hidden="true"

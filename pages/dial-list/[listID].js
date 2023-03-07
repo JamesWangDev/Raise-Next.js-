@@ -4,36 +4,24 @@ import Link from "next/link";
 import { useSupabase } from "utils/supabaseHooks";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import {
-    CheckIcon,
-    HandThumbUpIcon,
-    UserIcon,
-    PhoneIcon,
-} from "@heroicons/react/20/solid";
+import { CheckIcon, HandThumbUpIcon, UserIcon, PhoneIcon } from "@heroicons/react/20/solid";
 import InteractionHistory from "components/InteractionHistory";
 import Breadcrumbs from "components/Breadcrumbs";
-
-// import useorganization from clerk.dev
-import { useOrganization } from "@clerk/nextjs";
 
 export default function SpecificListPage() {
     const router = useRouter();
     const { personID } = router.query;
     const [person, setPerson] = useState();
-
-    //get orgid using clerk
-    const { organization } = useOrganization();
     const supabase = useSupabase();
 
     useEffect(() => {
         supabase
             .from("people")
             .select("*, interactions ( * )")
-            .eq("organization_id", organization?.id)
             .eq("id", personID)
             .single()
             .then((result) => setPerson(result.data));
-    }, [personID, organization]);
+    }, [personID]);
 
     var interactions = person?.interactions || [];
     console.log(interactions);
@@ -46,8 +34,7 @@ export default function SpecificListPage() {
                         pages={[
                             { name: "People", href: "/people", current: false },
                             {
-                                name:
-                                    person.first_name + " " + person.last_name,
+                                name: person.first_name + " " + person.last_name,
                                 href: "/people/" + person.id,
                                 current: true,
                             },
@@ -87,10 +74,7 @@ export default function SpecificListPage() {
                     <PersonContactInfo person={person} />
                 </div>
                 <div className="col-span-2">
-                    <InteractionHistory
-                        person={person}
-                        interactions={interactions}
-                    />
+                    <InteractionHistory person={person} interactions={interactions} />
                 </div>
                 <div className="col-span-1">Last column</div>
             </div>
@@ -105,9 +89,7 @@ function PersonContactInfo({ person }) {
         <div>
             <h2>Contact Information</h2>
             <div className="sm:col-span-1">
-                <dt className="text-sm font-medium text-gray-500">
-                    Phone Numbers
-                </dt>
+                <dt className="text-sm font-medium text-gray-500">Phone Numbers</dt>
                 <dd className="mt-1 text-sm text-gray-900">{person.phone}</dd>
             </div>
             <div className="sm:col-span-1 mt-3">

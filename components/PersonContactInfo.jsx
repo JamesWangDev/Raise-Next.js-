@@ -45,9 +45,7 @@ export default function PersonContactInfo({ person }) {
         <div>
             <h2>Contact Information</h2>
             <div className="sm:col-span-1">
-                <dt className="text-sm font-medium text-gray-500">
-                    Phone Numbers
-                </dt>
+                <dt className="text-sm font-medium text-gray-500">Phone Numbers</dt>
                 <dd className="mt-1 text-sm text-gray-900">
                     {phoneNumberDisplayFormatter(person.phone)}
                 </dd>

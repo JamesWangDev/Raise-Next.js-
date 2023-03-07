@@ -10,11 +10,7 @@ export default function PeoplePage() {
     return (
         <div className="">
             <div className="mx-auto max-w-7xl px-2 ">
-                <Breadcrumbs
-                    pages={[
-                        { name: "People", href: "/people", current: false },
-                    ]}
-                />
+                <Breadcrumbs pages={[{ name: "People", href: "/people", current: false }]} />
                 <PageTitle title="People" descriptor="Donors and prospects." />
             </div>
             <div className="mx-auto max-w-7xl px-2  ">

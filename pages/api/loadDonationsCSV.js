@@ -175,16 +175,13 @@ export default async function loadDonationsCSV(req, res) {
         // Loop through every key
         Object.keys(row).forEach((key, j) => {
             // And drop every key that is not present in permitTheseColumns
-            if (!permitTheseColumns.includes(key))
-                delete fileParsedToJSON[index][key];
+            if (!permitTheseColumns.includes(key)) delete fileParsedToJSON[index][key];
         });
     });
 
     // // Grab the people collection as an array of rows
     console.time("people get direct query");
-    const people = (
-        await db.query(`select * from people where organization_id='${orgID}'`)
-    ).rows;
+    const people = (await db.query(`select * from people where organization_id='${orgID}'`)).rows;
     console.timeEnd("people get direct query");
     const oldPeople = JSON.parse(JSON.stringify(people));
 
@@ -260,17 +257,13 @@ export default async function loadDonationsCSV(req, res) {
             personID = people[matchingIndex].id;
 
             // Record the overwrite
-            people[matchingIndex] = JSON.parse(
-                JSON.stringify({ ...newPerson, id: personID })
-            );
+            people[matchingIndex] = JSON.parse(JSON.stringify({ ...newPerson, id: personID }));
         } else {
             // If the donor doesn't already exist, we want to create someone!
             // personID = (await accountDB.collection('people').add(newPerson)).id;
             personID = uuid();
             // Record a change a differnt way
-            people.push(
-                JSON.parse(JSON.stringify({ ...newPerson, id: personID }))
-            );
+            people.push(JSON.parse(JSON.stringify({ ...newPerson, id: personID })));
         }
 
         fileParsedToJSON[index]["person_id"] = personID;
@@ -337,8 +330,7 @@ export default async function loadDonationsCSV(req, res) {
     const chunkSize = 250;
     let responses = [];
 
-    var concatColumns =
-        '"' + Object.keys(fileParsedToJSON[0]).join('", "') + '"';
+    var concatColumns = '"' + Object.keys(fileParsedToJSON[0]).join('", "') + '"';
 
     const client = await db.connect();
 

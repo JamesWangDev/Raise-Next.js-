@@ -23,16 +23,10 @@ export default function SpecificListPage() {
                         },
                     ]}
                 />
-                <PageTitle
-                    title={"List " + listID}
-                    descriptor="You're editing this query."
-                />
+                <PageTitle title={"List " + listID} descriptor="You're editing this query." />
             </div>
             <div className="mx-auto max-w-7xl px-2  ">
-                <QueryBuilderProvider
-                    table="people_for_user_display"
-                    listID={listID}
-                />
+                <QueryBuilderProvider table="people_for_user_display" listID={listID} />
             </div>
         </div>
     );

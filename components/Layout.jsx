@@ -167,14 +167,10 @@ const Layout = ({ children }) => {
     let activeIndex =
         router.pathname == "/"
             ? 0
-            : navigation.findIndex(
-                  (element) => element.href == router.pathname
-              );
+            : navigation.findIndex((element) => element.href == router.pathname);
     // If the page is not found, set the parent page as active
     if (activeIndex == -1)
-        activeIndex = navigation.findIndex(
-            (element) => element.href == basePath
-        );
+        activeIndex = navigation.findIndex((element) => element.href == basePath);
     if (activeIndex in navigation) navigation[activeIndex].current = true;
 
     const hasOrg = user ? !!user.organizationMemberships.length : false;
@@ -183,11 +179,7 @@ const Layout = ({ children }) => {
         <>
             <Menu>
                 <Transition.Root show={sidebarOpen} as={Fragment}>
-                    <Dialog
-                        as="div"
-                        className="relative z-40 md:hidden"
-                        onClose={setSidebarOpen}
-                    >
+                    <Dialog as="div" className="relative z-40 md:hidden" onClose={setSidebarOpen}>
                         <Transition.Child
                             as={Fragment}
                             enter="transition-opacity ease-linear duration-300"
@@ -224,13 +216,9 @@ const Layout = ({ children }) => {
                                             <button
                                                 type="button"
                                                 className="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
-                                                onClick={() =>
-                                                    setSidebarOpen(false)
-                                                }
+                                                onClick={() => setSidebarOpen(false)}
                                             >
-                                                <span className="sr-only">
-                                                    Close sidebar
-                                                </span>
+                                                <span className="sr-only">Close sidebar</span>
                                                 <XMarkIcon
                                                     className="h-6 w-6 text-white"
                                                     aria-hidden="true"
@@ -243,9 +231,7 @@ const Layout = ({ children }) => {
                                         <nav className="space-y-1 px-2">
                                             {navigation.map((item, index) => (
                                                 <Link
-                                                    onClick={() =>
-                                                        setSidebarOpen(false)
-                                                    }
+                                                    onClick={() => setSidebarOpen(false)}
                                                     key={index}
                                                     href={item.href}
                                                     className={classNames(
@@ -271,10 +257,7 @@ const Layout = ({ children }) => {
                                     </div>
                                 </Dialog.Panel>
                             </Transition.Child>
-                            <div
-                                className="w-14 flex-shrink-0"
-                                aria-hidden="true"
-                            >
+                            <div className="w-14 flex-shrink-0" aria-hidden="true">
                                 {/* Dummy element to force sidebar to shrink to fit close icon */}
                             </div>
                         </div>
@@ -294,17 +277,13 @@ const Layout = ({ children }) => {
                                         <Link
                                             href={item.href}
                                             className={
-                                                item.current
-                                                    ? "nav-item current"
-                                                    : "nav-item"
+                                                item.current ? "nav-item current" : "nav-item"
                                             }
                                         >
                                             <item.icon aria-hidden="true" />
                                             {item.name}
                                         </Link>
-                                        {["Make Calls", "Donations"].includes(
-                                            item.name
-                                        ) ? (
+                                        {["Make Calls", "Donations"].includes(item.name) ? (
                                             <div className="py-2">
                                                 <div className="flex-grow border-t border-gray-200"></div>
                                             </div>
@@ -325,18 +304,11 @@ const Layout = ({ children }) => {
                             onClick={() => setSidebarOpen(true)}
                         >
                             <span className="sr-only">Open sidebar</span>
-                            <Bars3BottomLeftIcon
-                                className="h-6 w-6"
-                                aria-hidden="true"
-                            />
+                            <Bars3BottomLeftIcon className="h-6 w-6" aria-hidden="true" />
                         </button>
                         <div className="flex flex-1 justify-between px-4">
                             <div className="flex flex-1">
-                                <form
-                                    className="flex w-full md:ml-0"
-                                    action="#"
-                                    method="GET"
-                                >
+                                <form className="flex w-full md:ml-0" action="#" method="GET">
                                     {/* <label htmlFor="search-field" className="sr-only">
                     Search
                   </label> */}
@@ -349,14 +321,10 @@ const Layout = ({ children }) => {
                   </InstantSearch> */}
                                     <div className="mr-5 relative pt-3 w-full text-gray-400 focus-within:text-gray-600">
                                         <DocSearch
-                                            appId={
-                                                process.env
-                                                    .ALGOLIA_APPLICATION_ID
-                                            }
+                                            appId={process.env.ALGOLIA_APPLICATION_ID}
                                             indexName="RaiseMoreClientSearch"
                                             apiKey={
-                                                process.env
-                                                    .NEXT_PUBLIC_ALGOLIA_SEARCH_ONLY_API_KEY
+                                                process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_ONLY_API_KEY
                                             }
                                         />
                                     </div>
@@ -385,13 +353,8 @@ const Layout = ({ children }) => {
                                             type="button"
                                             className="rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                         >
-                                            <span className="sr-only">
-                                                View notifications
-                                            </span>
-                                            <BellIcon
-                                                className="h-6 w-6"
-                                                aria-hidden="true"
-                                            />
+                                            <span className="sr-only">View notifications</span>
+                                            <BellIcon className="h-6 w-6" aria-hidden="true" />
                                         </button>
 
                                         {/* Profile dropdown */}

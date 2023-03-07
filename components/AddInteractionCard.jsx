@@ -76,25 +76,13 @@ export default function AddInteractionCard({ person, appendInteraction }) {
                                     aria-hidden="true"
                                 /> */}
                                 <span className="text-sm mr-2">Add: </span>
-                                <button
-                                    type="button"
-                                    className="btn"
-                                    onClick={newPledge}
-                                >
+                                <button type="button" className="btn" onClick={newPledge}>
                                     Pledge
                                 </button>
-                                <button
-                                    type="button"
-                                    className="btn mx-2"
-                                    onClick={newDonation}
-                                >
+                                <button type="button" className="btn mx-2" onClick={newDonation}>
                                     Donation
                                 </button>
-                                <button
-                                    type="button"
-                                    className="btn btn-primary"
-                                    onClick={newNote}
-                                >
+                                <button type="button" className="btn btn-primary" onClick={newNote}>
                                     Note
                                 </button>
                             </div>

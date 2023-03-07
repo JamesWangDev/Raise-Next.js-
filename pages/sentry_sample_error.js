@@ -10,10 +10,7 @@ export default function Home() {
         <div>
             <Head>
                 <title>Sentry Onboarding</title>
-                <meta
-                    name="description"
-                    content="Make your Next.js ready for Sentry"
-                />
+                <meta name="description" content="Make your Next.js ready for Sentry" />
             </Head>
 
             <main

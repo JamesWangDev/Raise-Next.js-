@@ -4,12 +4,7 @@ import Link from "next/link";
 import { useSupabase } from "utils/supabaseHooks";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import {
-    CheckIcon,
-    HandThumbUpIcon,
-    UserIcon,
-    PhoneIcon,
-} from "@heroicons/react/20/solid";
+import { CheckIcon, HandThumbUpIcon, UserIcon, PhoneIcon } from "@heroicons/react/20/solid";
 import InteractionHistory from "./InteractionHistory";
 import Breadcrumbs from "./Breadcrumbs";
 
