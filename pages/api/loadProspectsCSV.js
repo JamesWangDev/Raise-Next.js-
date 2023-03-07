@@ -34,7 +34,10 @@ export default async function loadProspectsCSV(req, res) {
     // Clerk and supabase
     const supabase = createSupabaseClient(
         await getToken({
-            template: "supabase",
+            template:
+                process.env.NEXT_PUBLIC_ENVIRONMENT != "development"
+                    ? "supabase"
+                    : "supabase-local-development",
         })
     );
 
