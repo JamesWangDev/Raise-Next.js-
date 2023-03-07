@@ -347,7 +347,6 @@ export default async function loadDonationsCSV(req, res) {
         let chunk = fileParsedToJSON.slice(i, i + chunkSize);
 
         // console.log({ chunk });
-
         let query = `INSERT INTO DONATIONS (${concatColumns}) VALUES `;
 
         // comma seperated and quoted each value from the chunk[index] object
