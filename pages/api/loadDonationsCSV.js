@@ -4,7 +4,7 @@ const Papa = require("papaparse"); // Handles csvs
 import { connectToDatabase } from "utils/db"; // Postgres client
 const db = connectToDatabase();
 import { createSupabaseClient } from "utils/supabaseHooks";
-
+import jwt_decode from "jwt-decode";
 // List of columns in order from csv file
 let permitTheseColumns = [
     "id",
@@ -106,14 +106,22 @@ export default async function loadDonationsCSV(req, res) {
     if (!orgID) return res.status(401).send();
 
     // Clerk and supabase
-    const supabase = createSupabaseClient(
-        await getToken({
-            template:
-                process.env.NEXT_PUBLIC_ENVIRONMENT != "development"
-                    ? "supabase"
-                    : "supabase-local-development",
-        })
-    );
+    const supabaseJWTToken = await getToken({
+        template:
+            process.env.NEXT_PUBLIC_ENVIRONMENT != "development"
+                ? "supabase"
+                : "supabase-local-development",
+    });
+
+    const decoded = jwt_decode(supabaseJWTToken);
+
+    const supabase = createSupabaseClient(supabaseJWTToken);
+    // Direct connection
+    const client = await db.connect();
+    const authQuery = `set session role authenticated;set request.jwt.claims to '${JSON.stringify(
+        decoded
+    )}';`;
+    await client.query(authQuery);
 
     // Assign a unique batch ID for transaction integrity
     const batchID = uuid();
@@ -331,8 +339,6 @@ export default async function loadDonationsCSV(req, res) {
     let responses = [];
 
     var concatColumns = '"' + Object.keys(fileParsedToJSON[0]).join('", "') + '"';
-
-    const client = await db.connect();
 
     for (let i = 0; i < fileParsedToJSON.length; i += chunkSize) {
         // do whatever

@@ -47,6 +47,7 @@
         "filepond": "^4.30.4",
         "firebase": "^9.17.1",
         "jsonwebtoken": "^9.0.0",
+        "jwt-decode": "^3.1.2",
         "next": "^13.1.6",
         "object-hash": "^3.0.0",
         "papaparse": "^5.3.2",

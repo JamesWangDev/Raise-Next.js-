@@ -34,7 +34,8 @@ export default function SupabaseTable({
     // Preload the next result using SWR, too
     preload(
         `/api/rq?query=${encodeURI(
-            SWRqueryWithoutLimitOffset` limit ${perPage}` +
+            SWRqueryWithoutLimitOffset +
+                ` limit ${perPage}` +
                 (page + 1 > 0 ? " OFFSET " + (page + 1) * perPage : 0)
         )}`,
         fetcher
