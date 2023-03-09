@@ -119,7 +119,7 @@ export default function SupabaseTable({
 
     return (
         <>
-            <Box sx={{ height: "55vh", width: "100%" }}>
+            <Box sx={{ height: "53vh", width: "100%" }}>
                 <DataGrid
                     components={{
                         NoRowsOverlay: () => (
