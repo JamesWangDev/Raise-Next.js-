@@ -100,7 +100,7 @@ let permitTheseColumns = [
 // 12/19/22 Currently loading 60k donations from a 45mb file in 34 seconds
 export default async function loadDonationsCSV(req, res) {
     // Get the user's orgID (clerk.dev's capitalization is weird so rename it)
-    const { orgId: orgID, getToken } = getAuth(req);
+    const { orgId: orgID, getToken, userId: userID } = getAuth(req);
 
     // No unauthorized access
     if (!orgID) return res.status(401).send();
@@ -126,6 +126,11 @@ export default async function loadDonationsCSV(req, res) {
     // Assign a unique batch ID for transaction integrity
     const batchID = uuid();
     console.log({ batchID });
+    supabase
+        .from("import_batches")
+        .insert([
+            { id: batchID, file_url: req.query.fileName, organization_id: orgID, user_id: userID },
+        ]);
 
     // Log the time of function execution
     console.time("functionexectime");
@@ -135,10 +140,7 @@ export default async function loadDonationsCSV(req, res) {
     console.time("load file");
 
     // Get fileName from request query variable
-    let {
-        query: { fileName },
-        method,
-    } = req;
+    let fileName = req.query.fileName;
 
     // For testing
     // fileName = "example-ab-backup.csv";
@@ -318,9 +320,11 @@ export default async function loadDonationsCSV(req, res) {
     client.release();
     console.timeEnd("upload donations to db");
 
+    supabase.from("import_batches").upsert([{ id: batchID, finalized: new Date().toISOString() }]);
+
     //////////////////////////////////////////
     console.timeEnd("functionexectime");
-    res.send("ok");
+    res.send(`File uploaded successfully, and ${fileParsedToJSON.length} records processed.`);
 }
 
 // Standarized!
