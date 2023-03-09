@@ -1,12 +1,11 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["postgresqlExtensions", "views", "multiSchema"]
+  previewFeatures = ["views"]
 }
 
 datasource db {
-  provider   = "postgresql"
-  url        = env("PRISMA_DATABASE_URL")
-  extensions = [uuid_ossp(map: "uuid-ossp")]
+  provider = "postgresql"
+  url      = env("PRISMA_DATABASE_URL")
 }
 
 model call_sessions {
@@ -15,11 +14,11 @@ model call_sessions {
   list_id         String?   @db.Uuid
   started         DateTime? @default(now()) @db.Timestamptz(6)
   last_call       DateTime? @db.Timestamptz(6)
-  organization_id String?
+  organization_id String?   @default(dbgenerated("requesting_org_id()"))
 }
 
 model donations {
-  id                               String    @id @db.Uuid
+  id                               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   person_id                        String?   @db.Uuid
   batch_id                         String?   @db.Uuid
   created_at                       DateTime? @db.Timestamptz(6)
@@ -116,34 +115,34 @@ model donations {
   weekly_recurring_amount          String?
   smart_boost_amount               String?
   smart_boost_shown                String?
-  organization_id                  String?
+  organization_id                  String?   @default(dbgenerated("requesting_org_id()"))
   people                           people?   @relation(fields: [person_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model emails {
-  id              String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   created_at      DateTime? @default(now()) @db.Timestamptz(6)
   email           String
   person_id       String    @db.Uuid
-  organization_id String
+  organization_id String    @default(dbgenerated("requesting_org_id()"))
   batch_id        String?   @db.Uuid
 }
 
 model files {
   filename        String?
-  organization_id String?
-  id              String  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  organization_id String? @default(dbgenerated("requesting_org_id()"))
+  id              String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 }
 
 model import_batches {
-  id               String    @id @db.Uuid
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   created_at       DateTime  @default(now()) @db.Timestamptz(6)
   finalized        DateTime? @db.Timestamptz(6)
   success          Boolean?
   records_affected Int?
   file_url         String
   user_id          String
-  organization_id  String
+  organization_id  String    @default(dbgenerated("requesting_org_id()"))
 }
 
 model indiv20b {
@@ -155,10 +154,10 @@ model indiv20b {
 }
 
 model interactions {
-  id                 String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   created_at         DateTime? @default(now()) @db.Timestamptz(6)
-  inserted_at        DateTime? @db.Timestamptz(6)
-  updated_at         DateTime? @db.Timestamptz(6)
+  inserted_at        DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime? @default(now()) @db.Timestamptz(6)
   batch_id           String?   @db.Uuid
   person_id          String?   @db.Uuid
   contact_type       String?
@@ -167,17 +166,17 @@ model interactions {
   resulted_in_pledge Boolean?  @default(false)
   pledge_id          String?   @db.Uuid
   note               String?
-  organization_id    String?
+  organization_id    String?   @default(dbgenerated("requesting_org_id()"))
   people             people?   @relation(fields: [person_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model people {
   batch_id        String?        @db.Uuid
-  id              String         @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   created_at      DateTime       @default(dbgenerated("timezone('utc'::text, now())")) @db.Timestamptz(6)
   inserted_at     DateTime       @default(dbgenerated("timezone('utc'::text, now())")) @db.Timestamptz(6)
   updated_at      DateTime       @default(dbgenerated("timezone('utc'::text, now())")) @db.Timestamptz(6)
-  organization_id String?
+  organization_id String?        @default(dbgenerated("requesting_org_id()"))
   first_name      String?
   last_name       String?
   addr1           String?
@@ -200,32 +199,94 @@ model people {
 }
 
 model phone_numbers {
-  id              String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   created_at      DateTime? @default(now()) @db.Timestamptz(6)
   phone           Int
   person_id       String    @db.Uuid
-  organization_id String
+  organization_id String    @default(dbgenerated("requesting_org_id()"))
   batch_id        String?   @db.Uuid
 }
 
 model pledges {
-  id              String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   person_id       String?  @db.Uuid
   batch_id        String?  @db.Uuid
   created_at      DateTime @default(dbgenerated("timezone('utc'::text, now())")) @db.Timestamptz(6)
   inserted_at     DateTime @default(dbgenerated("timezone('utc'::text, now())")) @db.Timestamptz(6)
   updated_at      DateTime @default(dbgenerated("timezone('utc'::text, now())")) @db.Timestamptz(6)
-  date            String?
   amount          Decimal? @db.Decimal
-  fufilled        Boolean?
-  organization_id String?
+  fufilled        Boolean? @default(false)
+  organization_id String?  @default(dbgenerated("requesting_org_id()"))
   people          people?  @relation(fields: [person_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model saved_lists {
   name            String
-  id              String    @id @unique @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id              String    @id @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   created_at      DateTime? @default(now()) @db.Timestamptz(6)
   query           String
+  organization_id String?   @default(dbgenerated("requesting_org_id()"))
+}
+
+/// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+view donations_for_user_display {
+  id              String?  @db.Uuid
+  date            String?
+  first_name      String?
+  last_name       String?
+  amount          Decimal? @db.Decimal
   organization_id String?
+
+  @@ignore
+}
+
+/// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+view dashboard_by_account {
+  organization_id              String?
+  total_sum_donations          Int?
+  number_of_donations          Int?
+  total_sum_unfufilled_pledges Int?
+  number_of_unfufilled_pledges Int?
+
+  @@ignore
+}
+
+/// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+view donations_rollup_by_person {
+  person_id            String?  @db.Uuid
+  total_donated        Decimal? @db.Decimal
+  number_of_donations  BigInt?
+  most_recent_donation String?
+  organization_id      String?
+
+  @@ignore
+}
+
+/// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+view people_for_user_display {
+  id                        String?   @db.Uuid
+  created_at                DateTime? @db.Timestamptz(6)
+  first_name                String?
+  last_name                 String?
+  addr1                     String?
+  addr2                     String?
+  city                      String?
+  state                     String?
+  zip                       String?
+  country                   String?
+  occupation                String?
+  employer                  String?
+  email                     String?
+  phone                     String?
+  total_donated             Decimal?  @db.Decimal
+  number_of_donations       BigInt?
+  most_recent_donation      String?
+  concatenated_zip_and_name String?
+  donations_made_in_2020    BigInt?
+  total_donated_2020        BigInt?
+  list_of_committees_2020   String?
+  number_of_committees_2020 BigInt?
+  organization_id           String?
+
+  @@ignore
 }

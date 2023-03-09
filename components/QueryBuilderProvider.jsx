@@ -7,7 +7,6 @@ const className = (...classes) => classes.filter(Boolean).join(" ");
 import { QueryBuilderBootstrap } from "@react-querybuilder/bootstrap";
 import { useState, useEffect, useCallback } from "react";
 import { useSupabase } from "utils/supabaseHooks";
-import { useOrganization } from "@clerk/nextjs";
 import SaveList from "./SaveList";
 import SupabaseTable from "./SupabaseTable";
 
@@ -32,7 +31,6 @@ const initialQuery = {
 };
 
 export default function QueryBuilderProvider({ table, children, listID }) {
-    const { organization } = useOrganization();
     const supabase = useSupabase();
     const [list, setList] = useState({});
     const [query, setQuery] = useState(initialQuery);
@@ -43,7 +41,6 @@ export default function QueryBuilderProvider({ table, children, listID }) {
             supabase
                 .from("saved_lists")
                 .select()
-                .eq("organization_id", organization?.id)
                 .eq("id", listID)
                 .single()
                 .then((result) => {
@@ -53,7 +50,7 @@ export default function QueryBuilderProvider({ table, children, listID }) {
                     setList(list);
                 });
         }
-    }, [listID, organization]);
+    }, [listID]);
 
     var formatted = formatQuery(query, {
         format: "sql",
@@ -63,9 +60,7 @@ export default function QueryBuilderProvider({ table, children, listID }) {
     // console.log("formatted", formatted);
 
     const { data: rowsForColumns, error } = useSWR(
-        `/api/rq?start=0&orgID=${organization?.id}&query=${encodeURI(
-            `select * from ${table} where (1 = 1) limit 25`
-        )}`,
+        `/api/rq?&query=${encodeURI(`select * from ${table} where (1 = 1) limit 25`)}`,
         fetcher
     );
 
@@ -78,13 +73,7 @@ export default function QueryBuilderProvider({ table, children, listID }) {
 
     // add a filter rule
     const addRule = useCallback(() => {
-        setQuery(
-            add(
-                query,
-                { field: "first_name", operator: "contains", value: "" },
-                []
-            )
-        );
+        setQuery(add(query, { field: "first_name", operator: "contains", value: "" }, []));
     });
 
     return (

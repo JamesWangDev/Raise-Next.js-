@@ -1,7 +1,6 @@
 import useSWR, { preload } from "swr";
 import axios from "axios";
 const fetcher = (url) => axios.get(url).then((res) => res.data);
-// const fetcher = (url) => fetch(url).then((res) => res.json());
 
 import { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
@@ -13,39 +12,29 @@ import { InstallMobileRounded } from "@mui/icons-material";
 
 import { useRouter } from "next/router";
 
-import { useOrganization } from "@clerk/nextjs";
-
 export default function SupabaseTable({
     table,
     query = "*",
     currentQuery,
     setFilterColumns = () => {},
 }) {
-    //useorg
-    const { organization } = useOrganization();
-
     const [page, setPage] = useState(0);
     // console.log({ page });
     let perPage = 25;
     let offset = page > 0 ? " OFFSET " + page * perPage : "";
 
-    const SWRquery =
-        `select * from ${table}` +
-        (!!currentQuery ? ` where ${currentQuery}` : "") +
-        ` limit ${perPage}` +
-        offset;
-
+    const SWRqueryWithoutLimitOffset =
+        `select * from ${table}` + (!!currentQuery ? ` where ${currentQuery}` : "");
     const { data, error } = useSWR(
-        `/api/rq?orgID=${organization?.id}&query=${encodeURI(SWRquery)}`,
+        `/api/rq?query=${encodeURI(SWRqueryWithoutLimitOffset + ` limit ${perPage}` + offset)}`,
         fetcher
     );
     if (error) console.log(error);
 
     // Preload the next result using SWR, too
     preload(
-        `/api/rq?orgID=${organization?.id}&query=${encodeURI(
-            `select * from ${table}` +
-                (!!currentQuery ? ` where ${currentQuery}` : "") +
+        `/api/rq?query=${encodeURI(
+            SWRqueryWithoutLimitOffset +
                 ` limit ${perPage}` +
                 (page + 1 > 0 ? " OFFSET " + (page + 1) * perPage : 0)
         )}`,
@@ -53,12 +42,11 @@ export default function SupabaseTable({
     );
 
     // useSWR to get the count of rows in the table
+    let encodedQuery = encodeURI(
+        `select count(*) from ${table}` + (!!currentQuery ? ` where ${currentQuery}` : "")
+    );
     const { data: rowCountData, error: rowCountError } = useSWR(
-        `/api/rq?start=0&orgID=${organization?.id}&query=${encodeURI(
-            `select count(*), organization_id from ${table}` +
-                (!!currentQuery ? ` where ${currentQuery}` : "") +
-                " GROUP BY organization_id"
-        )}`,
+        `/api/rq?query=${encodedQuery}`,
         fetcher
     );
     if (rowCountError) console.log(rowCountError);
@@ -121,9 +109,7 @@ export default function SupabaseTable({
             column.renderCell = (params) => {
                 return (
                     <Tooltip title={params.value}>
-                        <div className="MuiDataGrid-cellContent">
-                            {params.value}
-                        </div>
+                        <div className="MuiDataGrid-cellContent">{params.value}</div>
                     </Tooltip>
                 );
             };
@@ -133,15 +119,11 @@ export default function SupabaseTable({
 
     return (
         <>
-            <Box sx={{ height: "55vh", width: "100%" }}>
+            <Box sx={{ height: "53vh", width: "100%" }}>
                 <DataGrid
                     components={{
                         NoRowsOverlay: () => (
-                            <Stack
-                                height="100%"
-                                alignItems="center"
-                                justifyContent="center"
-                            >
+                            <Stack height="100%" alignItems="center" justifyContent="center">
                                 No records
                             </Stack>
                         ),
@@ -162,10 +144,9 @@ export default function SupabaseTable({
                     sx={{
                         fontSize: "0.85rem",
                         my: 2,
-                        "& .MuiDataGrid-columnHeader .MuiDataGrid-columnSeparator":
-                            {
-                                display: "none",
-                            },
+                        "& .MuiDataGrid-columnHeader .MuiDataGrid-columnSeparator": {
+                            display: "none",
+                        },
                         // "& .MuiDataGrid-columnHeader": {
                         //   fontWeight: "bold",
                         // },

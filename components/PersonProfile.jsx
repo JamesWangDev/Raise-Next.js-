@@ -4,45 +4,29 @@ import Link from "next/link";
 import { useSupabase } from "utils/supabaseHooks";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import {
-    CheckIcon,
-    HandThumbUpIcon,
-    UserIcon,
-    PhoneIcon,
-} from "@heroicons/react/20/solid";
+import { CheckIcon, HandThumbUpIcon, UserIcon, PhoneIcon } from "@heroicons/react/20/solid";
 import InteractionHistory from "./InteractionHistory";
 import Breadcrumbs from "./Breadcrumbs";
 
 import PledgeHistory from "./PledgeHistory";
 import DonationHistory from "./DonationHistory";
 import PersonContactInfo from "./PersonContactInfo";
-
-// import useorganization from clerk.dev
-import { useOrganization } from "@clerk/nextjs";
 import { Tooltip } from "@mui/material";
 
-export default function PersonProfile({
-    personID,
-    dial,
-    hangup,
-    outbound,
-    hasNext,
-    next,
-}) {
+export default function PersonProfile({ personID, dial, hangup, outbound, hasNext, next }) {
     const [person, setPerson] = useState();
     //get orgid using clerk
-    const { organization } = useOrganization();
     const supabase = useSupabase();
 
     useEffect(() => {
         supabase
             .from("people")
             .select("*, interactions ( * ), donations ( * ), pledges ( * )")
-            .eq("organization_id", organization?.id)
+
             .eq("id", personID)
             .single()
             .then((result) => setPerson(result.data));
-    }, [personID, organization]);
+    }, [personID]);
 
     var interactions = person?.interactions || [];
 
@@ -80,9 +64,7 @@ export default function PersonProfile({
                             <button
                                 type="button"
                                 onClick={() => dial(person.phone)}
-                                {...(!person?.phone || outbound
-                                    ? { disabled: true }
-                                    : {})}
+                                {...(!person?.phone || outbound ? { disabled: true } : {})}
                             >
                                 <PhoneIcon
                                     className="-ml-1 mr-2 h-5 w-5 text-gray-400"
@@ -104,9 +86,7 @@ export default function PersonProfile({
                             type="button"
                             className="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
                             onClick={() => next()}
-                            {...(!outbound && hasNext
-                                ? {}
-                                : { disabled: true })}
+                            {...(!outbound && hasNext ? {} : { disabled: true })}
                         >
                             Next
                         </button>
@@ -118,13 +98,10 @@ export default function PersonProfile({
                     <PersonContactInfo person={person} />
                 </div>
                 <div className="col-span-6 -ml-10">
-                    <InteractionHistory
-                        person={person}
-                        interactions={interactions}
-                    />
+                    <InteractionHistory person={person} interactions={interactions} />
                 </div>
                 <div className="col-span-3">
-                    <PledgeHistory donations={person?.pledges} />
+                    <PledgeHistory pledges={person?.pledges} />
                     <DonationHistory donations={person?.donations} />
                 </div>
             </div>

@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test("should navigate to the about page", async ({ page }) => {
+test("Home page should render a header", async ({ page }) => {
     // If available, we set the target URL to a preview deployment URL provided by the ENVIRONMENT_URL created by Vercel.
     // Otherwise, we use the Production URL.
     const targetUrl = "/";
@@ -16,6 +16,6 @@ test("should navigate to the about page", async ({ page }) => {
 
     // Take a screenshot
     await page.screenshot({
-        path: `e2e/results/${targetUrl}+${Math.random()}.png`,
+        path: `__e2e__/results/${targetUrl}+${Math.random()}.png`,
     });
 });

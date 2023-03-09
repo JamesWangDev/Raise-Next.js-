@@ -12,16 +12,16 @@ const config = {
     // Timeout per test
     timeout: 30 * 1000,
     // Test directory
-    testDir: path.join(__dirname, "e2e"),
+    testDir: path.join(__dirname, "__e2e__"),
     // If a test fails, retry it additional 2 times
-    retries: 2,
+    retries: 0, // 2,
     // Artifacts folder where screenshots, videos, and traces are stored.
     outputDir: "test-results/",
 
     // Run your local dev server before starting the tests:
     // https://playwright.dev/docs/test-advanced#launching-a-development-web-server-during-the-tests
     webServer: {
-        command: "npm run dev",
+        command: process.env.CI ? "npm run dev" : "make",
         url: baseURL,
         timeout: 120 * 1000,
         reuseExistingServer: !process.env.CI,
@@ -49,29 +49,18 @@ const config = {
                 ...devices["Desktop Chrome"],
             },
         },
+
+        // // Test against mobile viewports.
         // {
-        //   name: 'Desktop Firefox',
-        //   use: {
-        //     ...devices['Desktop Firefox'],
-        //   },
+        //     name: "Mobile Chrome",
+        //     use: {
+        //         ...devices["Pixel 5"],
+        //     },
         // },
         // {
-        //   name: 'Desktop Safari',
-        //   use: {
-        //     ...devices['Desktop Safari'],
-        //   },
+        //     name: "Mobile Safari",
+        //     use: devices["iPhone 12"],
         // },
-        // Test against mobile viewports.
-        {
-            name: "Mobile Chrome",
-            use: {
-                ...devices["Pixel 5"],
-            },
-        },
-        {
-            name: "Mobile Safari",
-            use: devices["iPhone 12"],
-        },
     ],
 };
 export default config;

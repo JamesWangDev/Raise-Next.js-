@@ -4,96 +4,83 @@ import Link from "next/link";
 import { useSupabase } from "utils/supabaseHooks";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import {
-    CheckIcon,
-    HandThumbUpIcon,
-    UserIcon,
-} from "@heroicons/react/20/solid";
-
-// useUser and useOrganization are used to get the current user and organization
-import { useUser, useOrganization } from "@clerk/nextjs";
+import { CheckIcon, HandThumbUpIcon, UserIcon } from "@heroicons/react/20/solid";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
 import AddInteractionCard from "./AddInteractionCard";
 
-function AddModal() {
-    return (
-        <>
-            <p>Add</p>
-        </>
-    );
-}
-
-export default function InteractionHistory({
-    person,
-    interactions: passedInteractions,
-}) {
+export default function InteractionHistory({ person, interactions: passedInteractions }) {
     const supabase = useSupabase();
-
-    // showModal and addModalType are states that are used to control the display of the modal
-    const [isModalShowing, showModal] = useState(false);
-    const [addModalType, setAddModalType] = useState("");
     const [interactions, setInteractions] = useState(
         passedInteractions?.length > 0 ? passedInteractions : []
     );
-    // get current org
-    const { organization } = useOrganization();
-    const { user } = useUser();
 
     const appendInteraction = (newInteraction) => {
-        // Prepare interaction for inserting
-        let newInteractionPrepared = {
-            ...newInteraction,
-            person_id: person.id,
-            organization_id: organization.id,
-            user_id: user.id,
-        };
+        let { pledge, ...newInteractionPrepared } = newInteraction;
+        newInteractionPrepared.person_id = person.id;
+        console.log({ pledge });
+        if (pledge) {
+            supabase
+                .from("pledges")
+                .insert({
+                    person_id: person.id,
+                    amount: pledge,
+                })
+                .single()
+                .select()
+                .then((newInteractionResponse) => {
+                    console.log("New pledge added!");
+                    console.log({ newInteractionResponse });
 
-        // Amalgate into state
-        setInteractions([...interactions, newInteractionPrepared]);
+                    // Amalgate into state
+                    setInteractions([...interactions, newInteractionResponse?.data]);
+                });
+        }
+
+        if (!note) return;
 
         // Update supabase
         console.log({ newInteractionPrepared });
-        supabase.from("interactions").insert(newInteractionPrepared);
-        // .select();
-        // .then((newInteractionResponse) => {
-        //     console.log("New interaction added!");
-        //     // console.log({ newInteractionResponse });
-        // });
+        supabase
+            .from("interactions")
+            .insert(newInteractionPrepared)
+            .single()
+            .select()
+            .then((newInteractionResponse) => {
+                console.log("New interaction added!");
+                console.log({ newInteractionResponse });
+
+                // Amalgate into state
+                setInteractions([...interactions, newInteractionResponse?.data]);
+            });
     };
 
     return (
         <div className="flow-root">
             <h2>Interaction History</h2>
-            <AddInteractionCard
-                person={person}
-                appendInteraction={appendInteraction}
-            />
-            {isModalShowing ? <AddModal type={addModalType} /> : null}
+            <AddInteractionCard person={person} appendInteraction={appendInteraction} />
             <ul role="list" className="-mb-8 mt-6">
                 {interactions?.map((interaction, eventIdx) => {
                     interaction.iconBackground = "bg-gray-400";
                     interaction.icon = UserIcon;
 
-                    interaction.date = new Date(
-                        interaction.created_at
-                    ).toLocaleString("en-US", {
+                    interaction.date = new Date(interaction.created_at).toLocaleString("en-US", {
                         month: "short",
                         day: "numeric",
+                        year: "numeric",
                     });
-                    interaction.datetime = new Date(
-                        interaction.created_at
-                    ).toString();
+                    interaction.datetime = new Date(interaction.created_at).toString();
                     interaction.href = "";
 
-                    interaction.content =
-                        interaction.contact_type +
-                        ", " +
-                        interaction.disposition +
-                        ", " +
-                        interaction.note;
+                    interaction.content = [
+                        interaction.contact_type,
+                        interaction.disposition,
+                        interaction.note,
+                    ]
+                        .filter((item) => !!item)
+                        .join(", ");
 
                     return (
                         <li key={interaction.id}>
@@ -121,19 +108,17 @@ export default function InteractionHistory({
                                     <div className="flex min-w-0 flex-1 justify-between space-x-4 pb-1.5">
                                         <div>
                                             <p className="text-sm text-gray-500">
-                                                {interaction.content}{" "}
-                                                <a
+                                                {interaction.content}
+                                                {/* <a
                                                     href={interaction.href}
                                                     className="font-medium text-gray-900"
                                                 >
                                                     {interaction.target}
-                                                </a>
+                                                </a> */}
                                             </p>
                                         </div>
                                         <div className="whitespace-nowrap text-right text-sm text-gray-500">
-                                            <time
-                                                dateTime={interaction.datetime}
-                                            >
+                                            <time dateTime={interaction.datetime}>
                                                 {interaction.date}
                                             </time>
                                         </div>

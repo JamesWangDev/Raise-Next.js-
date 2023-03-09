@@ -30,9 +30,6 @@ import {
     orderBy,
 } from "utils/firebase";
 
-// import useorganization from clerk.dev
-import { useOrganization } from "@clerk/nextjs";
-
 export default function StartCallingSession() {
     const router = useRouter();
     const { listID } = router.query;
@@ -43,9 +40,6 @@ export default function StartCallingSession() {
     const [personID, setPersonID] = useState();
     const [outbound, setOutbound] = useState(false);
     const [peopleList, setPeopleList] = useState();
-
-    //get orgid using clerk
-    const { organization } = useOrganization();
     const supabase = useSupabase();
 
     function nextPerson() {
@@ -68,7 +62,6 @@ export default function StartCallingSession() {
         supabase
             .from("call_sessions")
             .select("*")
-            .eq("organization_id", organization?.id)
             .then(({ data, error }) => {
                 if (error) console.log("Error fetching sessions", error);
                 else setSessions(data);
@@ -78,7 +71,6 @@ export default function StartCallingSession() {
         supabase
             .from("saved_lists")
             .select("*")
-            .eq("organization_id", organization?.id)
             .eq("id", listID)
             .single()
             .limit(1)
@@ -89,22 +81,17 @@ export default function StartCallingSession() {
                     `select id from people where ${data.query}`
                 )}`;
                 axios.get(urlToFetch).then((res) => {
-                    let temporaryPeopleList = Array.from(
-                        res.data.map((row) => row.id)
-                    );
+                    let temporaryPeopleList = Array.from(res.data.map((row) => row.id));
                     setPeopleList(temporaryPeopleList);
                     setPersonID(temporaryPeopleList[0]);
                 });
             });
-    }, [listID, organization]);
+    }, [listID]);
 
     useEffect(() => {
         // Subscribe to the conference updates snapshot listener.
         const conferenceUpdatesRef = onSnapshot(
-            query(
-                collection(db, "conference-updates"),
-                orderBy("Timestamp", "desc")
-            ),
+            query(collection(db, "conference-updates"), orderBy("Timestamp", "desc")),
             // Handler for the conference updates snapshot listener.
             (snapshot) => {
                 console.log("firebase snapshot fired");
@@ -121,8 +108,7 @@ export default function StartCallingSession() {
                 // Determine if we're currently dialed in
                 if (
                     (allUpdates[0].StatusCallbackEvent == "conference-end" ||
-                        allUpdates[1].StatusCallbackEvent ==
-                            "conference-end") &&
+                        allUpdates[1].StatusCallbackEvent == "conference-end") &&
                     allUpdates[0].StatusCallbackEvent != "participant-join"
                 )
                     setDialedIn(false);
@@ -148,20 +134,14 @@ export default function StartCallingSession() {
             conferenceUpdatesRef();
             //
         };
-    }, [organization]);
+    }, []);
 
     return dialedIn ? (
         <>
             <div className="mx-auto max-w-7xl mb-4 px-5 p-3 shadow-sm rounded-lg bg-white ">
-                <span className="flex-grow">
-                    You&apos;re dialed in to the call session!
-                </span>
+                <span className="flex-grow">You&apos;re dialed in to the call session!</span>
                 {/* Leave call session button */}
-                <button
-                    className="text-sm button-sm"
-                    type="button"
-                    onClick={leave}
-                >
+                <button className="text-sm button-sm" type="button" onClick={leave}>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="h-6 w-6 text-red-500"
@@ -205,10 +185,7 @@ export default function StartCallingSession() {
                         },
                     ]}
                 />
-                <PageTitle
-                    title="Start a new calling session"
-                    descriptor="Dial in to connect."
-                />
+                <PageTitle title="Start a new calling session" descriptor="Dial in to connect." />
             </div>
             <div className="mx-auto max-w-7xl px-2">
                 <div className="p-12">
@@ -218,8 +195,7 @@ export default function StartCallingSession() {
                             (667) 242-9611
                         </p>
                         <span className="mt-2 block text-base text-gray-900">
-                            Call the above number from your cell phone to
-                            connect.
+                            Call the above number from your cell phone to connect.
                         </span>
                     </div>
                 </div>

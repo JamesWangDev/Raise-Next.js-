@@ -2,24 +2,38 @@
 // Postgres client
 import { connectToDatabase } from "utils/db";
 const db = connectToDatabase();
-
-//getauth from clerk!
+import jwt_decode from "jwt-decode";
 import { getAuth } from "@clerk/nextjs/server";
 
 export default async function handler(req, res) {
-    let random = Math.random();
-    // Get the user's orgID and userID (clerk.dev's capitalization is weird so rename it)
-    // console.time(random);
-    const { userId: userID, orgId: orgID } = getAuth(req);
-    // console.timeLog(random);
+    // Get the user's orgID (clerk.dev's capitalization is weird so rename it)
+    const { orgId: orgID, getToken } = getAuth(req);
+
+    // No unauthorized access
+    if (!orgID) return res.status(401).send();
+
+    // Clerk and supabase
+    const supabaseJWTToken = await getToken({
+        template:
+            process.env.NEXT_PUBLIC_ENVIRONMENT != "development"
+                ? "supabase"
+                : "supabase-local-development",
+    });
+    const decoded = jwt_decode(supabaseJWTToken);
+
+    // Direct connection
+    const client = await db.connect();
+    const authQuery = `BEGIN;set role authenticated;set request.jwt.claims to '${JSON.stringify(
+        decoded
+    )}';`;
     let rawQuery = req.query.query;
-    let scopedQuery = `SELECT * FROM (${rawQuery}) unscoped WHERE unscoped.organization_id = '${orgID}'`;
-    // console.log(scopedQuery);
-    // console.log(scopedQuery);
+
     try {
-        const results = (await db.query(scopedQuery)).rows;
-        res.status(200).json(results);
+        const results = await client.query(authQuery + rawQuery + "; END;");
+        client.release();
+        res.status(200).json(results[3].rows);
     } catch (err) {
+        // TODO: do we need to check to see if the client has been released first?
         console.error(err);
         res.status(200).json({ error: err });
     }

@@ -1,15 +1,4 @@
 import { Fragment, useState } from "react";
-import {
-    FaceFrownIcon,
-    FaceSmileIcon,
-    FireIcon,
-    HandThumbUpIcon,
-    HeartIcon,
-    PaperClipIcon,
-    PlusIcon,
-    XMarkIcon,
-} from "@heroicons/react/20/solid";
-import { Listbox, Transition } from "@headlessui/react";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -20,17 +9,23 @@ import { useUser } from "@clerk/nextjs";
 export default function AddInteractionCard({ person, appendInteraction }) {
     // note state
     const [note, setNote] = useState("");
+    const [prompt, setPrompt] = useState(false);
+    const [pledge, setPledge] = useState(null);
+    const [donation, setDonation] = useState(null);
 
     // get user from clerk
     const { isSignedIn, isLoading, user } = useUser();
 
     const newNote = () => {
         appendInteraction({
-            note: note,
+            note,
+            resulted_in_pledge: !!pledge,
+            pledge,
         });
+        setNote("");
+        setPrompt(null);
+        setPledge(null);
     };
-    const newPledge = () => {};
-    const newDonation = () => {};
 
     return (
         <div className="interaction-card">
@@ -57,6 +52,7 @@ export default function AddInteractionCard({ person, appendInteraction }) {
                                 onChange={(event) => {
                                     setNote(event.target.value);
                                 }}
+                                value={note}
                             />
 
                             {/* Spacer element to match the height of the toolbar */}
@@ -71,31 +67,46 @@ export default function AddInteractionCard({ person, appendInteraction }) {
                         <div className="absolute inset-x-0 bottom-0 flex justify-between py-0 px-3 border-t">
                             <div className="placeholder-justify-the-rest-to-right"></div>
                             <div className="flex-shrink-0">
-                                {/* <PlusIcon
-                                    className="h-5 w-5 text-gray-500 -ml-1 inline-block mr-3"
-                                    aria-hidden="true"
-                                /> */}
-                                <span className="text-sm mr-2">Add: </span>
-                                <button
-                                    type="button"
-                                    className="btn"
-                                    onClick={newPledge}
-                                >
-                                    Pledge
-                                </button>
-                                <button
-                                    type="button"
-                                    className="btn mx-2"
-                                    onClick={newDonation}
-                                >
-                                    Donation
-                                </button>
-                                <button
-                                    type="button"
-                                    className="btn btn-primary"
-                                    onClick={newNote}
-                                >
-                                    Note
+                                {/* <span className="text-sm">Add: </span> */}
+                                {prompt && (
+                                    <div className="inline-block mx-3">
+                                        <label
+                                            htmlFor="pledge"
+                                            className="mx-3 inline-block text-sm font-normal leading-6 text-gray-900"
+                                        >
+                                            Pledge:
+                                        </label>
+                                        <div className="inline-block relative mt-2 rounded-md shadow-sm w-28">
+                                            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                                <span className="text-gray-500 sm:text-sm">$</span>
+                                            </div>
+                                            <input
+                                                type="text"
+                                                name="pledge"
+                                                id="pledge"
+                                                className="block w-full rounded-md border-0 py-1.5 pl-7 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                placeholder="0.00"
+                                                aria-describedby="price-currency"
+                                                onChange={(event) => {
+                                                    setPledge(Number(event.target.value));
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+                                {!prompt && (
+                                    <button
+                                        type="button"
+                                        className="btn mx-2"
+                                        onClick={() => {
+                                            setPrompt(true);
+                                        }}
+                                    >
+                                        Add Pledge
+                                    </button>
+                                )}
+                                <button type="button" className="btn btn-primary" onClick={newNote}>
+                                    Add Note{prompt && " + Pledge"}
                                 </button>
                             </div>
                         </div>

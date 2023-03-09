@@ -138,7 +138,7 @@ pre {
 .brand span {
     @apply text-xl mx-3;
     font-weight: 600 !important;
-    /* @apply text-gray-800; */
+    /* @apply text-gray-500 !important; */
 }
 
 .DocSearch-Button {
@@ -255,8 +255,8 @@ body {
         --ifm-hover-overlay: hsla(0, 0%, 100%, 0.05);
         --ifm-color-content: #e3e3e3;
         --ifm-color-content-secondary: #fff;
-        --ifm-breadcrumb-separator-filter: invert(64%) sepia(11%) saturate(0%)
-            hue-rotate(149deg) brightness(99%) contrast(95%);
+        --ifm-breadcrumb-separator-filter: invert(64%) sepia(11%) saturate(0%) hue-rotate(149deg)
+            brightness(99%) contrast(95%);
         --ifm-code-background: hsla(0, 0%, 100%, 0.1);
         --ifm-scrollbar-track-background-color: #444;
         --ifm-scrollbar-thumb-background-color: #686868;
@@ -293,8 +293,8 @@ body {
         --docsearch-hit-shadow: none;
         --docsearch-hit-background: #090a11;
         --docsearch-key-gradient: linear-gradient(-26.5deg, #565872, #31355b);
-        --docsearch-key-shadow: inset 0 -2px 0 0 #282d55,
-            inset 0 0 1px 1px #51577d, 0 2px 2px 0 rgba(3, 4, 9, 0.3);
+        --docsearch-key-shadow: inset 0 -2px 0 0 #282d55, inset 0 0 1px 1px #51577d,
+            0 2px 2px 0 rgba(3, 4, 9, 0.3);
         --docsearch-footer-background: #1e2136;
         --docsearch-footer-shadow: inset 0 1px 0 0 rgba(73, 76, 106, 0.5),
             0 -4px 8px 0 rgba(0, 0, 0, 0.2);
@@ -394,8 +394,7 @@ button[type].btn-primary:not(.do-not-global-style) {
     --docsearch-modal-width: 560px;
     --docsearch-modal-height: 600px;
     --docsearch-modal-background: #f5f6f7;
-    --docsearch-modal-shadow: inset 1px 1px 0 0 hsla(0, 0%, 100%, 0.5),
-        0 3px 8px 0 #555a64;
+    --docsearch-modal-shadow: inset 1px 1px 0 0 hsla(0, 0%, 100%, 0.5), 0 3px 8px 0 #555a64;
     --docsearch-searchbox-height: 56px;
     --docsearch-searchbox-background: #ebedf0;
     --docsearch-searchbox-focus-background: #fff;
@@ -410,8 +409,7 @@ button[type].btn-primary:not(.do-not-global-style) {
         0 1px 2px 1px rgba(30, 35, 90, 0.4);
     --docsearch-footer-height: 44px;
     --docsearch-footer-background: #fff;
-    --docsearch-footer-shadow: 0 -1px 0 0 #e0e3e8,
-        0 -3px 6px 0 rgba(69, 98, 155, 0.12);
+    --docsearch-footer-shadow: 0 -1px 0 0 #e0e3e8, 0 -3px 6px 0 rgba(69, 98, 155, 0.12);
 }
 html[data-theme="dark"] {
     --docsearch-text-color: #f5f6f7;
@@ -636,15 +634,14 @@ html[data-theme="dark"] {
 }
 .DocSearch-Dropdown {
     max-height: calc(
-        var(--docsearch-modal-height) - var(--docsearch-searchbox-height) -
-            var(--docsearch-spacing) - var(--docsearch-footer-height)
+        var(--docsearch-modal-height) - var(--docsearch-searchbox-height) - var(--docsearch-spacing) -
+            var(--docsearch-footer-height)
     );
     min-height: var(--docsearch-spacing);
     overflow-y: auto;
     overflow-y: overlay;
     padding: 0 var(--docsearch-spacing);
-    scrollbar-color: var(--docsearch-muted-color)
-        var(--docsearch-modal-background);
+    scrollbar-color: var(--docsearch-muted-color) var(--docsearch-modal-background);
     scrollbar-width: thin;
 }
 .DocSearch-Dropdown::-webkit-scrollbar {
@@ -1019,4 +1016,10 @@ svg.DocSearch-Hit-Select-Icon {
     to {
         opacity: 1;
     }
+}
+
+.brand {
+    @apply border-b-2 border-b-gray-200 !important;
+    border-bottom-width: 1px !important;
+    padding-bottom: 0.88rem;
 }

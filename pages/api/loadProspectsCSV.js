@@ -89,9 +89,7 @@ export default async function loadProspectsCSV(req, res) {
 
     // Grab the people collection as an array of rows
     console.time("people get direct query");
-    const people = (
-        await db.query(`select * from people where organization_id='${orgID}'`)
-    ).rows;
+    const people = (await db.query(`select * from people where organization_id='${orgID}'`)).rows;
     console.timeEnd("people get direct query");
 
     // Add the batch ID
@@ -107,8 +105,7 @@ export default async function loadProspectsCSV(req, res) {
         // Loop through every key
         Object.keys(row).forEach((key, j) => {
             // And drop every key that is not present in permitTheseColumns
-            if (!permitTheseColumns.includes(key))
-                delete fileParsedToJSON[index][key];
+            if (!permitTheseColumns.includes(key)) delete fileParsedToJSON[index][key];
         });
     });
 
@@ -196,15 +193,11 @@ export default async function loadProspectsCSV(req, res) {
             personID = people[matchingIndex].id;
 
             // Record the overwrite
-            people[matchingIndex] = JSON.parse(
-                JSON.stringify({ ...newPerson, id: personID })
-            );
+            people[matchingIndex] = JSON.parse(JSON.stringify({ ...newPerson, id: personID }));
         } else {
             // If the donor doesn't already exist, we want to create someone!
             personID = uuid();
-            people.push(
-                JSON.parse(JSON.stringify({ ...newPerson, id: personID }))
-            );
+            people.push(JSON.parse(JSON.stringify({ ...newPerson, id: personID })));
         }
     }
 
@@ -221,10 +214,7 @@ export default async function loadProspectsCSV(req, res) {
     console.time("upsert records into people");
 
     // Insert differences...actually for now just upsert the whole table
-    const { error: error4 } = await supabase
-        .from("people")
-        .upsert(people)
-        .select();
+    const { error: error4 } = await supabase.from("people").upsert(people).select();
     console.timeEnd("upsert records into people");
     console.log("people insert error4:", error4);
 

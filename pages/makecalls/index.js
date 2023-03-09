@@ -21,10 +21,7 @@ export default function MakeCallsPage() {
                         },
                     ]}
                 />
-                <PageTitle
-                    title="Make Calls"
-                    descriptor="Join or start a calling session."
-                />
+                <PageTitle title="Make Calls" descriptor="Join or start a calling session." />
             </div>
             <div className="mx-auto max-w-7xl px-2">
                 {/* A button for starting a new calling session */}

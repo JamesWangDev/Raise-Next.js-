@@ -11,10 +11,7 @@ export default function Reports() {
         <div className="">
             <div className="mx-auto max-w-7xl px-2 ">
                 <Breadcrumbs pages={[{ name: "Reports", href: "/reports" }]} />
-                <PageTitle
-                    title="Reports"
-                    descriptor="View existing or generate new reports."
-                />
+                <PageTitle title="Reports" descriptor="View existing or generate new reports." />
             </div>
             <div className="mx-auto max-w-7xl px-2  ">Not implemented yet.</div>
         </div>

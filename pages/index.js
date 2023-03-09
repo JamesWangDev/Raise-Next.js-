@@ -8,9 +8,6 @@ import Breadcrumbs from "components/Breadcrumbs";
 import PageTitle from "components/PageTitle";
 import CallingSessionsGrid from "components/CallingSessionsGrid";
 
-// import useorganization from clerk.dev
-import { useOrganization } from "@clerk/nextjs";
-
 import {
     useAuth,
     useUser,
@@ -68,22 +65,18 @@ export function StatCard({ query, table, key, item }) {
     const [data, setData] = useState(null);
     const supabase = useSupabase();
 
-    //get orgid using clerk
-    const { organization } = useOrganization();
-
     useEffect(() => {
         setLoading(true);
 
         supabase
             .from(table)
             .select(query)
-            .eq("organization_id", organization?.id)
             .single()
             .then((data) => {
                 setData(data.data);
                 setLoading(false);
             });
-    }, [query, table, organization]);
+    }, [query, table]);
 
     item.stat = data ? (Object.keys(data) ? data[Object.keys(data)[0]] : 0) : 0;
 
@@ -91,11 +84,7 @@ export function StatCard({ query, table, key, item }) {
     if (isNaN(item.stat)) item.stat = 0;
 
     // Format certain metrics
-    if (
-        ["pledge", "raise"].some((v) =>
-            item.name.toLowerCase().includes(v.toLowerCase())
-        )
-    )
+    if (["pledge", "raise"].some((v) => item.name.toLowerCase().includes(v.toLowerCase())))
         item.stat = "$" + Number(item.stat).toLocaleString();
 
     return (
@@ -105,19 +94,12 @@ export function StatCard({ query, table, key, item }) {
         >
             <dt>
                 <div className="absolute rounded-md bg-gray-400 p-3">
-                    <item.icon
-                        className="h-6 w-6 text-white"
-                        aria-hidden="true"
-                    />
+                    <item.icon className="h-6 w-6 text-white" aria-hidden="true" />
                 </div>
-                <p className="ml-16 truncate text-sm font-medium text-gray-500">
-                    {item.name}
-                </p>
+                <p className="ml-16 truncate text-sm font-medium text-gray-500">{item.name}</p>
             </dt>
             <dd className="ml-16 flex items-baseline pb-6 sm:pb-7">
-                <p className="text-2xl font-semibold text-gray-900">
-                    {item.stat}
-                </p>
+                <p className="text-2xl font-semibold text-gray-900">{item.stat}</p>
                 {/* <p
           className={classNames(
             item.changeType === "increase" ? "text-green-600" : "text-red-600",
@@ -160,9 +142,7 @@ export function HomepageCards() {
     return (
         <>
             <div>
-                <h3 className="text-lg font-medium leading-6 text-gray-900">
-                    All Time Stats
-                </h3>
+                <h3 className="text-lg font-medium leading-6 text-gray-900">All Time Stats</h3>
                 <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     {stats.map((item, i) => (
                         <StatCard
@@ -192,9 +172,7 @@ export default function Home() {
     return (
         <div className="">
             <div className="mx-auto max-w-7xl px-2">
-                <Breadcrumbs
-                    pages={[{ name: "Dashboard", href: "/", current: false }]}
-                />
+                <Breadcrumbs pages={[{ name: "Dashboard", href: "/", current: false }]} />
                 <PageTitle
                     title="Dashboard"
                     descriptor="A real time picture of your fundraising so far."

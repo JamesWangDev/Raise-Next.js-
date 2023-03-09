@@ -6,17 +6,7 @@ import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
 import { useSupabase } from "utils/supabaseHooks";
 
-import { useOrganization } from "@clerk/nextjs";
-
 export default function SaveList({ formattedQuery, listName, listID }) {
-    const {
-        isLoaded,
-        organization,
-        invitationList,
-        membershipList,
-        membership,
-    } = useOrganization();
-
     const [listNameTemp, setListNameTemp] = useState(listName ?? "");
     const [savedListName, setSavedListName] = useState(!!listName);
     const supabase = useSupabase();
@@ -27,7 +17,6 @@ export default function SaveList({ formattedQuery, listName, listID }) {
 
         setSavedListName(listNameTemp);
         const listObject = {
-            organization_id: organization?.id,
             name: listNameTemp,
             query: formattedQuery,
         };
@@ -43,10 +32,7 @@ export default function SaveList({ formattedQuery, listName, listID }) {
             <div>
                 <Menu.Button className="inline-flex justify-center rounded-md border border-gray-300 bg-white px-1 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100">
                     {isSaved ? `Editing '${savedListName}'` : "Save List"}
-                    <ChevronDownIcon
-                        className="-mr-1 ml-2 h-5 w-5"
-                        aria-hidden="true"
-                    />
+                    <ChevronDownIcon className="-mr-1 ml-2 h-5 w-5" aria-hidden="true" />
                 </Menu.Button>
             </div>
 
@@ -62,9 +48,7 @@ export default function SaveList({ formattedQuery, listName, listID }) {
                 <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                     <form onSubmit={saveList}>
                         <div className="px-4 py-3">
-                            <p className="text-sm form-label mb-2">
-                                List Name:
-                            </p>
+                            <p className="text-sm form-label mb-2">List Name:</p>
                             <input
                                 type="text"
                                 className="form-input"

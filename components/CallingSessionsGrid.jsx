@@ -3,12 +3,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSupabase } from "utils/supabaseHooks";
 
-// import useorganization from clerk.dev
-import { useOrganization } from "@clerk/nextjs";
-
 export default function CallingSessionsGrid() {
     // get orgid using clerk
-    const { organization } = useOrganization();
     const supabase = useSupabase();
 
     const [sessions, setSessions] = useState([]);
@@ -18,12 +14,11 @@ export default function CallingSessionsGrid() {
         supabase
             .from("call_sessions")
             .select("*")
-            .eq("organization_id", organization?.id)
             .then(({ data, error }) => {
                 if (error) console.log("Error fetching sessions", error);
                 else setSessions(data);
             });
-    }, [organization]);
+    }, []);
 
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
@@ -32,8 +27,7 @@ export default function CallingSessionsGrid() {
                     <div className="bg-white rounded-lg shadow-sm p-6 pt-0 hover:shadow-lg hover:cursor-pointer border">
                         <h3>List ID: {session.list_id}</h3>
                         <p className="text-gray-400 mt-2 font-normal">
-                            Started on:{" "}
-                            {new Date(session.started).toLocaleDateString()}
+                            Started on: {new Date(session.started).toLocaleDateString()}
                         </p>
                         <Link
                             href="/call/1"

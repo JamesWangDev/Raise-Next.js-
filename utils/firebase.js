@@ -127,12 +127,9 @@ function dialerAdvance() {
     // Change dialer setting
     var nextNumberToCall = $("li.font-weight-bold").text();
     $("input.next-number").val(
-        nextNumberToCall.includes("choose")
-            ? "Write a number to call here"
-            : nextNumberToCall
+        nextNumberToCall.includes("choose") ? "Write a number to call here" : nextNumberToCall
     );
-    if (nextNumberToCall.includes("choose"))
-        $("input.next-number").prop("disabled", false);
+    if (nextNumberToCall.includes("choose")) $("input.next-number").prop("disabled", false);
     //$('button:contains("Dial")').text('Dial ' + $('li.font-weight-bold').text());
 }
 
