@@ -28,16 +28,13 @@ export default async function handler(req, res) {
     )}';`;
     let rawQuery = req.query.query;
 
-    // console.log(authQuery + rawQuery);
-
     try {
-        // await client.query(authQuery);
         const results = await client.query(authQuery + rawQuery + "; END;");
         client.release();
         res.status(200).json(results[3].rows);
     } catch (err) {
+        // TODO: do we need to check to see if the client has been released first?
         console.error(err);
-        client.release();
         res.status(200).json({ error: err });
     }
 }
