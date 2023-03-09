@@ -3,8 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "open -a Docker && npm run devdatabase && npm run migrate && next dev",
-        "devdatabase": "supabase stop && supabase start --exclude gotrue,imgproxy,pgadmin-schema-diff,migra,deno-relay,inbucket",
+        "dev": "next dev",
         "build": "next build",
         "vercel-build": "npm run test && npm run build && npm run migrate",
         "migrate": "prisma migrate deploy",
