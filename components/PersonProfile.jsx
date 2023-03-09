@@ -101,7 +101,7 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
                     <InteractionHistory person={person} interactions={interactions} />
                 </div>
                 <div className="col-span-3">
-                    <PledgeHistory donations={person?.pledges} />
+                    <PledgeHistory pledges={person?.pledges} />
                     <DonationHistory donations={person?.donations} />
                 </div>
             </div>
