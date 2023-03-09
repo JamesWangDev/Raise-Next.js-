@@ -3,9 +3,8 @@
 reset: stop start
 
 start:
-	open -a Docker
-	supabase start --exclude gotrue,imgproxy,pgadmin-schema-diff,migra,deno-relay,inbucket --debug
-	npm run migrate --debug
+	supabase start --exclude gotrue,imgproxy,pgadmin-schema-diff,migra,deno-relay,inbucket
+	npm run migrate
 	npm run dev
 
 stop:
