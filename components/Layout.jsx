@@ -153,9 +153,6 @@ const Brand = () => {
 const Layout = ({ children }) => {
     // const { data: session } = useSession();
     const { isSignedIn, isLoading, user } = useUser();
-    // useorg
-    // const { organization } = useOrganization();
-    // console.log({ organization });
 
     const [sidebarOpen, setSidebarOpen] = useState(false);
 

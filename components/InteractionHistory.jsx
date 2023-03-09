@@ -6,9 +6,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { CheckIcon, HandThumbUpIcon, UserIcon } from "@heroicons/react/20/solid";
 
-// useUser and useOrganization are used to get the current user and organization
-import { useUser, useOrganization } from "@clerk/nextjs";
-
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -31,17 +28,12 @@ export default function InteractionHistory({ person, interactions: passedInterac
     const [interactions, setInteractions] = useState(
         passedInteractions?.length > 0 ? passedInteractions : []
     );
-    // get current org
-    const { organization } = useOrganization();
-    const { user } = useUser();
 
     const appendInteraction = (newInteraction) => {
-        // Prepare interaction for inserting
+        // Prepare interaction for inserting - orgid and userid are automatically set by defaults
         let newInteractionPrepared = {
             ...newInteraction,
             person_id: person.id,
-            organization_id: organization.id,
-            user_id: user.id,
         };
 
         // Amalgate into state
