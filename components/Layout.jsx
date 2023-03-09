@@ -439,7 +439,7 @@ const Layout = ({ children }) => {
                     </div>
 
                     <main className="flex-1">
-                        <div className="py-4">
+                        <div className="py-6">
                             {isSignedIn ? (
                                 hasOrg ? (
                                     children
