@@ -277,62 +277,15 @@ export default async function loadDonationsCSV(req, res) {
         fileParsedToJSON[index]["person_id"] = personID;
     }
     console.timeEnd("edit file");
-    /*
-    // console.time("unparse JSON to file");
-
-    // let updatedFileContents = Papa.unparse(fileParsedToJSON);
-
-    // console.timeEnd("unparse JSON to file");
-
-    // console.time("resave file and get url");
-
-    // Write the CSV back to storage
-    // ..now that we're sure it's compatible
-    // and replace fileName with these cleaned file
-    // const updatedFileUploadResult = await supabase.storage
-    //     .from("imports")
-    //     .upload(batchID + ".csv", updatedFileContents, {
-    //         upsert: true,
-    //     });
-    // let sanitzedFileName = updatedFileUploadResult.data.path;
-
-    // console.log("updatedFileUploadResult", updatedFileUploadResult);
-
-    // // Store a signed URL to pass to PG as fileURL
-    // let {
-    //     data: { publicUrl: fileURL },
-    // } = await supabase.storage.from("imports").getPublicUrl(sanitzedFileName);
-
-    // console.log("fileURL", fileURL);
-
-    // console.timeEnd("resave file and get url");
 
     // OK we are actually going to insert People first
     // since now there is a foreign key constraint on donations
-    */
 
     console.time("upsert records into people");
     // Need  .select() at the end to await until upsert is completed :)
     const { error4 } = await supabase.from("people").upsert(people).select();
     console.timeEnd("upsert records into people");
     console.log("people insert error4:", error4);
-
-    // console.time("upload donations to db");
-    // const chunkSize = 25;
-    // let responses = [];
-    // for (let i = 0; i < fileParsedToJSON.length; i += chunkSize) {
-    //     // do whatever
-    //     responses.push(
-    //         supabase
-    //             .from("donations")
-    //             .insert(fileParsedToJSON.slice(i, i + chunkSize))
-    //     );
-    //     // console.log({ response });
-    //     console.log("upload loop " + i);
-    // }
-    // let response = await Promise.allSettled(responses);
-    // console.log({ response });
-    // console.timeEnd("upload donations to db");
 
     console.time("upload donations to db");
     const chunkSize = 250;
@@ -359,64 +312,13 @@ export default async function loadDonationsCSV(req, res) {
             )
             .join(", ");
 
-        // console.log(query + ";");
-
         let result = await client.query(query + ";");
-        // console.log({ result });
         console.log("upload loop " + i);
     }
-    // let response = await Promise.allSettled(responses);
     client.release();
-    // console.log({ response });
     console.timeEnd("upload donations to db");
 
-    //     // Get the target columns parsed from csv into array
-    //     let columns = updatedFileContents.split("\n", 1)[0].trim().split(",");
-    //     var concatColumns = '"' + columns.join('", "') + '"';
-
-    //     // Woof, this is a hack to get outgoing connections to localhost to work in dockerized postgres
-    //     if (process.env.NEXT_PUBLIC_ENVIRONMENT == "development")
-    //         fileURL = fileURL.replace("localhost", "host.docker.internal");
-
-    //     // Setup query
-    //     let query = `
-    //     COPY donations(${concatColumns})
-    //       FROM PROGRAM 'curl "${fileURL}"'
-    //       DELIMITER ','
-    //       CSV HEADER;
-    //   `;
-    //     console.log(query);
-
-    //     // Open PG connection and safely close connection
-    //     let result = await db.query(query);
-
-    //     // next js test lines
-    //     let successfulCopies = "rowCount" in result ? result.rowCount : 0;
-    //     console.log("successfulCopies", successfulCopies);
-
-    //     if (!(successfulCopies > 0)) {
-    //         var error2 = "";
-    //         console.error(error2);
-    //         res.status(500).send(error2);
-    //     }
-
-    // // Setup query to copy staging to production
-    // let stageToProductionQuery = `
-    //   INSERT INTO public.donations
-    //     SELECT * FROM staging.donations
-    //     WHERE batch_id='${batchID}';
-    //   DELETE FROM staging.donations WHERE batch_id='${batchID}';
-    // `;
-
-    // console.log(stageToProductionQuery);
-
-    // // Open PG connection and safely close connection
-    // let result2 = await db.query(stageToProductionQuery);
-    // console.log(result2);
-    // console.log("b");
-
-    // //////////////////////////////////////////
-    // // End handleDonationsCSVImport()
+    //////////////////////////////////////////
     console.timeEnd("functionexectime");
     res.send("ok");
 }
