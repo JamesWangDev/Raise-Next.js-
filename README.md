@@ -14,10 +14,8 @@
 
 ## Technical details:
 
--   Built with NextJS deployed to Vercel (just like Netflix).
-
--   Automated continuous testing with Jest, Playwright, and Checkly.
-
+-   Built with NextJS, deployed to Vercel.
+-   Automated testing with Jest, Playwright, and Checkly.
 -   Client side & API monitoring with Sentry and Logflare.
 
 ![](public/screenshot.png?raw=true)
