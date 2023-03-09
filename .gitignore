@@ -65,10 +65,11 @@ next.config.original.js
 next.config.wizardcopy.js
 
 #  Testing
-coverage/
-test-results/
-tests/results/
-e2e/results/
+*coverage*/
+*test-results*/
+*tests*/results/
+*e2e*/results/
+
 
 # Ignore on purpose
 *.ignore
