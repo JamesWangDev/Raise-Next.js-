@@ -69,6 +69,7 @@ next.config.wizardcopy.js
 *test-results*/
 *tests*/results/
 *e2e*/results/
+*.auth*
 
 
 # Ignore on purpose
