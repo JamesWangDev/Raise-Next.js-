@@ -99,6 +99,7 @@ let permitTheseColumns = [
 // Load csv of donations to donation and people table
 // 12/19/22 Currently loading 60k donations from a 45mb file in 34 seconds
 export default async function loadDonationsCSV(req, res) {
+    console.log(req.query.fileName);
     // Get the user's orgID (clerk.dev's capitalization is weird so rename it)
     const { orgId: orgID, getToken, userId: userID } = getAuth(req);
 
@@ -195,8 +196,6 @@ export default async function loadDonationsCSV(req, res) {
     console.timeEnd("people get direct query");
     const oldPeople = JSON.parse(JSON.stringify(people));
 
-    let updates = [];
-
     function matchExpression(person, index) {
         var isMatch = person.email == this.donation["donor_email"];
         if (isMatch) {
@@ -217,6 +216,9 @@ export default async function loadDonationsCSV(req, res) {
         }
         return !!isMatch;
     }
+
+    // Keep track of who has been updated
+    const peopleIndexesToUpsert = [];
 
     // // Loop through donation objects
     for (let index = 0; index < fileParsedToJSON.length; index++) {
@@ -267,13 +269,15 @@ export default async function loadDonationsCSV(req, res) {
             personID = people[matchingIndex].id;
 
             // Record the overwrite
-            people[matchingIndex] = JSON.parse(JSON.stringify({ ...newPerson, id: personID }));
+            people[matchingIndex] = { ...newPerson, id: personID };
+            peopleIndexesToUpsert.push(matchingIndex);
         } else {
             // If the donor doesn't already exist, we want to create someone!
             // personID = (await accountDB.collection('people').add(newPerson)).id;
             personID = uuid();
             // Record a change a differnt way
-            people.push(JSON.parse(JSON.stringify({ ...newPerson, id: personID })));
+            const newPersonIndex = people.push({ ...newPerson, id: personID }) - 1;
+            peopleIndexesToUpsert.push(newPersonIndex);
         }
 
         fileParsedToJSON[index]["person_id"] = personID;
@@ -285,9 +289,12 @@ export default async function loadDonationsCSV(req, res) {
 
     console.time("upsert records into people");
     // Need  .select() at the end to await until upsert is completed :)
-    const { error4 } = await supabase.from("people").upsert(people).select();
+    // console.log({ people });
+
+    const peopleToUpsert = peopleIndexesToUpsert.map((key, value) => people[value]);
+    const peopleInsertResults = await supabase.from("people").upsert(peopleToUpsert).select();
     console.timeEnd("upsert records into people");
-    console.log("people insert error4:", error4);
+    if (peopleInsertResults?.error) console.error({ peopleInsertResults });
 
     console.time("upload donations to db");
     const chunkSize = 250;
@@ -331,19 +338,19 @@ export default async function loadDonationsCSV(req, res) {
 function newPersonFromDonationObject(data) {
     return {
         // Basic assignments
-        last_name: data["donor_last_name"],
-        first_name: data["donor_first_name"],
-        email: data["donor_email"],
-        phone: data["donor_phone"],
-        employer: data["donor_employer"],
-        occupation: data["donor_occupation"],
+        last_name: data?.donor_last_name,
+        first_name: data?.donor_first_name,
+        email: data?.donor_email,
+        phone: data?.donor_phone,
+        employer: data?.donor_employer,
+        occupation: data?.donor_occupation,
 
         // Address
-        addr1: data["donor_addr1"],
-        addr2: data["donor_addr2"],
-        city: data["donor_city"],
-        state: data["donor_state"],
-        country: data["donor_country"],
-        zip: data["donor_zip"],
+        addr1: data?.donor_addr1,
+        addr2: data?.donor_addr2,
+        city: data?.donor_city,
+        state: data?.donor_state,
+        country: data?.donor_country,
+        zip: data?.donor_zip,
     };
 }

@@ -3,7 +3,6 @@ import { createContext, useContext } from "react";
 
 export function createSupabaseClient(supabaseAccessToken) {
     // Create a new Supabase client passing alnog the clerk.dev JWT as Authorization header
-    console.log({ supabaseAccessToken });
     if (supabaseAccessToken)
         return createClient(
             process.env.NEXT_PUBLIC_SUPABASE_URL,
