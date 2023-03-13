@@ -1,8 +1,11 @@
-// eslint-disable-next-line no-unused-vars
+import { NextResponse } from "next/server";
+
 export const config = {
     runtime: "edge",
 };
-export default async function handler(req, res) {
-    res.status(200);
-    res.end();
-}
+
+export default (req) => {
+    return NextResponse.json({
+        name: `Hello world`,
+    });
+};
