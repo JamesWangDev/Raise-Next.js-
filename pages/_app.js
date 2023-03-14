@@ -37,7 +37,7 @@ function SupabaseWrapper({ children }) {
             console.log({ data, error });
         };
         now();
-    }, [userId, sessionId, orgId, getToken]);
+    }, [userId, sessionId, orgId]);
 
     return (
         <SupabaseProvider value={supabaseClient}>
