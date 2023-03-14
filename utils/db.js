@@ -25,20 +25,3 @@ export function connectToDatabase() {
     }
     return global.db;
 }
-
-// export const db = connectToDatabase();
-
-//
-//
-// the serverless way
-// const ServerlessClient = require("serverless-postgres");
-
-// export const db = new ServerlessClient({
-//   user: process.env.PGUSER,
-//   host: process.env.PGHOST,
-//   database: process.env.PGDATABASE,
-//   password: process.env.PGPASSWORD,
-//   port: process.env.DBPORT,
-//   debug: true,
-//   delayMs: 3000,
-// });

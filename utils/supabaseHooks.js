@@ -1,8 +1,14 @@
 import { createClient } from "@supabase/supabase-js";
 import { createContext, useContext } from "react";
 
-export function createSupabaseClient(supabaseAccessToken) {
+export function createSupabaseClient(supabaseAccessToken, { serviceRole } = {}) {
     // Create a new Supabase client passing alnog the clerk.dev JWT as Authorization header
+    if (serviceRole)
+        return createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL,
+            process.env.SUPABASE_SERVICE_ROLE_KEY
+        );
+
     if (supabaseAccessToken)
         return createClient(
             process.env.NEXT_PUBLIC_SUPABASE_URL,

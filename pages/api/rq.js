@@ -22,18 +22,15 @@ export default async function handler(req, res) {
     const decoded = jwt_decode(supabaseJWTToken);
 
     // Direct connection
-    const client = await db.connect();
     const authQuery = `BEGIN;set role authenticated;set request.jwt.claims to '${JSON.stringify(
         decoded
     )}';`;
     let rawQuery = req.query.query;
 
     try {
-        const results = await client.query(authQuery + rawQuery + "; END;");
-        client.release();
+        const results = await db.query(authQuery + rawQuery + "; END;");
         res.status(200).json(results[3].rows);
     } catch (err) {
-        // TODO: do we need to check to see if the client has been released first?
         console.error(err);
         res.status(200).json({ error: err });
     }

@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { CheckIcon, HandThumbUpIcon, UserIcon, PhoneIcon } from "@heroicons/react/20/solid";
 import InteractionHistory from "components/InteractionHistory";
 import Breadcrumbs from "components/Breadcrumbs";
+import PersonContactInfo from "components/PersonContactInfo";
 
 export default function SpecificListPage() {
     const router = useRouter();
@@ -17,14 +18,14 @@ export default function SpecificListPage() {
     useEffect(() => {
         supabase
             .from("people")
-            .select("*, interactions ( * )")
+            .select("*, interactions ( * ), emails ( * ), phone_numbers ( * )")
             .eq("id", personID)
             .single()
             .then((result) => setPerson(result.data));
     }, [personID]);
 
     var interactions = person?.interactions || [];
-    console.log(interactions);
+    // console.log(interactions);
 
     return person ? (
         <div className="py-2">
@@ -49,7 +50,7 @@ export default function SpecificListPage() {
                     <p className="text-sm">Person ID: {person.id}</p>
                 </div>
                 <div className="text-right">
-                    {person.phone ? (
+                    {person?.phone_numbers ? (
                         <button type="button">
                             <PhoneIcon
                                 className="-ml-1 mr-2 h-5 w-5 text-gray-400"
@@ -81,32 +82,6 @@ export default function SpecificListPage() {
         </div>
     ) : (
         <></>
-    );
-}
-
-function PersonContactInfo({ person }) {
-    return (
-        <div>
-            <h2>Contact Information</h2>
-            <div className="sm:col-span-1">
-                <dt className="text-sm font-medium text-gray-500">Phone Numbers</dt>
-                <dd className="mt-1 text-sm text-gray-900">{person.phone}</dd>
-            </div>
-            <div className="sm:col-span-1 mt-3">
-                <dt className="text-sm font-medium text-gray-500">Emails</dt>
-                <dd className="mt-1 text-sm text-gray-900">{person.email}</dd>
-            </div>
-            <div className="sm:col-span-1 mt-3">
-                <dt className="text-sm font-medium text-gray-500">Addresses</dt>
-                <dd className="mt-1 text-sm text-gray-900">
-                    {person.addr1}
-                    <br />
-                    {person.addr2}
-                    {person.addr2 ? <br /> : null}
-                    {person.city}, {person.state} {person.zip}
-                </dd>
-            </div>
-        </div>
     );
 }
 

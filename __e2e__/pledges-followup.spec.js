@@ -50,12 +50,16 @@ test.describe("Pledge followup flow", () => {
     test.skip("Contact History page displays all past call attempts correctly", async ({ page }) =>
         true);
 
-    // Editing fields?
-    // Add notes to idnividual profiles - halfdone already
-    // Add tags <--
-    // Send me a file of what tags look like <---
-    // Save and start together from 2 contacts
-    // Bio field +/ cumulative note field
+    // JAcobs additions
+    test.skip("Edit bio, occupation, employer", async ({ page }) => true);
     test.skip("Import with a tag column", async ({ page }) => true);
     test.skip("Tag entire import", async ({ page }) => true);
+    test.skip("Start calling from a single person", async ({ page }) => true);
+
+    // Security
+    test.skip("Supabase: unauthorized users cannot access anything", async ({ page }) => true);
+    test.skip("Supabase: users can only access their own organization", async ({ page }) => true);
+    test.skip("API: doesn't allow unauthorized access", async ({ page }) => true);
+    test.skip("API: Users can only access their own organization", async ({ page }) => true);
+    test.skip("API: Users can only upload to their own organization", async ({ page }) => true);
 });
