@@ -60,7 +60,7 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
 
-export function StatCard({ query, table, key, item }) {
+export function StatCard({ query, table, item }) {
     const [isLoading, setLoading] = useState(false);
     const [data, setData] = useState(null);
     const supabase = useSupabase();
