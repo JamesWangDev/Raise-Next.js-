@@ -3,7 +3,6 @@ const { v4: uuid } = require("uuid");
 const Papa = require("papaparse"); // Handles csvs
 import { createSupabaseClient } from "utils/supabaseHooks";
 import { EMAIL_VALIDATION_REGEX } from "utils/validation";
-import fs from "fs";
 // List of columns in order from csv file
 let permitTheseColumns = [
     "id",
@@ -271,7 +270,6 @@ export default async function loadDonationsCSV(req, res) {
         Object.keys({ ...newPersonFromDonationObject(), id: null })
     );
 
-    fs.writeFileSync("peopleToUpsert.json", JSON.stringify(peopleToUpsert, 0, 2));
     const peopleInsertResults = await supabase
         .from("people")
         .upsert(peopleToUpsert, { ignoreDuplicates: false })
