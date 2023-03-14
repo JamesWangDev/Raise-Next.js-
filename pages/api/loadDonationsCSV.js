@@ -291,23 +291,20 @@ export default async function loadDonationsCSV(req, res) {
     console.timeEnd("upsert records into people");
 
     console.time("upload donations to db");
-    const chunkSize = 50;
+    const chunkSize = 100;
+    const donationsInsertResults = [];
     for (let i = 0; i < fileParsedToJSON.length; i += chunkSize) {
-        const donationsInsertResults = supabase
-            .from("donations")
-            .insert(fileParsedToJSON.slice(i, i + chunkSize));
-        // if (donationsInsertResults?.error) console.error({ donationsInsertResults });
+        donationsInsertResults.push(
+            supabase.from("donations").insert(fileParsedToJSON.slice(i, i + chunkSize))
+        );
     }
+    await Promise.allSettled(donationsInsertResults);
     console.timeEnd("upload donations to db");
 
-    supabase.from("import_batches").upsert([{ id: batchID, finalized: new Date().toISOString() }]);
+    await supabase
+        .from("import_batches")
+        .upsert([{ id: batchID, finalized: new Date().toISOString() }]);
     console.timeEnd("functionexectime");
-
-    console.log((await supabase.from("people").select("*", { count: "exact", head: true })).count);
-    console.log((await supabase.from("emails").select("*", { count: "exact", head: true })).count);
-    console.log(
-        (await supabase.from("phone_numbers").select("*", { count: "exact", head: true })).count
-    );
 
     res.send(`File uploaded successfully, and ${fileParsedToJSON.length} records processed.`);
 }
