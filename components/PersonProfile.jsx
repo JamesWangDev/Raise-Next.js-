@@ -27,7 +27,7 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
             .eq("id", personID)
             .single()
             .then((result) => setPerson(result.data));
-    }, [personID]);
+    }, [personID, supabase]);
 
     var interactions = person?.interactions || [];
 

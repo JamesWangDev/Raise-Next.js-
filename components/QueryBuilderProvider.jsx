@@ -50,7 +50,7 @@ export default function QueryBuilderProvider({ table, children, listID }) {
                     setList(list);
                 });
         }
-    }, [listID]);
+    }, [listID, supabase]);
 
     var formatted = formatQuery(query, {
         format: "sql",
@@ -73,8 +73,10 @@ export default function QueryBuilderProvider({ table, children, listID }) {
 
     // add a filter rule
     const addRule = useCallback(() => {
-        setQuery(add(query, { field: "first_name", operator: "contains", value: "" }, []));
-    });
+        setQuery((query) =>
+            add(query, { field: "first_name", operator: "contains", value: "" }, [])
+        );
+    }, []);
 
     return (
         <>

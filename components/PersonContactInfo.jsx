@@ -48,7 +48,7 @@ export default function PersonContactInfo({ person }) {
             <div className="sm:col-span-1">
                 <dt className="text-sm font-medium text-gray-500">Phone Numbers</dt>
                 {person.phone_numbers?.map((phone_number) => (
-                    <dd className="mt-1 text-sm text-gray-900">
+                    <dd className="mt-1 text-sm text-gray-900" key={phone_number.id}>
                         {phoneNumberDisplayFormatter(phone_number.phone_number)}
                     </dd>
                 ))}
@@ -59,7 +59,7 @@ export default function PersonContactInfo({ person }) {
             <div className="sm:col-span-1 mt-5">
                 <dt className="text-sm font-medium text-gray-500">Emails</dt>
                 {person.emails?.map((email) => (
-                    <dd className="mt-1 text-sm text-gray-900">
+                    <dd className="mt-1 text-sm text-gray-900" key={email.id}>
                         {emailDisplayFormatter(email.email)}
                     </dd>
                 ))}

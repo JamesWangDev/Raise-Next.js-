@@ -22,7 +22,7 @@ export default function SpecificListPage() {
             .eq("id", personID)
             .single()
             .then((result) => setPerson(result.data));
-    }, [personID]);
+    }, [personID, supabase]);
 
     var interactions = person?.interactions || [];
     // console.log(interactions);

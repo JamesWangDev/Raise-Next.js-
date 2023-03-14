@@ -4,8 +4,8 @@ export const config = {
     runtime: "edge",
 };
 
-export default (req) => {
+export default function handler(req) {
     return NextResponse.json({
         name: `Hello world`,
     });
-};
+}
