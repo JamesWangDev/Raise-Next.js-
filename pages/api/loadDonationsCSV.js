@@ -104,6 +104,9 @@ let permitTheseColumns = [
 
 // Load csv of donations to donation and people table
 export default async function loadDonationsCSV(req, res) {
+    const { searchParams } = new URL(req.url);
+    let fileName = searchParams.get("fileName");
+
     // Clerk
     const { orgId: orgID, getToken, userId: userID } = getAuth(req);
 
@@ -126,9 +129,7 @@ export default async function loadDonationsCSV(req, res) {
     console.log({ batchID });
     supabase
         .from("import_batches")
-        .insert([
-            { id: batchID, file_url: req.query.fileName, organization_id: orgID, user_id: userID },
-        ]);
+        .insert([{ id: batchID, file_url: fileName, organization_id: orgID, user_id: userID }]);
 
     // Log the time of function execution
     console.time("functionexectime");
@@ -139,7 +140,7 @@ export default async function loadDonationsCSV(req, res) {
     // Get the file from supabase storage
     const { data: fileBlob, error } = await supabaseServiceRole.storage
         .from("public/imports")
-        .download(req.query.fileName);
+        .download(fileName);
     let rawContent = await fileBlob.text();
     console.log("rawContent.length", rawContent.length);
     console.timeEnd("load file");
@@ -314,7 +315,10 @@ export default async function loadDonationsCSV(req, res) {
         .upsert([{ id: batchID, finalized: new Date().toISOString() }]);
     console.timeEnd("functionexectime");
 
-    res.send(`File uploaded successfully, and ${fileParsedToJSON.length} records processed.`);
+    // res.send(`File uploaded successfully, and ${fileParsedToJSON.length} records processed.`);
+    return new Response(
+        `File uploaded successfully, and ${fileParsedToJSON.length} records processed.`
+    );
 }
 
 // Standarized!
