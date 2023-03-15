@@ -6,9 +6,8 @@ import { useState } from "react";
 import Box from "@mui/material/Box";
 
 import Button from "@mui/material/Button";
-import { DataGrid, GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import { Stack, Tooltip } from "@mui/material";
-import { InstallMobileRounded } from "@mui/icons-material";
 
 import { useRouter } from "next/router";
 

@@ -36,7 +36,11 @@ test.describe("Pledge followup flow", () => {
     test.skip("Imported pledges appear accurately in profiles", async ({ page }) => true);
     test.skip("Add, remove, and 'make primary' different phone numbers and emails", async ({
         page,
-    }) => true);
+    }) => {
+        // Importing phones and emails now has the right data structures and works
+        // Primary is un-implemented
+        // First, add, and remove, and make primary buttons
+    });
 
     test.skip("Create a single-table list", async ({ page }) => true);
     test.skip("Create a multi-table list re: pledges, past donations, and FEC data", async ({
@@ -50,8 +54,10 @@ test.describe("Pledge followup flow", () => {
     test.skip("Contact History page displays all past call attempts correctly", async ({ page }) =>
         true);
 
-    // JAcobs additions
-    test.skip("Edit bio, occupation, employer", async ({ page }) => true);
+    // Jacobs additions
+    test.skip("Edit bio, occupation, employer", async ({ page }) => {
+        // Add this
+    });
     test.skip("Import with a tag column", async ({ page }) => true);
     test.skip("Tag entire import", async ({ page }) => true);
     test.skip("Start calling from a single person", async ({ page }) => true);

@@ -1,4 +1,5 @@
 import { Tooltip } from "@mui/material";
+import { useState } from "react";
 import { EMAIL_VALIDATION_REGEX } from "utils/validation";
 
 function phoneNumberDisplayFormatter(input) {
@@ -41,7 +42,9 @@ function emailDisplayFormatter(input) {
     );
 }
 
-export default function PersonContactInfo({ person }) {
+export default function PersonContactInfo({ person, addPhone, addEmail }) {
+    let [newPhone, setNewPhone] = useState(null);
+    let [newEmail, setNewEmail] = useState(null);
     return (
         <div>
             <h2>Contact Information</h2>
@@ -52,9 +55,34 @@ export default function PersonContactInfo({ person }) {
                         {phoneNumberDisplayFormatter(phone_number.phone_number)}
                     </dd>
                 ))}
-                <button className="mt-2 button-xs" type="button">
-                    Add Phone
-                </button>
+                <form
+                    onSubmit={(event) => {
+                        event.preventDefault();
+                        if (newPhone !== null) {
+                            addPhone(newPhone);
+                            setNewPhone(null);
+                        } else setNewPhone("");
+                    }}
+                >
+                    {newPhone !== null && (
+                        <input
+                            type="text"
+                            name="newPhoneNumber"
+                            className="mt-2 block w-36 rounded-md border-0 py-1.5 pl-3 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            autoFocus
+                            onChange={(event) => {
+                                setNewPhone(event.target.value);
+                            }}
+                            value={newPhone}
+                        />
+                    )}
+                    <button
+                        className={"mt-2 button-xs" + (newPhone !== null ? " btn-primary" : "")}
+                        type="submit"
+                    >
+                        Add Phone
+                    </button>
+                </form>
             </div>
             <div className="sm:col-span-1 mt-5">
                 <dt className="text-sm font-medium text-gray-500">Emails</dt>
@@ -63,9 +91,34 @@ export default function PersonContactInfo({ person }) {
                         {emailDisplayFormatter(email.email)}
                     </dd>
                 ))}
-                <button className="mt-2 button-xs" type="button">
-                    Add Email
-                </button>
+                <form
+                    onSubmit={(event) => {
+                        event.preventDefault();
+                        if (newEmail !== null) {
+                            addEmail(newEmail);
+                            setNewEmail(null);
+                        } else setNewEmail("");
+                    }}
+                >
+                    {newEmail !== null && (
+                        <input
+                            type="email"
+                            name="newEmail"
+                            className="mt-2 block w-36 rounded-md border-0 py-1.5 pl-3 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            autoFocus
+                            onChange={(event) => {
+                                setNewEmail(event.target.value);
+                            }}
+                            value={newEmail}
+                        />
+                    )}
+                    <button
+                        className={"mt-2 button-xs" + (newEmail !== null ? " btn-primary" : "")}
+                        type="submit"
+                    >
+                        Add Email
+                    </button>
+                </form>
             </div>
             <div className="sm:col-span-1 mt-5">
                 <dt className="text-sm font-medium text-gray-500">Addresses</dt>
@@ -76,9 +129,9 @@ export default function PersonContactInfo({ person }) {
                     {person.addr2 ? <br /> : null}
                     {person.city}, {person.state} {person.zip}
                 </dd>
-                <button className="mt-2 button-xs" type="button">
+                {/* <button className="mt-2 button-xs" type="button">
                     Add Address
-                </button>
+                </button> */}
             </div>
         </div>
     );

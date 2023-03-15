@@ -7,51 +7,8 @@ function classNames(...classes) {
 }
 import AddInteractionCard from "./AddInteractionCard";
 
-export default function InteractionHistory({ person, interactions: passedInteractions }) {
+export default function InteractionHistory({ person, interactions, appendInteraction }) {
     const supabase = useSupabase();
-    const [interactions, setInteractions] = useState(
-        passedInteractions?.length > 0 ? passedInteractions : []
-    );
-
-    const appendInteraction = (newInteraction) => {
-        let { pledge, ...newInteractionPrepared } = newInteraction;
-        newInteractionPrepared.person_id = person.id;
-        console.log({ pledge });
-        if (pledge) {
-            supabase
-                .from("pledges")
-                .insert({
-                    person_id: person.id,
-                    amount: pledge,
-                })
-                .single()
-                .select()
-                .then((newInteractionResponse) => {
-                    console.log("New pledge added!");
-                    console.log({ newInteractionResponse });
-
-                    // Amalgate into state
-                    setInteractions([...interactions, newInteractionResponse?.data]);
-                });
-        }
-
-        if (!note) return;
-
-        // Update supabase
-        console.log({ newInteractionPrepared });
-        supabase
-            .from("interactions")
-            .insert(newInteractionPrepared)
-            .single()
-            .select()
-            .then((newInteractionResponse) => {
-                console.log("New interaction added!");
-                console.log({ newInteractionResponse });
-
-                // Amalgate into state
-                setInteractions([...interactions, newInteractionResponse?.data]);
-            });
-    };
 
     return (
         <div className="flow-root">
