@@ -1,8 +1,3 @@
-import Head from "next/head";
-import Image from "next/image";
-import Link from "next/link";
-
-import { useState, useEffect } from "react";
 import PageTitle from "components/PageTitle";
 import Breadcrumbs from "components/Breadcrumbs";
 

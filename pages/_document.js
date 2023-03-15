@@ -5,12 +5,6 @@ export default function Document() {
     return (
         <Html>
             <Head>
-                {/* <link
-          rel="preload"
-          href="https://clerk.prompt.meerkat-85.lcl.dev/npm/@clerk/clerk-js@4/dist/clerk.browser.js"
-          as="fetch"
-          crossOrigin="anonymous"
-        /> */}
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
                 <link
