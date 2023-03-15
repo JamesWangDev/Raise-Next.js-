@@ -5,16 +5,27 @@ import { ClerkProvider, useAuth } from "@clerk/nextjs";
 import ChatWidgetWrapper from "components/ChatWidgetWrapper";
 import { createSupabaseClient, SupabaseProvider } from "utils/supabaseHooks";
 
+// pages/_app.js
+import { Inter } from "@next/font/google";
+const inter = Inter({ subsets: ["latin"] });
+
 // for some reason vercel analytics breask jest
 // import { Analytics } from "@vercel/analytics/react";
 
 function App({ Component, pageProps }) {
     return (
-        <ClerkProvider {...pageProps}>
-            <SupabaseWrapper>
-                <Component {...pageProps} />
-            </SupabaseWrapper>
-        </ClerkProvider>
+        <>
+            <style jsx global>{`
+                html {
+                    font-family: ${inter.style.fontFamily};
+                }
+            `}</style>
+            <ClerkProvider {...pageProps}>
+                <SupabaseWrapper>
+                    <Component {...pageProps} />
+                </SupabaseWrapper>
+            </ClerkProvider>
+        </>
     );
 }
 
