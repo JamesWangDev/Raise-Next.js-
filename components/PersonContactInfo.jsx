@@ -95,7 +95,7 @@ export default function PersonContactInfo({ person, addPhone, addEmail }) {
                     onSubmit={(event) => {
                         event.preventDefault();
                         if (newEmail !== null) {
-                            addEmail(newEmail);
+                            if (newEmail !== "") addEmail(newEmail);
                             setNewEmail(null);
                         } else setNewEmail("");
                     }}
