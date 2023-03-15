@@ -1,9 +1,5 @@
-import Head from "next/head";
-import Image from "next/image";
-import Link from "next/link";
 import { useSupabase } from "utils/supabaseHooks";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
 import { CheckIcon, HandThumbUpIcon, UserIcon, PhoneIcon } from "@heroicons/react/20/solid";
 import InteractionHistory from "./InteractionHistory";
 import Breadcrumbs from "./Breadcrumbs";
@@ -21,12 +17,13 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
     useEffect(() => {
         supabase
             .from("people")
-            .select("*, interactions ( * ), donations ( * ), pledges ( * )")
-
+            .select(
+                "*, interactions ( * ), donations ( * ), pledges ( * ), emails ( * ), phone_numbers ( * )"
+            )
             .eq("id", personID)
             .single()
             .then((result) => setPerson(result.data));
-    }, [personID]);
+    }, [personID, supabase]);
 
     var interactions = person?.interactions || [];
 
@@ -63,8 +60,14 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
                         {
                             <button
                                 type="button"
-                                onClick={() => dial(person.phone)}
-                                {...(!person?.phone || outbound ? { disabled: true } : {})}
+                                onClick={() =>
+                                    dial(
+                                        person?.phone_numbers?.filter(
+                                            (phone) => !!phone.primary_for
+                                        )
+                                    )
+                                }
+                                {...(!person?.phone_numbers || outbound ? { disabled: true } : {})}
                             >
                                 <PhoneIcon
                                     className="-ml-1 mr-2 h-5 w-5 text-gray-400"

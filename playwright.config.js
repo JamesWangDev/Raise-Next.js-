@@ -1,4 +1,4 @@
-import { devices } from "@playwright/test";
+import { devices, defineConfig } from "@playwright/test";
 import path from "path";
 
 // Use process.env.PORT by default and fallback to port 3000
@@ -10,7 +10,7 @@ const baseURL = `http://localhost:${PORT}`;
 // Reference: https://playwright.dev/docs/test-configuration
 const config = {
     // Timeout per test
-    timeout: 30 * 1000,
+    timeout: 20 * 1000,
     // Test directory
     testDir: path.join(__dirname, "__e2e__"),
     // If a test fails, retry it additional 2 times
@@ -21,7 +21,7 @@ const config = {
     // Run your local dev server before starting the tests:
     // https://playwright.dev/docs/test-advanced#launching-a-development-web-server-during-the-tests
     webServer: {
-        command: process.env.CI ? "npm run dev" : "make",
+        command: "npm run dev",
         url: baseURL,
         timeout: 120 * 1000,
         reuseExistingServer: !process.env.CI,
@@ -43,24 +43,15 @@ const config = {
     },
 
     projects: [
+        { name: "setup", testMatch: /.*\.setup\.[jt]s/ },
         {
             name: "Desktop Chrome",
             use: {
                 ...devices["Desktop Chrome"],
+                storageState: "__e2e__/.auth/user.json",
             },
+            dependencies: ["setup"],
         },
-
-        // // Test against mobile viewports.
-        // {
-        //     name: "Mobile Chrome",
-        //     use: {
-        //         ...devices["Pixel 5"],
-        //     },
-        // },
-        // {
-        //     name: "Mobile Safari",
-        //     use: devices["iPhone 12"],
-        // },
     ],
 };
-export default config;
+export default defineConfig(config);

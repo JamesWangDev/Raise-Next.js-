@@ -1,20 +1,36 @@
 import { useState, useEffect } from "react";
 import "styles/globals.css";
+import "styles/docsearch.css";
+import "styles/dark.css";
 import Layout from "components/Layout";
 import { ClerkProvider, useAuth } from "@clerk/nextjs";
 import ChatWidgetWrapper from "components/ChatWidgetWrapper";
 import { createSupabaseClient, SupabaseProvider } from "utils/supabaseHooks";
+
+// pages/_app.js
+import { Inter } from "@next/font/google";
+const inter = Inter({ subsets: ["latin"] });
 
 // for some reason vercel analytics breask jest
 // import { Analytics } from "@vercel/analytics/react";
 
 function App({ Component, pageProps }) {
     return (
-        <ClerkProvider {...pageProps}>
-            <SupabaseWrapper>
-                <Component {...pageProps} />
-            </SupabaseWrapper>
-        </ClerkProvider>
+        <>
+            <style jsx global>{`
+                html,
+                body,
+                .MuiDataGrid-root,
+                code {
+                    font-family: ${inter.style.fontFamily} !important;
+                }
+            `}</style>
+            <ClerkProvider {...pageProps}>
+                <SupabaseWrapper>
+                    <Component {...pageProps} />
+                </SupabaseWrapper>
+            </ClerkProvider>
+        </>
     );
 }
 

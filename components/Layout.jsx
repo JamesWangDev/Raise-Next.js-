@@ -23,10 +23,7 @@ import { Bars3CenterLeftIcon, Bars4Icon } from "@heroicons/react/24/outline";
 import {
     Bars3BottomLeftIcon,
     BellIcon,
-    CalendarIcon,
-    ChartBarIcon,
     HomeIcon,
-    InboxIcon,
     XMarkIcon,
     UsersIcon,
     FolderIcon,
@@ -38,9 +35,7 @@ import {
     ChevronDoubleRightIcon,
     UserPlusIcon,
     Cog6ToothIcon,
-    ChevronUpDownIcon,
-    ChevronDownIcon,
-} from "@heroicons/react/24/solid";
+} from "@heroicons/react/24/outline";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 
 // import algoliasearch from "algoliasearch/lite";
@@ -114,23 +109,6 @@ const Brand = () => {
     return (
         <>
             <div className="flex flex-shrink-0 items-center px-4 brand">
-                {/* <img
-          className="h-7 w-auto"
-          src="https://static.thenounproject.com/png/2018162-200.png"
-          alt="Raise More"
-        /> */}
-                {/* <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          className="w-7 h-7"
-        >
-          <path
-            fillRule="evenodd"
-            d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 9a.75.75 0 00-1.5 0v2.25H9a.75.75 0 000 1.5h2.25V15a.75.75 0 001.5 0v-2.25H15a.75.75 0 000-1.5h-2.25V9z"
-            clipRule="evenodd"
-          />
-        </svg> */}
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -303,7 +281,7 @@ const Layout = ({ children }) => {
                             <span className="sr-only">Open sidebar</span>
                             <Bars3BottomLeftIcon className="h-6 w-6" aria-hidden="true" />
                         </button>
-                        <div className="flex flex-1 justify-between px-4">
+                        <div className="flex flex-1 justify-between pr-4">
                             {isSignedIn ? (
                                 <>
                                     <div className="flex flex-1">

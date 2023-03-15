@@ -1,6 +1,8 @@
 import { Tooltip } from "@mui/material";
+import { EMAIL_VALIDATION_REGEX } from "utils/validation";
 
 function phoneNumberDisplayFormatter(input) {
+    if (typeof input === "undefined") return null;
     let number = input.toString().replaceAll(/[^0-9]/g, "");
     if (number?.length < 1) return null;
     if (number?.length === 10) {
@@ -24,11 +26,10 @@ function phoneNumberDisplayFormatter(input) {
 }
 
 function emailDisplayFormatter(input) {
-    // check if its a valid email
-    // if so, return it
+    if (typeof input === "undefined") return null;
+    // check if its a valid email. if so, return it...
     // if not, return the input and a warning badge (tailwind) next to it
-    let regex = /^[\w-\.]+@([\w-]+\.)+[\w-]+$/g;
-    if (regex.test(input)) {
+    if (EMAIL_VALIDATION_REGEX.test(input)) {
         return input;
     }
     return (
@@ -46,18 +47,22 @@ export default function PersonContactInfo({ person }) {
             <h2>Contact Information</h2>
             <div className="sm:col-span-1">
                 <dt className="text-sm font-medium text-gray-500">Phone Numbers</dt>
-                <dd className="mt-1 text-sm text-gray-900">
-                    {phoneNumberDisplayFormatter(person.phone)}
-                </dd>
+                {person.phone_numbers?.map((phone_number) => (
+                    <dd className="mt-1 text-sm text-gray-900" key={phone_number.id}>
+                        {phoneNumberDisplayFormatter(phone_number.phone_number)}
+                    </dd>
+                ))}
                 <button className="mt-2 button-xs" type="button">
                     Add Phone
                 </button>
             </div>
             <div className="sm:col-span-1 mt-5">
                 <dt className="text-sm font-medium text-gray-500">Emails</dt>
-                <dd className="mt-1 text-sm text-gray-900">
-                    {emailDisplayFormatter(person.email)}
-                </dd>
+                {person.emails?.map((email) => (
+                    <dd className="mt-1 text-sm text-gray-900" key={email.id}>
+                        {emailDisplayFormatter(email.email)}
+                    </dd>
+                ))}
                 <button className="mt-2 button-xs" type="button">
                     Add Email
                 </button>

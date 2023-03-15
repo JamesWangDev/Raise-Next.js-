@@ -6,9 +6,7 @@ module.exports = {
     theme: {
         // color: { "bg-gray-100": "#ebedf0" },
         extend: {
-            fontFamily: {
-                sans: ["Inter var", ...defaultTheme.fontFamily.sans],
-            },
+            fontSize: { "2xl": "1.4rem" },
             colors: {
                 indigo: {
                     300: "#2d28ff",

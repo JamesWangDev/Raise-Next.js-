@@ -2,7 +2,7 @@ import useSWR, { preload } from "swr";
 import axios from "axios";
 const fetcher = (url) => axios.get(url).then((res) => res.data);
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Box from "@mui/material/Box";
 
 import Button from "@mui/material/Button";

@@ -86,7 +86,7 @@ export default function StartCallingSession() {
                     setPersonID(temporaryPeopleList[0]);
                 });
             });
-    }, [listID]);
+    }, [listID, supabase]);
 
     useEffect(() => {
         // Subscribe to the conference updates snapshot listener.

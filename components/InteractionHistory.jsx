@@ -1,9 +1,5 @@
-import Head from "next/head";
-import Image from "next/image";
-import Link from "next/link";
 import { useSupabase } from "utils/supabaseHooks";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
+import { useState } from "react";
 import { CheckIcon, HandThumbUpIcon, UserIcon } from "@heroicons/react/20/solid";
 
 function classNames(...classes) {

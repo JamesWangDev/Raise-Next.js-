@@ -34,6 +34,7 @@ export default function AddInteractionCard({ person, appendInteraction }) {
                     <img
                         className="inline-block h-10 w-10 rounded-full"
                         src={user.profileImageUrl}
+                        alt=""
                     />
                 </div>
                 <div className="min-w-0 flex-1">

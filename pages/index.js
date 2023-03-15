@@ -1,33 +1,10 @@
-import Head from "next/head";
-import Image from "next/image";
-import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useSupabase } from "utils/supabaseHooks";
-import SupabaseTable from "components/SupabaseTable";
 import Breadcrumbs from "components/Breadcrumbs";
 import PageTitle from "components/PageTitle";
 import CallingSessionsGrid from "components/CallingSessionsGrid";
-
-import {
-    useAuth,
-    useUser,
-    UserButton,
-    SignInButton,
-    SignUpButton,
-    SignIn,
-    SignUp,
-} from "@clerk/nextjs";
-
-import { ArrowDownIcon, ArrowUpIcon } from "@heroicons/react/20/solid";
-import {
-    CursorArrowRaysIcon,
-    EnvelopeOpenIcon,
-    UsersIcon,
-    CurrencyDollarIcon,
-    BanknotesIcon,
-    HandRaisedIcon,
-    PhoneIcon,
-} from "@heroicons/react/24/outline";
+import { useUser } from "@clerk/nextjs";
+import { CurrencyDollarIcon, HandRaisedIcon, PhoneIcon } from "@heroicons/react/24/outline";
 
 const stats = [
     {
@@ -60,7 +37,7 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
 
-export function StatCard({ query, table, key, item }) {
+export function StatCard({ query, table, item }) {
     const [isLoading, setLoading] = useState(false);
     const [data, setData] = useState(null);
     const supabase = useSupabase();
@@ -76,7 +53,7 @@ export function StatCard({ query, table, key, item }) {
                 setData(data.data);
                 setLoading(false);
             });
-    }, [query, table]);
+    }, [query, table, supabase]);
 
     item.stat = data ? (Object.keys(data) ? data[Object.keys(data)[0]] : 0) : 0;
 
@@ -100,39 +77,6 @@ export function StatCard({ query, table, key, item }) {
             </dt>
             <dd className="ml-16 flex items-baseline pb-6 sm:pb-7">
                 <p className="text-2xl font-semibold text-gray-900">{item.stat}</p>
-                {/* <p
-          className={classNames(
-            item.changeType === "increase" ? "text-green-600" : "text-red-600",
-            "ml-2 flex items-baseline text-sm font-semibold"
-          )}
-        >
-          {item.changeType === "increase" ? (
-            <ArrowUpIcon
-              className="h-5 w-5 flex-shrink-0 self-center text-green-500"
-              aria-hidden="true"
-            />
-          ) : (
-            <ArrowDownIcon
-              className="h-5 w-5 flex-shrink-0 self-center text-red-500"
-              aria-hidden="true"
-            />
-          )}
-
-          <span className="sr-only">
-            {item.changeType === "increase" ? "Increased" : "Decreased"} by{" "}
-          </span>
-          {item.change}
-        </p> */}
-                {/* <div className="absolute inset-x-0 bottom-0 bg-gray-50 px-4 py-4 sm:px-6">
-          <div className="text-sm">
-            <a
-              href="#"
-              className="font-medium text-gray-600 hover:text-gray-500"
-            >
-              View all<span className="sr-only"> {item.name} stats</span>
-            </a>
-          </div>
-        </div> */}
             </dd>
         </div>
     );
