@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import "styles/globals.css";
+import "styles/docsearch.css";
+import "styles/dark.css";
 import Layout from "components/Layout";
 import { ClerkProvider, useAuth } from "@clerk/nextjs";
 import ChatWidgetWrapper from "components/ChatWidgetWrapper";
@@ -16,8 +18,11 @@ function App({ Component, pageProps }) {
     return (
         <>
             <style jsx global>{`
-                html {
-                    font-family: ${inter.style.fontFamily};
+                html,
+                body,
+                .MuiDataGrid-root,
+                code {
+                    font-family: ${inter.style.fontFamily} !important;
                 }
             `}</style>
             <ClerkProvider {...pageProps}>
