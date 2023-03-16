@@ -213,116 +213,118 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
     if (person) {
         return (
             <div className="mx-auto max-w-7xl px-2">
-                <div className="">
-                    <Breadcrumbs
-                        pages={[
-                            { name: "People", href: "/people", current: false },
-                            {
-                                name: person.first_name + " " + person.last_name,
-                                href: "/people/" + person.id,
-                                current: true,
-                            },
-                        ]}
-                    />
-                </div>
-                <div id="person-header" className="grid grid-cols-2 gap-2">
-                    <div id="">
-                        <Tooltip title={"Person ID: " + person.id} arrow>
-                            <h1 className="mb-0">
-                                {person.first_name} {person.last_name}
-                            </h1>
-                        </Tooltip>
-                        <h2 className="text-sm font-normal text-gray-600">
-                            {person.occupation} | {person.employer} | {person.state}
-                        </h2>
-                        <p className="text-sm text-gray-500">
-                            <span className="inline-flex flex mr-1.5">
-                                <DonationsSummary person={person} />
-                            </span>
-                            |
-                            <span className="inline-flex flex mx-1.5">
-                                <PledgesSummary person={person} />
-                            </span>
-                            |
-                            <form
-                                className="inline-flex ml-1.5"
-                                onSubmit={(event) => {
-                                    event.preventDefault();
-                                    if (bio == null) setBio(person?.bio || "");
-                                    else {
-                                        mutations.mutatePerson({ bio: bio.trim() });
-                                        setBio(null);
-                                    }
-                                }}
-                            >
-                                {bio == null && person?.bio && (
-                                    <span className="align-top mr-3">Bio: {person.bio}</span>
-                                )}
-                                {bio !== null && (
-                                    <textarea
-                                        value={bio}
-                                        onChange={(event) => {
-                                            setBio(event.target.value);
-                                        }}
-                                        autoFocus
-                                        className="mr-3 inline w-80 rounded-md border-0 py-1.5 pl-3 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                    />
-                                )}
-                                <button
-                                    type="submit"
-                                    className={
-                                        "align-top inline button-xs " + (bio && " btn-primary")
-                                    }
-                                >
-                                    {bio !== null
-                                        ? "Save"
-                                        : person?.bio?.length
-                                        ? "Edit"
-                                        : "Add a bio"}
-                                </button>
-                            </form>
-                        </p>
+                <div className="shaded-page-header">
+                    <div className="">
+                        <Breadcrumbs
+                            pages={[
+                                { name: "People", href: "/people", current: false },
+                                {
+                                    name: person.first_name + " " + person.last_name,
+                                    href: "/people/" + person.id,
+                                    current: true,
+                                },
+                            ]}
+                        />
                     </div>
-                    <div className="text-right">
-                        <div className=" flex-row gap-3 inline-flex">
-                            {
+                    <div id="person-header" className="grid grid-cols-2 gap-2">
+                        <div id="">
+                            <Tooltip title={"Person ID: " + person.id} arrow>
+                                <h1 className="mb-0">
+                                    {person.first_name} {person.last_name}
+                                </h1>
+                            </Tooltip>
+                            <h2 className="text-sm font-normal text-gray-600">
+                                {person.occupation} | {person.employer} | {person.state}
+                            </h2>
+                            <p className="text-sm text-gray-500">
+                                <span className="inline-flex flex mr-1.5">
+                                    <DonationsSummary person={person} />
+                                </span>
+                                |
+                                <span className="inline-flex flex mx-1.5">
+                                    <PledgesSummary person={person} />
+                                </span>
+                                |
+                                <form
+                                    className="inline-flex ml-1.5"
+                                    onSubmit={(event) => {
+                                        event.preventDefault();
+                                        if (bio == null) setBio(person?.bio || "");
+                                        else {
+                                            mutations.mutatePerson({ bio: bio.trim() });
+                                            setBio(null);
+                                        }
+                                    }}
+                                >
+                                    {bio == null && person?.bio && (
+                                        <span className="align-top mr-3">Bio: {person.bio}</span>
+                                    )}
+                                    {bio !== null && (
+                                        <textarea
+                                            value={bio}
+                                            onChange={(event) => {
+                                                setBio(event.target.value);
+                                            }}
+                                            autoFocus
+                                            className="mr-3 inline w-80 rounded-md border-0 py-1.5 pl-3 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        />
+                                    )}
+                                    <button
+                                        type="submit"
+                                        className={
+                                            "align-top inline button-xs " + (bio && " btn-primary")
+                                        }
+                                    >
+                                        {bio !== null
+                                            ? "Save"
+                                            : person?.bio?.length
+                                            ? "Edit"
+                                            : "Add a bio"}
+                                    </button>
+                                </form>
+                            </p>
+                        </div>
+                        <div className="text-right">
+                            <div className=" flex-row gap-3 inline-flex">
+                                {
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            dial(
+                                                person?.phone_numbers?.filter(
+                                                    (phone) => !!phone.primary_for
+                                                )
+                                            )
+                                        }
+                                        {...(!person?.phone_numbers || outbound
+                                            ? { disabled: true }
+                                            : {})}
+                                    >
+                                        <PhoneIcon
+                                            className="-ml-1 mr-2 h-5 w-5 text-gray-400"
+                                            aria-hidden="true"
+                                        />
+                                        Call
+                                    </button>
+                                }
+                                {/* <button type="button">Merge Records</button> */}
                                 <button
                                     type="button"
-                                    onClick={() =>
-                                        dial(
-                                            person?.phone_numbers?.filter(
-                                                (phone) => !!phone.primary_for
-                                            )
-                                        )
-                                    }
-                                    {...(!person?.phone_numbers || outbound
-                                        ? { disabled: true }
-                                        : {})}
+                                    className="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                                    onClick={() => hangup()}
+                                    {...(outbound ? {} : { disabled: true })}
                                 >
-                                    <PhoneIcon
-                                        className="-ml-1 mr-2 h-5 w-5 text-gray-400"
-                                        aria-hidden="true"
-                                    />
-                                    Call
+                                    Hang Up
                                 </button>
-                            }
-                            {/* <button type="button">Merge Records</button> */}
-                            <button
-                                type="button"
-                                className="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                                onClick={() => hangup()}
-                                {...(outbound ? {} : { disabled: true })}
-                            >
-                                Hang Up
-                            </button>
-                            <button
-                                type="button"
-                                className="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
-                                onClick={() => next()}
-                                {...(!outbound && hasNext ? {} : { disabled: true })}
-                            >
-                                Next
-                            </button>
+                                <button
+                                    type="button"
+                                    className="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
+                                    onClick={() => next()}
+                                    {...(!outbound && hasNext ? {} : { disabled: true })}
+                                >
+                                    Next
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
