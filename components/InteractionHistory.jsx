@@ -2,12 +2,9 @@ import { useSupabase } from "utils/supabaseHooks";
 import { useState } from "react";
 import { CheckIcon, HandThumbUpIcon, UserIcon } from "@heroicons/react/20/solid";
 
-Object.defineProperty(String.prototype, "capitalize", {
-    value: function () {
-        return this.charAt(0).toUpperCase() + this.slice(1);
-    },
-    enumerable: false,
-});
+function capitalize(input) {
+    return input?.length > 0 ? input.charAt(0).toUpperCase() + input.slice(1) : "";
+}
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -40,7 +37,7 @@ export default function InteractionHistory({ person, interactions, appendInterac
                         interaction.href = "";
 
                         interaction.content = [
-                            interaction?.type.capitalize(),
+                            capitalize(interaction?.type),
                             interaction?.contact_type,
                             interaction?.disposition,
                             interaction?.note,

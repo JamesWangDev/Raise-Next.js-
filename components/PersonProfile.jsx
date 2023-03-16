@@ -122,144 +122,81 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
         fetchPerson();
     }, [fetchPerson]);
 
-    const mutatePerson = useCallback(
-        (changedPersonObject) => {
-            supabase
-                .from("people")
-                .update(changedPersonObject)
-                .eq("id", personID)
-                .then(fetchPerson);
-            // .select()
-            // .single()
-            // .then((result) => setPerson(result.data));
-        },
-        [person, personID]
-    );
+    const mutations = useMemo(
+        () => ({
+            appendInteraction: async (newInteraction) => {
+                let { pledge, ...newInteractionPrepared } = newInteraction;
+                newInteractionPrepared.person_id = person.id;
 
-    const addPhone = useCallback(
-        (newPhone) => {
-            supabase
-                .from("phone_numbers")
-                .insert({ phone_number: newPhone, person_id: personID })
-                .then(fetchPerson);
-        },
+                if (pledge) {
+                    await supabase.from("pledges").insert({
+                        person_id: person.id,
+                        amount: pledge,
+                    });
+                }
+
+                if (newInteractionPrepared?.note?.length) {
+                    await supabase.from("interactions").insert(newInteractionPrepared);
+                }
+
+                fetchPerson();
+            },
+            mutatePerson: (changedPersonObject) =>
+                supabase
+                    .from("people")
+                    .update(changedPersonObject)
+                    .eq("id", personID)
+                    .then(fetchPerson),
+            addPhone: (newPhone) =>
+                supabase
+                    .from("phone_numbers")
+                    .insert({ phone_number: newPhone, person_id: personID })
+                    .then(fetchPerson),
+            addEmail: (newEmail) =>
+                supabase
+                    .from("emails")
+                    .insert({ email: newEmail, person_id: personID })
+                    .then(fetchPerson),
+            deleteEmail: (id) =>
+                supabase
+                    .from("emails")
+                    .update({ remove_date: new Date().toISOString(), remove_user: userID })
+                    .eq("id", id)
+                    .then(fetchPerson),
+            deletePhone: (id) =>
+                supabase
+                    .from("phone_numbers")
+                    .update({ remove_date: new Date().toISOString(), remove_user: userID })
+                    .eq("id", id)
+                    .then(fetchPerson),
+            addTag: (newTag) => supabase.from("tags").insert({ tag: newTag, person_id: personID }),
+            restorePhone: (id) =>
+                supabase
+                    .from("phone_numbers")
+                    .update({ remove_date: null, remove_user: null })
+                    .eq("id", id)
+                    .then(fetchPerson),
+            restoreEmail: (id) =>
+                supabase
+                    .from("emails")
+                    .update({ remove_date: null, remove_user: null })
+                    .eq("id", id)
+                    .then(fetchPerson),
+            deleteTag: (id) =>
+                supabase
+                    .from("tags")
+                    .update({ remove_date: new Date().toISOString(), remove_user: userID })
+                    .eq("id", id)
+                    .then(fetchPerson),
+            restoreTag: (id) =>
+                supabase
+                    .from("tags")
+                    .update({ remove_date: null, remove_user: null })
+                    .eq("id", id)
+                    .then(fetchPerson),
+        }),
         [supabase, personID, fetchPerson]
     );
-
-    const addTag = useCallback(
-        (newTag) => {
-            supabase.from("tags").insert({ tag: newTag, person_id: personID }).then(fetchPerson);
-        },
-        [supabase, personID, fetchPerson]
-    );
-
-    const addEmail = useCallback(
-        (newEmail) => {
-            supabase
-                .from("emails")
-                .insert({ email: newEmail, person_id: personID })
-                .then(fetchPerson);
-        },
-        [supabase, personID, fetchPerson]
-    );
-
-    const deletePhone = useCallback(
-        (id) => {
-            supabase
-                .from("phone_numbers")
-                .update({ remove_date: new Date().toISOString(), remove_user: userID })
-                .eq("id", id)
-                .then(fetchPerson);
-        },
-        [supabase, personID, fetchPerson]
-    );
-
-    const restorePhone = useCallback(
-        (id) => {
-            supabase
-                .from("phone_numbers")
-                .update({ remove_date: null, remove_user: null })
-                .eq("id", id)
-                .then(fetchPerson);
-        },
-        [supabase, personID, fetchPerson]
-    );
-
-    const deleteTag = useCallback(
-        (id) => {
-            supabase
-                .from("tags")
-                .update({ remove_date: new Date().toISOString(), remove_user: userID })
-                .eq("id", id)
-                .then(fetchPerson);
-        },
-        [supabase, personID, fetchPerson]
-    );
-
-    const restoreTag = useCallback(
-        (id) => {
-            supabase
-                .from("tags")
-                .update({ remove_date: null, remove_user: null })
-                .eq("id", id)
-                .then(fetchPerson);
-        },
-        [supabase, personID, fetchPerson]
-    );
-
-    const deleteEmail = useCallback(
-        (id) => {
-            supabase
-                .from("emails")
-                .update({ remove_date: new Date().toISOString(), remove_user: userID })
-                .eq("id", id)
-                .then(fetchPerson);
-        },
-        [supabase, personID, fetchPerson]
-    );
-
-    const restoreEmail = useCallback(
-        (id) => {
-            supabase
-                .from("emails")
-                .update({ remove_date: null, remove_user: null })
-                .eq("id", id)
-                .then(fetchPerson);
-        },
-        [supabase, personID, fetchPerson]
-    );
-
-    const appendInteraction = async (newInteraction) => {
-        let { pledge, ...newInteractionPrepared } = newInteraction;
-        newInteractionPrepared.person_id = person.id;
-
-        if (pledge) {
-            await supabase.from("pledges").insert({
-                person_id: person.id,
-                amount: pledge,
-            });
-        }
-
-        if (newInteractionPrepared?.note?.length) {
-            await supabase.from("interactions").insert(newInteractionPrepared);
-        }
-
-        fetchPerson();
-    };
-
-    const mutations = {
-        mutatePerson,
-        addPhone,
-        addEmail,
-        deleteEmail,
-        deletePhone,
-        appendInteraction,
-        addTag,
-        restorePhone,
-        restoreEmail,
-        deleteTag,
-        restoreTag,
-    };
 
     if (isLoading) return;
 
@@ -313,7 +250,7 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
                                     event.preventDefault();
                                     if (bio == null) setBio(person?.bio || "");
                                     else {
-                                        mutatePerson({ bio: bio.trim() });
+                                        mutations.mutatePerson({ bio: bio.trim() });
                                         setBio(null);
                                     }
                                 }}
