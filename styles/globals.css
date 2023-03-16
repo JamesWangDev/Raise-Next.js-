@@ -88,7 +88,7 @@ pre {
 }
 
 .cl-card {
-    @apply shadow-none ring-1 ring-black ring-opacity-10;
+    @apply ring-1 ring-black ring-opacity-10 shadow-lg;
 }
 
 .cl-main {
@@ -114,10 +114,6 @@ pre {
 .nav-item:hover,
 .nav-item:hover * {
     background: rgb(236, 244, 255) !important;
-}
-.nav-item.current *,
-.nav-item:hover * {
-    @apply text-gray-500 !important;
 }
 
 .brand span {
@@ -176,7 +172,7 @@ main button[type]:not(.MuiButtonBase-root):not(.do-not-global-style).button-xs {
 }
 
 .page-title-descriptor {
-    @apply text-gray-400 text-base font-light -mt-4 mb-3;
+    @apply text-gray-500 text-base font-normal -mt-4 mb-3;
 }
 
 .nav-item {
@@ -191,7 +187,7 @@ main button[type]:not(.MuiButtonBase-root):not(.do-not-global-style).button-xs {
 
 .nav-item.current,
 .nav-item:hover {
-    border-color: #ddd;
+    box-shadow: 0px 0px 0px 1px rgba(0, 144, 237, 0.4);
 }
 
 .cl-socialButtonsBlockButton {
@@ -233,4 +229,64 @@ button[type].btn-primary.button-xs:not(.do-not-global-style) {
 
 .sticky {
     margin-left: -1px;
+}
+
+.nav-item.current *,
+.nav-item:hover * {
+    /* @apply text-gray-500 !important; */
+    color: #1e6ebf70 !important;
+}
+
+.nav-item.current,
+.nav-item:hover {
+    color: #1e6ebf !important;
+}
+
+.MuiDataGrid-cellContent,
+.MuiDataGrid-cell,
+.MuiDataGrid-cellContent div,
+.MuiDataGrid-cell div {
+    @apply text-gray-500 !important;
+}
+
+.MuiDataGrid-columnHeaders,
+.MuiDataGrid-columnHeaders div {
+    @apply font-semibold bg-gray-50 !important;
+    @apply border-b-gray-300 !important;
+}
+
+.MuiDataGrid-root {
+    @apply rounded-lg border-0 ring-1 ring-black ring-opacity-5 shadow !important;
+}
+.MuiDataGrid-virtualScrollerRenderZone {
+    /* @apply min-w-full divide-y divide-gray-300 !important; */
+}
+.MuiSvgIcon-root {
+    color: #ccc !important;
+}
+.MuiDataGrid-columnHeaders .MuiSvgIcon-root {
+    @apply text-gray-300 !important;
+}
+
+nav {
+    padding-left: 0 !important;
+}
+nav,
+.nav-item {
+    margin-left: 0 !important;
+}
+.nav-item {
+    border-left: 0 none !important;
+    margin-left: -1px !important;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    padding-left: 1.5rem;
+}
+.nav-item:hover:not(.current),
+.nav-item:hover:not(.current) * {
+    background-color: #fafafa !important;
+    color: #666 !important;
+}
+.nav-item:hover:not(.current) {
+    box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.1) !important;
 }

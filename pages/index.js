@@ -67,7 +67,7 @@ export function StatCard({ query, table, item }) {
     return (
         <div
             key={item.id}
-            className="relative overflow-hidden rounded-lg bg-white px-4 pt-5 pb-0 shadow-sm sm:px-6 sm:pt-6 ring-1 ring-black ring-opacity-5"
+            className="relative overflow-hidden rounded-lg bg-white px-4 pt-5 pb-0 shadow sm:px-6 sm:pt-6 ring-1 ring-opacity-5 ring-black"
         >
             <dt>
                 <div className="absolute rounded-md bg-gray-400 p-3">

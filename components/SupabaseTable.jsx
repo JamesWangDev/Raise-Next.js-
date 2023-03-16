@@ -134,12 +134,12 @@ export default function SupabaseTable({
                     columns={columns}
                     pageSize={25}
                     rowsPerPageOptions={[25]}
-                    // checkboxSelection
+                    checkboxSelection
                     onPageChange={setPage}
                     className="bg-white"
                     // disable sorting and filtering
                     disableColumnMenu
-                    rowHeight={44}
+                    // rowHeight={44}
                     sx={{
                         fontSize: "0.85rem",
                         my: 2,
