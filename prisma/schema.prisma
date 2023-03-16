@@ -198,6 +198,7 @@ model people {
   custom_field_1  String?
   custom_field_2  String?
   custom_field_3  String?
+  bio             String?
   donations       donations[]
   emails          emails[]
   interactions    interactions[]

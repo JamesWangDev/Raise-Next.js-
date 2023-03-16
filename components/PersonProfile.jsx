@@ -12,6 +12,7 @@ import { Tooltip } from "@mui/material";
 export default function PersonProfile({ personID, dial, hangup, outbound, hasNext, next }) {
     const supabase = useSupabase();
     const [person, setPerson] = useState();
+    const [bio, setBio] = useState(null);
 
     const fetchPerson = useCallback(() => {
         supabase
@@ -32,11 +33,12 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
         (changedPersonObject) => {
             supabase
                 .from("people")
-                .update({ ...person, changedPersonObject })
+                .update(changedPersonObject)
                 .eq("id", personID)
-                .select()
-                .single()
-                .then((result) => setPerson(result.data));
+                .then(fetchPerson);
+            // .select()
+            // .single()
+            // .then((result) => setPerson(result.data));
         },
         [person, personID]
     );
@@ -117,7 +119,7 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
                     ]}
                 />
             </div>
-            <div id="person-header" className="grid grid-cols-2 gap-16">
+            <div id="person-header" className="grid grid-cols-2 gap-2">
                 <div id="">
                     <Tooltip title={"Person ID: " + person.id} arrow>
                         <h1 className="text-2xl font-semibold text-gray-900 mb-0">
@@ -127,9 +129,38 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
                     <h2 className="text-sm font-normal text-gray-600">
                         {person.occupation} | {person.employer} | {person.state}
                     </h2>
-                    {/* <p className="text-sm text-gray-400">
-                        Person ID: {person.id}
-                    </p> */}
+                    <p className="text-sm text-gray-500">
+                        <form
+                            onSubmit={(event) => {
+                                event.preventDefault();
+                                if (bio == null) setBio(person?.bio || "");
+                                else {
+                                    mutatePerson({ bio: bio.trim() });
+                                    setBio(null);
+                                }
+                            }}
+                        >
+                            {bio == null && person?.bio && (
+                                <span className="align-top mr-3">Bio: {person.bio}</span>
+                            )}
+                            {bio !== null && (
+                                <textarea
+                                    value={bio}
+                                    onChange={(event) => {
+                                        setBio(event.target.value);
+                                    }}
+                                    autoFocus
+                                    className="mr-3 inline w-80 rounded-md border-0 py-1.5 pl-3 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                />
+                            )}
+                            <button
+                                type="submit"
+                                className={"align-top inline button-xs " + (bio && " btn-primary")}
+                            >
+                                {bio !== null ? "Save" : person?.bio?.length ? "Edit" : "Add a bio"}
+                            </button>
+                        </form>
+                    </p>
                 </div>
                 <div className="text-right">
                     <div className=" flex-row gap-3 inline-flex">
