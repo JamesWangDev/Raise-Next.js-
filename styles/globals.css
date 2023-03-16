@@ -296,3 +296,16 @@ nav .border-t {
 .shaded-page-header {
     @apply bg-gray-100 -mx-12 -mt-8 -mb-2 pb-3 pt-8 px-12;
 }
+
+.brand svg {
+    display: none;
+}
+.brand span {
+    background: #388bff;
+    padding: 4px 10px;
+    color: white !important;
+    @apply rounded -mt-0.5 mb-0.5;
+}
+.brand {
+    padding-bottom: 0.55rem;
+}

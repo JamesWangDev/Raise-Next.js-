@@ -26,7 +26,7 @@ export default function ChatWidgetWrapper() {
             inbox="1a5d07de-76b2-4430-a1c3-68507bb8b977"
             title="Welcome to RaiseMore"
             subtitle="Ask us anything in the chat window below 😊"
-            primaryColor="#2d28ff"
+            primaryColor="#388bff"
             greeting="Hi there! Send us a message and we'll get back to you as soon as we can."
             newMessagePlaceholder="Start typing..."
             showAgentAvailability={false}
