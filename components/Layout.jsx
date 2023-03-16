@@ -1,25 +1,16 @@
-import Head from "next/head";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import Breadcrumbs from "./Breadcrumbs";
 import {
-    useAuth,
     useUser,
     UserButton,
-    SignInButton,
-    SignUpButton,
-    SignIn,
     SignUp,
     CreateOrganization,
     OrganizationSwitcher,
     SignedOut,
-    useOrganization,
 } from "@clerk/nextjs";
 
 import { Fragment, useState } from "react";
 import { Dialog, Menu, Transition } from "@headlessui/react";
-import { Bars3CenterLeftIcon, Bars4Icon } from "@heroicons/react/24/outline";
 import {
     Bars3BottomLeftIcon,
     BellIcon,
@@ -36,7 +27,6 @@ import {
     UserPlusIcon,
     Cog6ToothIcon,
 } from "@heroicons/react/24/outline";
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 
 // import algoliasearch from "algoliasearch/lite";
 // import { InstantSearch, SearchBox, Hits } from "react-instantsearch-dom";
@@ -47,7 +37,6 @@ import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { DocSearch } from "@docsearch/react";
 // Commented out for Jest testing
 // import "@docsearch/css";
-import { Breadcrumb } from "react-instantsearch-dom";
 
 const navigation = [
     { name: "Dashboard", href: "/", icon: HomeIcon, current: true },
@@ -93,19 +82,11 @@ const navigation = [
     },
 ];
 
-// const userNavigation = [
-//   { name: "Settings", href: "#" },
-//   // { name: "Sign out", href: "#", onClick: signOut },
-// ];
-
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
 
 const Brand = () => {
-    // const { data: session } = useSession();
-    const { isSignedIn, isLoading, user } = useUser();
-
     return (
         <>
             <div className="flex flex-shrink-0 items-center px-4 brand">
@@ -242,10 +223,10 @@ const Layout = ({ children }) => {
                 {/* Static sidebar for desktop */}
                 <div className="hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
                     {/* Sidebar component, swap this element with another sidebar if you like */}
-                    <div className="pt-5 flex flex-grow flex-col overflow-y-auto border-r border-gray-200 bg-white">
+                    <div className="pt-5 flex flex-grow flex-col overflow-y-auto border-r border-gray-200">
                         <Brand />
 
-                        <div className="mt-5 flex flex-grow flex-col">
+                        <div className="pt-5 flex flex-grow flex-col bg-gray-50">
                             <nav className="flex-1 space-y-1 px-2 pb-4">
                                 {navigation.map((item, index) => (
                                     <div key={index}>

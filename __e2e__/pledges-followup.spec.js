@@ -7,6 +7,8 @@ const db = createClient(
 );
 
 test.describe("Pledge followup flow", () => {
+    // ****************
+    // Basics
     test("Import donations", async ({ page }) => {
         await page.goto("/import");
         await page.getByRole("radio", { name: "Donations" }).click();
@@ -36,7 +38,12 @@ test.describe("Pledge followup flow", () => {
     test.skip("Imported pledges appear accurately in profiles", async ({ page }) => true);
     test.skip("Add, remove, and 'make primary' different phone numbers and emails", async ({
         page,
-    }) => true);
+    }) => {
+        // Importing phones and emails now has the right data structures and works
+        // Primary is un-implemented
+        // First, add, and remove, and make primary buttons
+        // Add email and phone, note, and pledge, done
+    });
 
     test.skip("Create a single-table list", async ({ page }) => true);
     test.skip("Create a multi-table list re: pledges, past donations, and FEC data", async ({
@@ -45,17 +52,25 @@ test.describe("Pledge followup flow", () => {
     test.skip("Start a call session on multi-table list", async ({ page }) => true);
     test.skip("Dialing-in begins the list view", async ({ page }) => true);
     test.skip("Call three people in a row, add notes and pledges", async ({ page }) => true);
-    test.skip("New notes and pledges are persisted", async ({ page }) => true);
-    test.skip("Pledges page displays all pledges correctly", async ({ page }) => true);
+    test.skip("New notes and pledges are persisted", async ({ page }) => {
+        // This should work
+    });
+    test.skip("Pledges page displays all pledges correctly", async ({ page }) => {
+        // Yes but needs linking and customization, etc
+    });
     test.skip("Contact History page displays all past call attempts correctly", async ({ page }) =>
         true);
 
-    // JAcobs additions
-    test.skip("Edit bio, occupation, employer", async ({ page }) => true);
+    // ****************
+    // Jacobs additions
+    test.skip("Edit bio, occupation, employer", async ({ page }) => {
+        // Needs to be added
+    });
     test.skip("Import with a tag column", async ({ page }) => true);
     test.skip("Tag entire import", async ({ page }) => true);
     test.skip("Start calling from a single person", async ({ page }) => true);
 
+    // ****************
     // Security
     test.skip("Supabase: unauthorized users cannot access anything", async ({ page }) => true);
     test.skip("Supabase: users can only access their own organization", async ({ page }) => true);

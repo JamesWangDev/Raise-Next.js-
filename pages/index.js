@@ -67,7 +67,7 @@ export function StatCard({ query, table, item }) {
     return (
         <div
             key={item.id}
-            className="relative overflow-hidden rounded-lg bg-white px-4 pt-5 pb-0 shadow-sm sm:px-6 sm:pt-6 ring-1 ring-black ring-opacity-5"
+            className="relative overflow-hidden rounded-lg bg-white px-4 pt-5 pb-0 shadow sm:px-6 sm:pt-6 ring-1 ring-opacity-5 ring-black"
         >
             <dt>
                 <div className="absolute rounded-md bg-gray-400 p-3">
@@ -86,7 +86,7 @@ export function HomepageCards() {
     return (
         <>
             <div>
-                <h3 className="text-lg font-medium leading-6 text-gray-900">All Time Stats</h3>
+                <h3>All Time Stats</h3>
                 <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     {stats.map((item, i) => (
                         <StatCard
@@ -99,9 +99,7 @@ export function HomepageCards() {
                 </dl>
             </div>
             <div>
-                <h3 className="text-lg font-medium leading-6 text-gray-900 mt-8">
-                    Join an Active Calling Session
-                </h3>
+                <h3>Join an Active Calling Session</h3>
 
                 {/* map callingSessions to devs/cards in the same way as done in makecalls/start/... */}
                 <CallingSessionsGrid />

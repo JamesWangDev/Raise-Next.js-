@@ -6,9 +6,8 @@ import { useState } from "react";
 import Box from "@mui/material/Box";
 
 import Button from "@mui/material/Button";
-import { DataGrid, GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import { Stack, Tooltip } from "@mui/material";
-import { InstallMobileRounded } from "@mui/icons-material";
 
 import { useRouter } from "next/router";
 
@@ -135,12 +134,12 @@ export default function SupabaseTable({
                     columns={columns}
                     pageSize={25}
                     rowsPerPageOptions={[25]}
-                    // checkboxSelection
+                    checkboxSelection
                     onPageChange={setPage}
                     className="bg-white"
                     // disable sorting and filtering
                     disableColumnMenu
-                    rowHeight={44}
+                    // rowHeight={44}
                     sx={{
                         fontSize: "0.85rem",
                         my: 2,

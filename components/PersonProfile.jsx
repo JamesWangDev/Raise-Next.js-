@@ -1,5 +1,5 @@
 import { useSupabase } from "utils/supabaseHooks";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { CheckIcon, HandThumbUpIcon, UserIcon, PhoneIcon } from "@heroicons/react/20/solid";
 import InteractionHistory from "./InteractionHistory";
 import Breadcrumbs from "./Breadcrumbs";
@@ -10,11 +10,10 @@ import PersonContactInfo from "./PersonContactInfo";
 import { Tooltip } from "@mui/material";
 
 export default function PersonProfile({ personID, dial, hangup, outbound, hasNext, next }) {
-    const [person, setPerson] = useState();
-    //get orgid using clerk
     const supabase = useSupabase();
+    const [person, setPerson] = useState();
 
-    useEffect(() => {
+    const fetchPerson = useCallback(() => {
         supabase
             .from("people")
             .select(
@@ -23,7 +22,84 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
             .eq("id", personID)
             .single()
             .then((result) => setPerson(result.data));
-    }, [personID, supabase]);
+    }, [supabase, personID]);
+
+    useEffect(() => {
+        fetchPerson();
+    }, [fetchPerson]);
+
+    const mutatePerson = useCallback(
+        (changedPersonObject) => {
+            supabase
+                .from("people")
+                .update({ ...person, changedPersonObject })
+                .eq("id", personID)
+                .select()
+                .single()
+                .then((result) => setPerson(result.data));
+        },
+        [person, personID]
+    );
+
+    const addPhone = useCallback(
+        (newPhoneNumber) => {
+            supabase
+                .from("phone_numbers")
+                .insert({ phone_number: newPhoneNumber, person_id: personID })
+                .then(fetchPerson);
+        },
+        [supabase, personID, fetchPerson]
+    );
+
+    const addEmail = useCallback(
+        (newEmail) => {
+            supabase
+                .from("emails")
+                .insert({ email: newEmail, person_id: personID })
+                .then(fetchPerson);
+        },
+        [supabase, personID, fetchPerson]
+    );
+
+    const deletePhone = useCallback(
+        (id) => {
+            supabase.from("phone_numbers").delete().eq("id", id).then(fetchPerson);
+        },
+        [supabase, personID, fetchPerson]
+    );
+    const deleteEmail = useCallback(
+        (id) => {
+            supabase.from("emails").delete().eq("id", id).then(fetchPerson);
+        },
+        [supabase, personID, fetchPerson]
+    );
+
+    const appendInteraction = async (newInteraction) => {
+        let { pledge, ...newInteractionPrepared } = newInteraction;
+        newInteractionPrepared.person_id = person.id;
+
+        if (pledge) {
+            await supabase.from("pledges").insert({
+                person_id: person.id,
+                amount: pledge,
+            });
+        }
+
+        if (newInteractionPrepared?.note?.length) {
+            await supabase.from("interactions").insert(newInteractionPrepared);
+        }
+
+        fetchPerson();
+    };
+
+    const mutations = {
+        mutatePerson,
+        addPhone,
+        addEmail,
+        deleteEmail,
+        deletePhone,
+        appendInteraction,
+    };
 
     var interactions = person?.interactions || [];
 
@@ -96,16 +172,20 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
                     </div>
                 </div>
             </div>
-            <div className="max-w-7xl  grid grid-flow-col grid-cols-12 gap-x-10 bg-white border-t px-8 py-6 mt-2 -mx-8">
+            <div className="max-w-7xl  grid grid-flow-col grid-cols-12 gap-x-10 bg-white border-t px-12 py-6 mt-2 -mx-12">
                 <div className="col-span-3">
-                    <PersonContactInfo person={person} />
+                    <PersonContactInfo person={person} {...mutations} />
                 </div>
                 <div className="col-span-6 -ml-10">
-                    <InteractionHistory person={person} interactions={interactions} />
+                    <InteractionHistory
+                        person={person}
+                        interactions={interactions}
+                        {...mutations}
+                    />
                 </div>
                 <div className="col-span-3">
-                    <PledgeHistory pledges={person?.pledges} />
-                    <DonationHistory donations={person?.donations} />
+                    <PledgeHistory pledges={person?.pledges} {...mutations} />
+                    <DonationHistory donations={person?.donations} {...mutations} />
                 </div>
             </div>
         </div>

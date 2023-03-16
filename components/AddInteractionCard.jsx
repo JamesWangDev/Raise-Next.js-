@@ -1,20 +1,14 @@
-import { Fragment, useState } from "react";
-
+import { useState } from "react";
+import { useUser } from "@clerk/nextjs";
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
 
-import { useUser } from "@clerk/nextjs";
-
 export default function AddInteractionCard({ person, appendInteraction }) {
-    // note state
+    const { user } = useUser();
     const [note, setNote] = useState("");
     const [prompt, setPrompt] = useState(false);
     const [pledge, setPledge] = useState(null);
-    const [donation, setDonation] = useState(null);
-
-    // get user from clerk
-    const { isSignedIn, isLoading, user } = useUser();
 
     const newNote = () => {
         appendInteraction({
