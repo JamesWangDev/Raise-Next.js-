@@ -195,7 +195,7 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
                     .eq("id", id)
                     .then(fetchPerson),
         }),
-        [supabase, personID, fetchPerson, person.id]
+        [supabase, personID, fetchPerson, userID]
     );
 
     if (isLoading) return;

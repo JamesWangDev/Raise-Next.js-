@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import "styles/globals.css";
 import "styles/docsearch.css";
 import "styles/dark.css";
@@ -37,6 +37,7 @@ function App({ Component, pageProps }) {
 function SupabaseWrapper({ children }) {
     let [supabaseClient, setSupabaseClient] = useState();
     const { getToken, userId, sessionId, orgId } = useAuth();
+
     useEffect(() => {
         let now = async () => {
             // Get the clerk.dev JWT
@@ -47,13 +48,10 @@ function SupabaseWrapper({ children }) {
                         : "supabase-local-development",
             });
             // Create and set the client
-            let client = createSupabaseClient(supabaseAccessToken);
-            setSupabaseClient(client);
-            const { data, error } = await client.from("donations").select("*").limit(25);
-            console.log({ data, error });
+            setSupabaseClient(createSupabaseClient(supabaseAccessToken));
         };
         now();
-    }, [userId, sessionId, orgId]);
+    }, [userId, sessionId, orgId, getTokenStable]);
 
     return (
         <SupabaseProvider value={supabaseClient}>
