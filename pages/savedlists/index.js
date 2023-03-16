@@ -12,8 +12,8 @@ export default function Dashboard() {
             <div className="mx-auto max-w-7xl px-2">
                 <Breadcrumbs pages={[{ name: "Lists", href: "/savedlists", current: true }]} />
                 <PageTitle
-                    title="Lists"
-                    descriptor="Edit existing saved lists or start a calling session."
+                    title="📋&nbsp; Lists"
+                    descriptor="Edit existing lists, or use one to launch a new call session."
                 />
             </div>
             <div className="mx-auto max-w-7xl px-2">

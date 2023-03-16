@@ -86,7 +86,7 @@ export function HomepageCards() {
     return (
         <>
             <div>
-                <h3>All Time Stats</h3>
+                <h3>Metrics</h3>
                 <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     {stats.map((item, i) => (
                         <StatCard
@@ -99,7 +99,7 @@ export function HomepageCards() {
                 </dl>
             </div>
             <div>
-                <h3>Join an Active Calling Session</h3>
+                <h3>Join an active calling session:</h3>
 
                 {/* map callingSessions to devs/cards in the same way as done in makecalls/start/... */}
                 <CallingSessionsGrid />
@@ -116,8 +116,8 @@ export default function Home() {
             <div className="mx-auto max-w-7xl px-2">
                 <Breadcrumbs pages={[{ name: "Dashboard", href: "/", current: false }]} />
                 <PageTitle
-                    title="Dashboard"
-                    descriptor="A real time picture of your fundraising so far."
+                    title="👋&nbsp; Dashboard"
+                    descriptor="Welcome to your fundraising home base!"
                 />
             </div>
             <div className="mx-auto max-w-7xl px-2">
