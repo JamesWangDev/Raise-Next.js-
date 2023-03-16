@@ -134,7 +134,7 @@ const Uploaders = ({ importType, nextStep, setUploadResult }) => {
             {importType == "donations" && (
                 <div>
                     <div className="mx-auto max-w-7xl px-2 ">
-                        <h2 className="mt-6 mb-0">
+                        <h2 className="mt-8 mb-0">
                             Upload your Actblue alltime donations file to sync: (
                             <a
                                 href="https://support.actblue.com/campaigns/the-dashboard/download-contribution-data/#downloads"
@@ -160,7 +160,7 @@ const Uploaders = ({ importType, nextStep, setUploadResult }) => {
             {importType == "prospects" && (
                 <div className="">
                     <div className="mx-auto max-w-7xl px-2 ">
-                        <h2 className="mt-6 mb-0">Upload a prospect file for donor research:</h2>
+                        <h2 className="mt-8 mb-0">Upload a prospect file for donor research:</h2>
                         <p className="font-light">(required: first_name, last_name, and zip) </p>
                         <div className="md:grid md:grid-cols-2">
                             <div className="col-span-1">
@@ -178,7 +178,7 @@ const Uploaders = ({ importType, nextStep, setUploadResult }) => {
             {importType == "pledges" && (
                 <div className="">
                     <div className="mx-auto max-w-7xl px-2 ">
-                        <h2 className="mt-6 mb-0">Upload pledges</h2>
+                        <h2 className="mt-8 mb-0">Upload pledges</h2>
                         <p className="font-light">
                             (required: first_name, last_name, zip, amount){" "}
                         </p>
@@ -319,7 +319,7 @@ function Choices({ importType, setImportType }) {
             onChange={(e) => {
                 setImportType(e.title.toLowerCase());
             }}
-            className="mt-6"
+            className="mt-8"
         >
             <RadioGroup.Label className="text-base font-semibold leading-6 text-gray-900">
                 Are you importing donations/donors, prospects, or pledges?
@@ -356,7 +356,7 @@ function Choices({ importType, setImportType }) {
                                         </RadioGroup.Description>
                                         <RadioGroup.Description
                                             as="span"
-                                            className="mt-6 text-sm font-medium text-gray-900"
+                                            className="mt-8 text-sm font-medium text-gray-900"
                                         >
                                             {/* {mailingList.users} */}
                                         </RadioGroup.Description>

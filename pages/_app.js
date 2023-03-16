@@ -37,7 +37,6 @@ function App({ Component, pageProps }) {
 function SupabaseWrapper({ children }) {
     let [supabaseClient, setSupabaseClient] = useState();
     const { getToken, userId, sessionId, orgId } = useAuth();
-
     useEffect(() => {
         let now = async () => {
             // Get the clerk.dev JWT
@@ -51,7 +50,7 @@ function SupabaseWrapper({ children }) {
             setSupabaseClient(createSupabaseClient(supabaseAccessToken));
         };
         now();
-    }, [userId, sessionId, orgId, getTokenStable]);
+    }, [userId, sessionId, orgId]);
 
     return (
         <SupabaseProvider value={supabaseClient}>

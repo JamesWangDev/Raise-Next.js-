@@ -177,7 +177,7 @@ main button[type]:not(.MuiButtonBase-root):not(.do-not-global-style).button-xs {
 
 .nav-item {
     border-color: white;
-    @apply p-2 text-gray-600;
+    @apply p-1.5 text-gray-600;
     @apply px-2.5;
     @apply mx-1 !important;
 }
@@ -187,7 +187,7 @@ main button[type]:not(.MuiButtonBase-root):not(.do-not-global-style).button-xs {
 
 .nav-item.current,
 .nav-item:hover {
-    box-shadow: 0px 0px 0px 1px rgba(0, 144, 237, 0.3);
+    box-shadow: 0px 0px 0px 1px rgba(50, 144, 237, 0.3);
 }
 
 .cl-socialButtonsBlockButton {
