@@ -226,7 +226,7 @@ const Layout = ({ children }) => {
                     <div className="pt-5 flex flex-grow flex-col overflow-y-auto border-r border-gray-200">
                         <Brand />
 
-                        <div className="mt-5 flex flex-grow flex-col">
+                        <div className="pt-5 flex flex-grow flex-col bg-gray-50">
                             <nav className="flex-1 space-y-1 px-2 pb-4">
                                 {navigation.map((item, index) => (
                                     <div key={index}>
