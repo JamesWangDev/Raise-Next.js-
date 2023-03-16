@@ -40,7 +40,7 @@ import { DocSearch } from "@docsearch/react";
 
 const navigation = [
     { name: "Dashboard", href: "/", icon: HomeIcon, current: true },
-    { name: "People", href: "/people", icon: UsersIcon, current: false },
+    { name: "Create a List", href: "/people", icon: UsersIcon, current: false },
     {
         name: "Saved Lists",
         href: "/savedlists",

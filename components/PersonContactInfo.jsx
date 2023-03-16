@@ -42,7 +42,15 @@ function emailDisplayFormatter(input) {
     );
 }
 
-export default function PersonContactInfo({ person, addPhone, addEmail }) {
+export default function PersonContactInfo({
+    person,
+    addPhone,
+    addEmail,
+    deletePhone,
+    deleteEmail,
+    restorePhone,
+    restoreEmail,
+}) {
     let [newPhone, setNewPhone] = useState(null);
     let [newEmail, setNewEmail] = useState(null);
     return (
@@ -52,7 +60,30 @@ export default function PersonContactInfo({ person, addPhone, addEmail }) {
                 <dt className="text-sm font-medium text-gray-500">Phone Numbers</dt>
                 {person.phone_numbers?.map((phone_number) => (
                     <dd className="mt-1 text-sm text-gray-900" key={phone_number.id}>
-                        {phoneNumberDisplayFormatter(phone_number.phone_number)}
+                        <span className={phone_number.remove_date && "line-through"}>
+                            {phoneNumberDisplayFormatter(phone_number.phone_number)}
+                        </span>
+                        {!phone_number.remove_date ? (
+                            <button
+                                type="button"
+                                className="do-not-global-style text-red-600 px-1"
+                                onClick={() => {
+                                    deletePhone(phone_number.id);
+                                }}
+                            >
+                                x
+                            </button>
+                        ) : (
+                            <button
+                                type="button"
+                                className="do-not-global-style text-green-700 px-1 text-xs underline"
+                                onClick={() => {
+                                    restorePhone(phone_number.id);
+                                }}
+                            >
+                                Restore
+                            </button>
+                        )}
                     </dd>
                 ))}
                 <form
@@ -88,7 +119,30 @@ export default function PersonContactInfo({ person, addPhone, addEmail }) {
                 <dt className="text-sm font-medium text-gray-500">Emails</dt>
                 {person.emails?.map((email) => (
                     <dd className="mt-1 text-sm text-gray-900" key={email.id}>
-                        {emailDisplayFormatter(email.email)}
+                        <span className={email.remove_date && "line-through"}>
+                            {emailDisplayFormatter(email.email)}
+                        </span>
+                        {!email.remove_date ? (
+                            <button
+                                type="button"
+                                className="do-not-global-style text-red-600 px-1"
+                                onClick={() => {
+                                    deleteEmail(email.id);
+                                }}
+                            >
+                                x
+                            </button>
+                        ) : (
+                            <button
+                                type="button"
+                                className="do-not-global-style text-green-700 px-1 text-xs underline"
+                                onClick={() => {
+                                    restoreEmail(email.id);
+                                }}
+                            >
+                                Restore
+                            </button>
+                        )}
                     </dd>
                 ))}
                 <form

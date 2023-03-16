@@ -70,7 +70,7 @@ export function StatCard({ query, table, item }) {
             className="relative overflow-hidden rounded-lg bg-white px-4 pt-5 pb-0 shadow sm:px-6 sm:pt-6 ring-1 ring-opacity-5 ring-black"
         >
             <dt>
-                <div className="absolute rounded-md bg-gray-400 p-3">
+                <div className="absolute rounded-md bg-blue-200 p-3">
                     <item.icon className="h-6 w-6 text-white" aria-hidden="true" />
                 </div>
                 <p className="ml-16 truncate text-sm font-medium text-gray-500">{item.name}</p>
