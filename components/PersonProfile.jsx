@@ -123,14 +123,14 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
     }, [fetchPerson]);
 
     const mutations = useMemo(
-        () => ({
+        (person) => ({
             appendInteraction: async (newInteraction) => {
                 let { pledge, ...newInteractionPrepared } = newInteraction;
-                newInteractionPrepared.person_id = person.id;
+                newInteractionPrepared.person_id = personID;
 
                 if (pledge) {
                     await supabase.from("pledges").insert({
-                        person_id: person.id,
+                        person_id: personID,
                         amount: pledge,
                     });
                 }
@@ -195,7 +195,7 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
                     .eq("id", id)
                     .then(fetchPerson),
         }),
-        [supabase, personID, fetchPerson]
+        [supabase, personID, fetchPerson, person.id]
     );
 
     if (isLoading) return;
@@ -220,7 +220,7 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
                                 { name: "People", href: "/people", current: false },
                                 {
                                     name: person.first_name + " " + person.last_name,
-                                    href: "/people/" + person.id,
+                                    href: "/people/" + personID,
                                     current: true,
                                 },
                             ]}
@@ -228,7 +228,7 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
                     </div>
                     <div id="person-header" className="grid grid-cols-2 gap-2">
                         <div id="">
-                            <Tooltip title={"Person ID: " + person.id} arrow>
+                            <Tooltip title={"Person ID: " + personID} arrow>
                                 <h1 className="mb-0">
                                     {person.first_name} {person.last_name}
                                 </h1>
