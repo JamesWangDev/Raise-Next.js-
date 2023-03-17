@@ -425,7 +425,7 @@ const Layout = ({ children }) => {
                                                     // socialButtonsPlacement: "bottom",
                                                 },
                                                 variables: {
-                                                    colorPrimary: "#2d28ff",
+                                                    colorPrimary: "#388bff",
                                                 },
                                             }}
                                             // signInUrl=
