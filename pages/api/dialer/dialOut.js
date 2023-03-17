@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-export const config = { runtime: "edge" };
+// export const config = { runtime: "edge" };
 const twilio = require("twilio");
 
 export default async function dialOutAndPlaceInConference(request) {
