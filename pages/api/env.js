@@ -3,6 +3,7 @@ export const config = { runtime: "edge" };
 
 export default function handler(req) {
     return NextResponse.json({
-        name: `Hello world`,
+        "process.env.ENVIRONMENT_URL": process.env.ENVIRONMENT_URL,
+        reqdoturl: req?.url,
     });
 }
