@@ -1,7 +1,7 @@
 // necessary imports
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useSupabase } from "utils/supabaseHooks";
+import { useSupabase } from "lib/supabaseHooks";
 
 export default function CallingSessionsGrid() {
     // get orgid using clerk

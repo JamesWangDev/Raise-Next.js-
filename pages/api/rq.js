@@ -1,6 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 // Postgres client
-import { connectToDatabase } from "utils/db";
+import { connectToDatabase } from "lib/db";
 const db = connectToDatabase();
 import jwt_decode from "jwt-decode";
 import { getAuth } from "@clerk/nextjs/server";

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSupabase } from "utils/supabaseHooks";
+import { useSupabase } from "lib/supabaseHooks";
 import Breadcrumbs from "components/Breadcrumbs";
 import PageTitle from "components/PageTitle";
 import CallingSessionsGrid from "components/CallingSessionsGrid";

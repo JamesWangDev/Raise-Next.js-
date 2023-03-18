@@ -5,7 +5,7 @@ import "styles/dark.css";
 import Layout from "components/Layout";
 import { ClerkProvider, useAuth } from "@clerk/nextjs";
 import ChatWidgetWrapper from "components/ChatWidgetWrapper";
-import { createSupabaseClient, SupabaseProvider } from "utils/supabaseHooks";
+import { createSupabaseClient, SupabaseProvider } from "lib/supabaseHooks";
 
 // pages/_app.js
 import { Inter } from "@next/font/google";

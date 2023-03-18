@@ -7,11 +7,11 @@ const { v4: uuid } = require("uuid");
 const Papa = require("papaparse");
 
 // Postgres client
-import { connectToDatabase } from "utils/db";
+import { connectToDatabase } from "lib/db";
 const db = connectToDatabase();
 
 // Supabase storage client
-import { createSupabaseClient } from "utils/supabaseHooks";
+import { createSupabaseClient } from "lib/supabaseHooks";
 
 // List of columns in order from csv file
 let permitTheseColumns = [

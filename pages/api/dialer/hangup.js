@@ -1,26 +1,29 @@
-const twilio = require("twilio");
+import { NextResponse } from "next/server";
+export const config = { runtime: "edge" };
+import { getConferences } from "lib/twilio";
 
-export default async function hangup(data, context) {
-    const accountSid = process.env.TWILIO_ACCOUNT_SID;
-    const authToken = process.env.TWILIO_AUTH_TOKEN;
-    const client = twilio(accountSid, authToken);
-
-    const conferences = await client.conferences.list({
-        status: "in-progress",
-        limit: 1,
-    });
+export default async function handler(request) {
+    const { searchParams } = new URL(request.url);
+    const participantCallSidOrLabel = searchParams.get("participant");
+    const conferences = getConferences();
 
     if (conferences.length < 1) {
         return "Error: cannot hangup an outbound call before you call in to (667) 242-9611!";
     } else {
         const conferenceSID = conferences[0]["sid"];
 
-        client
-            .conferences(conferenceSID)
-            .participants("outboundCall")
-            .remove()
-            .then((participant) => {
-                return "successfully hung up";
-            });
+        const response = await fetch(
+            `${TWILIO_API_URL}/Conferences/${conferenceSID}/Participants/${participantCallSidOrLabel}.json`,
+            {
+                method: "DELETE",
+                headers: new Headers({
+                    ...Authorization,
+                    "Content-Type": "application/x-www-form-urlencoded",
+                }),
+            }
+        );
+        const responseJSON = await response.json();
+        console.log({ responseJSON });
+        return NextResponse.json(responseJSON);
     }
 }

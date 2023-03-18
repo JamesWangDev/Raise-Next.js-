@@ -1,6 +1,6 @@
 import { Tooltip } from "@mui/material";
 import { useState } from "react";
-import { EMAIL_VALIDATION_REGEX } from "utils/validation";
+import { EMAIL_VALIDATION_REGEX } from "lib/validation";
 
 function phoneNumberDisplayFormatter(input) {
     if (typeof input === "undefined") return null;

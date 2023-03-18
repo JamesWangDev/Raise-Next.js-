@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import "utils/randomUUID-polyfill";
+import "lib/randomUUID-polyfill";
 import { CheckIcon } from "@heroicons/react/24/solid";
 import { RadioGroup } from "@headlessui/react";
 import { CheckCircleIcon } from "@heroicons/react/20/solid";
 import { useOrganization } from "@clerk/nextjs";
 import { FilePond } from "react-filepond";
 import "filepond/dist/filepond.min.css";
-import { useSupabase } from "utils/supabaseHooks";
+import { useSupabase } from "lib/supabaseHooks";
 import Breadcrumbs from "components/Breadcrumbs";
 import PageTitle from "components/PageTitle";
 

@@ -1,4 +1,4 @@
-import { useSupabase } from "utils/supabaseHooks";
+import { useSupabase } from "lib/supabaseHooks";
 import { useState } from "react";
 import { CheckIcon, HandThumbUpIcon, UserIcon } from "@heroicons/react/20/solid";
 

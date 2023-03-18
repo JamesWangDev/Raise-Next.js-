@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import PageTitle from "components/PageTitle";
 import { PhoneIcon } from "@heroicons/react/24/outline";
 import { useState, useEffect } from "react";
-import { useSupabase } from "utils/supabaseHooks";
+import { useSupabase } from "lib/supabaseHooks";
 import { parseSQL } from "react-querybuilder";
 import Breadcrumbs from "components/Breadcrumbs";
 
@@ -28,7 +28,7 @@ import {
     query,
     collection,
     orderBy,
-} from "utils/firebase";
+} from "lib/firebase";
 
 export default function StartCallingSession() {
     const router = useRouter();

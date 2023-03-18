@@ -263,6 +263,27 @@ model saved_lists {
   updated_at      DateTime @default(now()) @db.Timestamptz(6)
 }
 
+model conference_updates {
+  id                         String   @id @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  coaching                   Boolean?
+  friendly_name              String?
+  sequence_number            Int?
+  conference_sid             String
+  end_conference_on_exit     Boolean?
+  call_sid                   String?
+  status_callback_event      String?
+  start_conference_on_enter  Boolean?
+  hold                       Boolean?
+  account_sid                String
+  muted                      Boolean?
+  created_at                 DateTime @default(now()) @db.Timestamptz(6)
+  inserted_at                DateTime @default(now()) @db.Timestamptz(6)
+  updated_at                 DateTime @default(now()) @db.Timestamptz(6)
+  call_sid_ending_conference String?
+  reason                     String?
+  participant_label          String?
+}
+
 view donations_for_user_display {
   id              String   @id @db.Uuid
   date            String?

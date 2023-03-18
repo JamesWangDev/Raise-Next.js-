@@ -6,7 +6,7 @@ const className = (...classes) => classes.filter(Boolean).join(" ");
 
 import { QueryBuilderBootstrap } from "@react-querybuilder/bootstrap";
 import { useState, useEffect, useCallback } from "react";
-import { useSupabase } from "utils/supabaseHooks";
+import { useSupabase } from "lib/supabaseHooks";
 import SaveList from "./SaveList";
 import SupabaseTable from "./SupabaseTable";
 
