@@ -237,11 +237,11 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
                                 {person.occupation} | {person.employer} | {person.state}
                             </h2>
                             <p className="text-sm text-gray-500">
-                                <span className="inline-flex flex mr-1.5">
+                                <span className="inline-flex mr-1.5">
                                     <DonationsSummary person={person} />
                                 </span>
                                 |
-                                <span className="inline-flex flex mx-1.5">
+                                <span className="inline-flex mx-1.5">
                                     <PledgesSummary person={person} />
                                 </span>
                                 |

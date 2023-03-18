@@ -39,7 +39,7 @@ h3 {
 
 .qbp input,
 .qbp select {
-    @apply min-w-0 flex-1 rounded-none rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm mr-2;
+    @apply min-w-0 flex-1 rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm mr-2;
 }
 
 .qbp .btn {
@@ -205,7 +205,7 @@ button[type].btn-primary:not(.do-not-global-style) {
 }
 
 button[type].btn-primary.button-xs:not(.do-not-global-style) {
-    @apply inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-2.5 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-gray-50 focus:outline-none hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 !important;
+    @apply inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-2.5 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 !important;
     @apply bg-blue-600 !important;
 }
 
@@ -247,9 +247,9 @@ button[type].btn-primary.button-xs:not(.do-not-global-style) {
 .MuiDataGrid-root {
     @apply rounded-lg border-0 ring-1 ring-black ring-opacity-5 shadow !important;
 }
-.MuiDataGrid-virtualScrollerRenderZone {
-    /* @apply min-w-full divide-y divide-gray-300 !important; */
-}
+/* .MuiDataGrid-virtualScrollerRenderZone {
+    @apply min-w-full divide-y divide-gray-300 !important;
+} */
 .MuiSvgIcon-root {
     color: #ccc !important;
 }
@@ -282,9 +282,9 @@ nav,
 nav .border-t {
     @apply border-0 mt-1 !important;
 }
-.border-r {
-    /* @apply border-r-gray-100; */
-}
+/* .border-r {
+    @apply border-r-gray-100;
+} */
 .link {
     @apply text-blue-600 underline;
 }
