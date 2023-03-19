@@ -4,22 +4,40 @@ const fetcher = (url) => axios.get(url).then((res) => res.data);
 import { useRouter } from "next/router";
 import PageTitle from "components/PageTitle";
 import { PhoneIcon } from "@heroicons/react/24/outline";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useReducer } from "react";
 import { useSupabase } from "lib/supabaseHooks";
 import { parseSQL } from "react-querybuilder";
 import Breadcrumbs from "components/Breadcrumbs";
 
 import PersonProfile from "components/PersonProfile";
 
-function hangup() {}
-function dial() {}
+const reducer = (prevState, payload) => {
+    console.log("reducer()");
+
+    if (!payload || !payload.hasOwnProperty("new") || !payload.new.hasOwnProperty("created_at")) {
+        console.error({
+            error: "Conference updates subscription payload invalid",
+            payload,
+        });
+    }
+
+    // Don't push same update entry ID twice to state
+    if (prevState.map((item) => item.id).includes(payload.new.id)) {
+        return false;
+    }
+
+    // Append to beginning
+    return [payload.new, ...prevState];
+};
 
 export default function StartCallingSession() {
     const router = useRouter();
     const { listID } = router.query;
 
     const [sessions, setSessions] = useState([]);
-    const [conferenceUpdates, updateConference] = useState([]);
+    // const [conferenceUpdates, updateConference] = useState([]);
+    const [conferenceUpdates, appendConferenceUpdate] = useReducer(reducer, []);
+    const [conferenceSID, setConferenceSID] = useState(null);
     const [dialedIn, setDialedIn] = useState(false);
     const [personID, setPersonID] = useState();
     const [outbound, setOutbound] = useState(false);
@@ -71,27 +89,12 @@ export default function StartCallingSession() {
             });
     }, [listID, supabase]);
 
-    // Supabase realtime
-    const handleSubscription = (payload) => {
-        console.log("handleSubscription()");
-        if (
-            !payload ||
-            !payload.hasOwnProperty("new") ||
-            !payload.new.hasOwnProperty("created_at")
-        ) {
-            console.error({
-                error: "Conference updates subscription payload invalid",
-                payload,
-            });
-        }
+    // // Supabase realtime
+    // const handleSubscription = (payload) => {
 
-        // Don't push same update entry ID twice to state
-        if (conferenceUpdates.map((item) => item.id).includes(payload.new.id)) {
-            return false;
-        }
-
-        updateConference([payload.new, ...conferenceUpdates]);
-    };
+    //     // updateConference([payload.new, ...conferenceUpdates]);
+    //     appendConferenceUpdate(payload.new);
+    // };
     useEffect(() => {
         console.log("useffect1");
         console.log("conferenceUpdates", conferenceUpdates);
@@ -99,6 +102,8 @@ export default function StartCallingSession() {
         if (conferenceUpdates?.length === 0) {
             return () => {};
         }
+
+        if (conferenceSID === null) setConferenceSID(conferenceUpdates[0].conference_sid);
 
         if (
             (conferenceUpdates[0]?.status_callback_event === "conference-end" ||
@@ -141,7 +146,7 @@ export default function StartCallingSession() {
                     table: "conference_updates",
                 },
                 (payload) => {
-                    handleSubscription(payload);
+                    appendConferenceUpdate(payload);
                 }
             )
             .subscribe();
@@ -149,6 +154,27 @@ export default function StartCallingSession() {
             supabase.removeChannel(channel);
         };
     }, [supabase]);
+
+    async function hangup() {
+        const response = await (
+            await fetch("/api/dialer/hangup?conferenceSID=" + conferenceSID)
+        ).json();
+        console.log(response);
+        return response;
+    }
+
+    async function dial(number) {
+        const response = await (
+            await fetch(
+                "/api/dialer/dialOut?numberToDial=" +
+                    number.toString() +
+                    "&conferenceSID=" +
+                    conferenceSID
+            )
+        ).json();
+        console.log(response);
+        return response;
+    }
 
     return dialedIn ? (
         <>

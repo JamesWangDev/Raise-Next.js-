@@ -199,6 +199,9 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
     );
 
     if (isLoading) return;
+    if (!person) {
+        return <>No person with that ID exists.</>;
+    }
 
     // let interactions = person.interactions || [];
     var interactions = [
@@ -207,9 +210,12 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
         ...person?.pledges.map((i) => ({ ...i, type: "pledge" })),
     ];
 
-    if (!person) {
-        return <>No person with that ID exists.</>;
-    }
+    const primaryPhoneNumber =
+        person?.phone_numbers?.filter((phone) => !!phone.primary_for)[0]?.phone_number ||
+        person?.phone_numbers?.sort((a, b) =>
+            new Date(a.created_at) < new Date(b.created_at) ? 1 : -1
+        )[0]?.phone_number;
+
     if (person) {
         return (
             <div className="mx-auto max-w-7xl px-2">
@@ -289,14 +295,8 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
                                 {
                                     <button
                                         type="button"
-                                        onClick={() =>
-                                            dial(
-                                                person?.phone_numbers?.filter(
-                                                    (phone) => !!phone.primary_for
-                                                )
-                                            )
-                                        }
-                                        {...(!person?.phone_numbers || outbound
+                                        onClick={() => dial(primaryPhoneNumber)}
+                                        {...(!primaryPhoneNumber || outbound
                                             ? { disabled: true }
                                             : {})}
                                     >
