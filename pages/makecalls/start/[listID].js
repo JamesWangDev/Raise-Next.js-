@@ -1,41 +1,25 @@
 import useSWR from "swr";
 import axios from "axios";
 const fetcher = (url) => axios.get(url).then((res) => res.data);
-
-import Head from "next/head";
-import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import PageTitle from "components/PageTitle";
 import { PhoneIcon } from "@heroicons/react/24/outline";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSupabase } from "lib/supabaseHooks";
 import { parseSQL } from "react-querybuilder";
 import Breadcrumbs from "components/Breadcrumbs";
 
 import PersonProfile from "components/PersonProfile";
 
-// Import firebase utils
-import {
-    firebase,
-    db,
-    functions,
-    dial,
-    hangup,
-    dialerAdvanced,
-    handleConferenceUpdateSnapshot,
-    onSnapshot,
-    query,
-    collection,
-    orderBy,
-} from "lib/firebase";
+function hangup() {}
+function dial() {}
 
 export default function StartCallingSession() {
     const router = useRouter();
     const { listID } = router.query;
 
     const [sessions, setSessions] = useState([]);
-    const [conferenceUpdates, updateConference] = useState();
+    const [conferenceUpdates, updateConference] = useState([]);
     const [dialedIn, setDialedIn] = useState(false);
     const [personID, setPersonID] = useState();
     const [outbound, setOutbound] = useState(false);
@@ -51,7 +35,6 @@ export default function StartCallingSession() {
     }
 
     let hasNext = peopleList?.indexOf(personID) < peopleList?.length - 1;
-    console.log();
 
     function leave() {
         router.push("/makecalls");
@@ -88,53 +71,84 @@ export default function StartCallingSession() {
             });
     }, [listID, supabase]);
 
+    // Supabase realtime
+    const handleSubscription = (payload) => {
+        console.log("handleSubscription()");
+        if (
+            !payload ||
+            !payload.hasOwnProperty("new") ||
+            !payload.new.hasOwnProperty("created_at")
+        ) {
+            console.error({
+                error: "Conference updates subscription payload invalid",
+                payload,
+            });
+        }
+
+        // Don't push same update entry ID twice to state
+        if (conferenceUpdates.map((item) => item.id).includes(payload.new.id)) {
+            return false;
+        }
+
+        updateConference([payload.new, ...conferenceUpdates]);
+    };
     useEffect(() => {
-        // Subscribe to the conference updates snapshot listener.
-        const conferenceUpdatesRef = onSnapshot(
-            query(collection(db, "conference-updates"), orderBy("Timestamp", "desc")),
-            // Handler for the conference updates snapshot listener.
-            (snapshot) => {
-                console.log("firebase snapshot fired");
+        console.log("useffect1");
+        console.log("conferenceUpdates", conferenceUpdates);
 
-                // Rebuild the latest conference update using the special iterator
-                let allUpdates = [];
-                snapshot.forEach((doc) => {
-                    allUpdates.push(doc.data());
-                });
+        if (conferenceUpdates?.length === 0) {
+            return () => {};
+        }
 
-                // Set state
-                updateConference(allUpdates);
+        if (
+            (conferenceUpdates[0]?.status_callback_event === "conference-end" ||
+                conferenceUpdates[1]?.status_callback_event === "conference-end") &&
+            conferenceUpdates[0]?.status_callback_event !== "participant-join"
+        ) {
+            // Determine if we're currently dialed in
+            setDialedIn(false);
+        } else {
+            setDialedIn(true);
+        }
 
-                // Determine if we're currently dialed in
-                if (
-                    (allUpdates[0].StatusCallbackEvent == "conference-end" ||
-                        allUpdates[1].StatusCallbackEvent == "conference-end") &&
-                    allUpdates[0].StatusCallbackEvent != "participant-join"
-                )
-                    setDialedIn(false);
-                else setDialedIn(true);
+        // Enable hangup button when outbound call is active, disable dial button
+        if (
+            conferenceUpdates[0]?.status_callback_event == "participant-join" &&
+            conferenceUpdates[0]?.participant_label == "outboundCall"
+        ) {
+            setOutbound(true);
+        }
+        // Disable hangup button when outbound call ends, enable dial button
+        else if (
+            conferenceUpdates[0]?.status_callback_event == "participant-leave" &&
+            conferenceUpdates[0]?.participant_label == "outboundCall"
+        ) {
+            setOutbound(false);
+        }
+    }, [conferenceUpdates]);
 
-                // Enable hangup button when outbound call is active, disable dial button
-                if (
-                    allUpdates[0].StatusCallbackEvent == "participant-join" &&
-                    allUpdates[0].ParticipantLabel == "outboundCall"
-                )
-                    setOutbound(true);
-
-                // Disable hangup button when outbound call ends, enable dial button
-                if (
-                    allUpdates[0].StatusCallbackEvent == "participant-leave" &&
-                    allUpdates[0].ParticipantLabel == "outboundCall"
-                )
-                    setOutbound(false);
-            }
-        );
+    // useEffectOnMount to setup subscription
+    useEffect(() => {
+        console.log("useffect2");
+        // Keep
+        const channel = supabase
+            .channel("conference_updates")
+            .on(
+                "postgres_changes",
+                {
+                    event: "INSERT",
+                    schema: "public",
+                    table: "conference_updates",
+                },
+                (payload) => {
+                    handleSubscription(payload);
+                }
+            )
+            .subscribe();
         return () => {
-            // Unsubscribe from the conference updates snapshot listener.
-            conferenceUpdatesRef();
-            //
+            supabase.removeChannel(channel);
         };
-    }, []);
+    }, [supabase]);
 
     return dialedIn ? (
         <>

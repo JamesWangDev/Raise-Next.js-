@@ -282,6 +282,7 @@ model conference_updates {
   call_sid_ending_conference String?
   reason                     String?
   participant_label          String?
+  reason_conference_ended    String?
 }
 
 view donations_for_user_display {

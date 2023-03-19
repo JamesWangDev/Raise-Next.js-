@@ -202,9 +202,9 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
 
     // let interactions = person.interactions || [];
     var interactions = [
-        ...person.interactions.map((i) => ({ ...i, type: "interaction" })),
-        ...person.donations.map((i) => ({ ...i, type: "donation" })),
-        ...person.pledges.map((i) => ({ ...i, type: "pledge" })),
+        ...person?.interactions.map((i) => ({ ...i, type: "interaction" })),
+        ...person?.donations.map((i) => ({ ...i, type: "donation" })),
+        ...person?.pledges.map((i) => ({ ...i, type: "pledge" })),
     ];
 
     if (!person) {

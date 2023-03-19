@@ -50,6 +50,7 @@ function SupabaseWrapper({ children }) {
             setSupabaseClient(createSupabaseClient(supabaseAccessToken));
         };
         now();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userId, sessionId, orgId]);
 
     return (
