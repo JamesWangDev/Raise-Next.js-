@@ -126,7 +126,7 @@ export default function StartCallingSession() {
         ) {
             setOutbound(false);
         }
-    }, [conferenceUpdates]);
+    }, [conferenceUpdates, conferenceSID]);
 
     // useEffectOnMount to setup subscription
     useEffect(() => {

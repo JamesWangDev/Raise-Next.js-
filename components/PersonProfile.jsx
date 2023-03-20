@@ -106,17 +106,14 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
     const [bio, setBio] = useState(null);
     const [isLoading, setLoading] = useState(true);
 
-    const fetchFECHistory = useCallback(
-        (person) => {
-            supabase
-                .from("alltime_individual_contributions")
-                .select("*")
-                .eq("name", (person.last_name + ", " + person.first_name).toUpperCase())
-                .eq("zip_code", person.zip)
-                .then((result) => setFECHistory(result.data));
-        },
-        [supabase]
-    );
+    useEffect(() => {
+        supabase
+            .from("alltime_individual_contributions")
+            .select("*")
+            .eq("name", (person.last_name + ", " + person.first_name).toUpperCase())
+            .eq("zip_code", person.zip)
+            .then((result) => setFECHistory(result.data));
+    }, [supabase, person?.first_name, person?.last_name, person?.zip]);
 
     const fetchPerson = useCallback(() => {
         supabase
@@ -128,9 +125,6 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
             .single()
             .then((result) => {
                 setPerson(result.data);
-                fetchFECHistory(result.data);
-            })
-            .then(() => {
                 setLoading(false);
             });
     }, [supabase, personID]);
