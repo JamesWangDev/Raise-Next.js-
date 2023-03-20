@@ -16,7 +16,7 @@ export default function MakeCallsPage() {
                     pages={[
                         {
                             name: "Make Calls",
-                            href: "/makecalls",
+                            href: "/dialer",
                             current: false,
                         },
                     ]}

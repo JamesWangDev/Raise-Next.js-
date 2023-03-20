@@ -37,10 +37,8 @@ const reducer = (prevState, payload) => {
 
 export default function StartCallingSession() {
     const router = useRouter();
-    const { listID } = router.query;
-
-    const [sessions, setSessions] = useState([]);
-    // const [conferenceUpdates, updateConference] = useState([]);
+    const { callSessionID } = router.query;
+    const [session, setSession] = useState([]);
     const [conferenceUpdates, appendConferenceUpdate] = useReducer(reducer, []);
     const [conferenceSID, setConferenceSID] = useState(null);
     const [dialedIn, setDialedIn] = useState(false);
@@ -49,8 +47,8 @@ export default function StartCallingSession() {
     const [peopleList, setPeopleList] = useState();
     const supabase = useSupabase();
 
+    // Find the current person in the list, and move to the next one.
     function nextPerson() {
-        // Find the current person in the list, and move to the next one.
         let currentIndex = peopleList.indexOf(personID);
         let nextIndex = currentIndex + 1;
         if (nextIndex >= peopleList.length) return false;
@@ -60,31 +58,24 @@ export default function StartCallingSession() {
     let hasNext = peopleList?.indexOf(personID) < peopleList?.length - 1;
 
     function leave() {
-        router.push("/makecalls");
+        router.push("/dialer");
     }
 
     useEffect(() => {
         // Fetch the list of calling sessions from the API.
         supabase
             .from("call_sessions")
-            .select("*")
-            .then(({ data, error }) => {
-                if (error) console.log("Error fetching sessions", error);
-                else setSessions(data);
-            });
-
-        // Fetch the saved_list (as query) and execute it to return a people list
-        supabase
-            .from("saved_lists")
-            .select("*")
-            .eq("id", listID)
+            .select("*, saved_lists (*)")
+            .eq("id", callSessionID)
             .single()
-            .limit(1)
             .then(({ data, error }) => {
-                if (error) console.log("Error fetching list", error);
+                if (error) console.log("Error fetching call session+list", error);
+                else setSession(data);
 
-                const urlToFetch = `/api/rq?start=0&query=${encodeURI(
-                    `select id from people where ${data.query}`
+                console.log({ data });
+
+                const urlToFetch = `/api/rq?query=${encodeURI(
+                    `select id from people where ${data.saved_lists.query}`
                 )}`;
                 axios.get(urlToFetch).then((res) => {
                     let temporaryPeopleList = Array.from(res.data.map((row) => row.id));
@@ -92,7 +83,7 @@ export default function StartCallingSession() {
                     setPersonID(temporaryPeopleList[0]);
                 });
             });
-    }, [listID, supabase]);
+    }, [callSessionID, supabase]);
 
     // // Supabase realtime
     // const handleSubscription = (payload) => {
@@ -145,7 +136,7 @@ export default function StartCallingSession() {
         supabase
             .from("conference_updates")
             .select()
-            .order("created_at", { ascending: false })
+            .order("inserted_at", { ascending: false })
             .then((result) => {
                 appendConferenceUpdate(result?.data);
             });
@@ -230,12 +221,12 @@ export default function StartCallingSession() {
                     pages={[
                         {
                             name: "Make Calls",
-                            href: "/makecalls",
+                            href: "/dialer",
                             current: false,
                         },
                         {
-                            name: "Launch New Call Session with Saved List",
-                            href: "/makecalls/start/[listID]",
+                            name: `Call Session #${callSessionID}`,
+                            href: `/dialer/${callSessionID}`,
                             current: false,
                         },
                     ]}

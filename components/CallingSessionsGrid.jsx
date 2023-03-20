@@ -30,7 +30,7 @@ export default function CallingSessionsGrid() {
                             Started on: {new Date(session.started).toLocaleDateString()}
                         </p>
                         <Link
-                            href="/call/1"
+                            href={"/dialer/" + session.id}
                             className="block mt-4 text-blue-600 hover:underline underline underline-offset-4 text-base font-normal"
                         >
                             Join this session

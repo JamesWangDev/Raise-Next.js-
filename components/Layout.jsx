@@ -53,7 +53,7 @@ const navigation = [
         icon: FolderIcon,
         current: false,
     },
-    { name: "Make Calls", href: "/makecalls", icon: PhoneIcon, current: false },
+    { name: "Make Calls", href: "/dialer", icon: PhoneIcon, current: false },
     {
         name: "Interaction History",
         href: "/contacthistory",
