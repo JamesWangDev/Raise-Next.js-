@@ -7,6 +7,7 @@ import Breadcrumbs from "./Breadcrumbs";
 import PersonContactInfo from "./PersonContactInfo";
 import { Tooltip } from "@mui/material";
 import { useUser } from "@clerk/nextjs";
+import FECHistoryList from "./FECHistoryList";
 
 const pluralize = (single, plural, number) => (number > 1 ? plural : single);
 
@@ -101,8 +102,21 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
     const { id: userID } = useUser();
     const supabase = useSupabase();
     const [person, setPerson] = useState();
+    const [FECHistory, setFECHistory] = useState();
     const [bio, setBio] = useState(null);
     const [isLoading, setLoading] = useState(true);
+
+    const fetchFECHistory = useCallback(
+        (person) => {
+            supabase
+                .from("alltime_individual_contributions")
+                .select("*")
+                .eq("name", (person.last_name + ", " + person.first_name).toUpperCase())
+                .eq("zip_code", person.zip)
+                .then((result) => setFECHistory(result.data));
+        },
+        [supabase]
+    );
 
     const fetchPerson = useCallback(() => {
         supabase
@@ -112,7 +126,10 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
             )
             .eq("id", personID)
             .single()
-            .then((result) => setPerson(result.data))
+            .then((result) => {
+                setPerson(result.data);
+                fetchFECHistory(result.data);
+            })
             .then(() => {
                 setLoading(false);
             });
@@ -242,7 +259,7 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
                             <h2 className="text-sm font-normal text-gray-600">
                                 {person.occupation} | {person.employer} | {person.state}
                             </h2>
-                            <p className="text-sm text-gray-500">
+                            <p className="text-sm text-gray-900 font-semibold">
                                 <span className="inline-flex mr-1.5">
                                     <DonationsSummary person={person} />
                                 </span>
@@ -329,21 +346,22 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
                     </div>
                 </div>
                 <div className="max-w-7xl  grid grid-flow-col grid-cols-12 gap-x-10 bg-white border-t px-12 py-6 mt-2 -mx-12">
-                    <div className="col-span-4">
+                    <div className="col-span-3">
                         <PersonContactInfo person={person} {...mutations} />
                         <PersonTagList person={person} {...mutations} />
                     </div>
-                    <div className="col-span-8 -ml-10">
+                    <div className="col-span-6 -ml-10">
                         <InteractionHistory
                             person={person}
                             interactions={interactions}
                             {...mutations}
                         />
                     </div>
-                    {/* <div className="col-span-3">
-                    <PledgeHistory pledges={person?.pledges} {...mutations} />
-                    <DonationHistory donations={person?.donations} {...mutations} />
-                </div> */}
+                    <div className="col-span-3">
+                        <FECHistoryList FECHistory={FECHistory} />
+                        {/* <PledgeHistory pledges={person?.pledges} {...mutations} />
+                    <DonationHistory donations={person?.donations} {...mutations} /> */}
+                    </div>
                 </div>
             </div>
         );
