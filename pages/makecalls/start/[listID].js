@@ -14,6 +14,11 @@ import PersonProfile from "components/PersonProfile";
 const reducer = (prevState, payload) => {
     console.log("reducer()");
 
+    // Bulk update
+    if (!payload?.hasOwnProperty("new")) {
+        return [...payload];
+    }
+
     if (!payload || !payload.hasOwnProperty("new") || !payload.new.hasOwnProperty("created_at")) {
         console.error({
             error: "Conference updates subscription payload invalid",
@@ -135,7 +140,17 @@ export default function StartCallingSession() {
     // useEffectOnMount to setup subscription
     useEffect(() => {
         console.log("useffect2");
-        // Keep
+
+        // Load entire updates
+        supabase
+            .from("conference_updates")
+            .select()
+            .order("created_at", { ascending: false })
+            .then((result) => {
+                appendConferenceUpdate(result?.data);
+            });
+
+        // Keep realtime updates
         const channel = supabase
             .channel("conference_updates")
             .on(
