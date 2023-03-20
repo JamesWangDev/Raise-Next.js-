@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 export const config = { runtime: "edge" };
-import { TWILIO_API_URL } from "lib/twilio";
+import { Authorization, TWILIO_API_URL } from "lib/twilio";
 
 export default async function handler(request) {
     const { searchParams } = new URL(request.url);
