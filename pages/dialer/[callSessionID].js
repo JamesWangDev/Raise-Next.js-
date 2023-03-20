@@ -238,19 +238,13 @@ export default function StartCallingSession() {
                     <div className="relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-12 text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                         <p className="mb-5 text-gray-400 text-xl font-medium">
                             <PhoneIcon className="h-10 w-10 text-gray-400 align-center inline-flex mx-auto mr-2" />{" "}
-                            (667) 242-9611
+                            {process.env.DIALER_NUMBER}
                         </p>
                         <span className="mt-2 block text-base text-gray-900">
                             Call the above number from your cell phone to connect.
                         </span>
                     </div>
                 </div>
-
-                {/* <div className="overflow-hidden rounded-lg bg-white shadow">
-                    <div className="px-4 py-5 sm:p-6 text-center my-7">
-                        Call (667) 242-9611 with your phone to start dialing.
-                    </div>
-                </div> */}
             </div>
         </div>
     );

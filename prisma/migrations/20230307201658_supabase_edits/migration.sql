@@ -12,7 +12,7 @@ alter default privileges in schema public grant all on functions to postgres, an
 alter default privileges in schema public grant all on sequences to postgres, anon, authenticated, service_role;
 
 -- Add functions necessary for RLS
-create or replace function requesting_org_id()
+create or replace function requesting_user_id()
 returns text
 language sql stable
 as $$
