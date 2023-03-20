@@ -1,16 +1,9 @@
-export const config = {
-    runtime: "edge", // for Edge API Routes only
-    // unstable_allowDynamic: [
-    //     "/lib/utilities.js", // allows a single file
-    //     "/node_modules/function-bind/**", // use a glob to allow anything in the function-bind 3rd party module
-    // ],
-};
-
+export const config = { runtime: "edge" };
 import { getAuth } from "@clerk/nextjs/server";
 const { v4: uuid } = require("uuid");
 const Papa = require("papaparse"); // Handles csvs
-import { createSupabaseClient } from "utils/supabaseHooks";
-import { EMAIL_VALIDATION_REGEX } from "utils/validation";
+import { createSupabaseClient } from "lib/supabaseHooks";
+import { EMAIL_VALIDATION_REGEX } from "lib/validation";
 // List of columns in order from csv file
 let permitTheseColumns = [
     "id",

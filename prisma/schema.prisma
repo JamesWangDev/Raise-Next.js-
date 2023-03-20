@@ -9,14 +9,38 @@ datasource db {
 }
 
 model call_sessions {
-  id              BigInt    @id @default(autoincrement())
-  created_at      DateTime? @default(now()) @db.Timestamptz(6)
-  list_id         String?   @db.Uuid
-  started         DateTime? @default(now()) @db.Timestamptz(6)
-  last_call       DateTime? @db.Timestamptz(6)
-  organization_id String    @default(dbgenerated("requesting_org_id()"))
-  inserted_at     DateTime  @default(now()) @db.Timestamptz(6)
-  updated_at      DateTime  @default(now()) @db.Timestamptz(6)
+  id                    BigInt       @id @default(autoincrement())
+  created_at            DateTime?    @default(now()) @db.Timestamptz(6)
+  list_id               String?      @db.Uuid
+  started               DateTime?    @default(now()) @db.Timestamptz(6)
+  last_call             DateTime?    @db.Timestamptz(6)
+  organization_id       String       @default(dbgenerated("requesting_org_id()"))
+  inserted_at           DateTime     @default(now()) @db.Timestamptz(6)
+  updated_at            DateTime     @default(now()) @db.Timestamptz(6)
+  twilio_conference_sid String?      @unique
+  saved_lists           saved_lists? @relation(fields: [list_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "call_sessions_saved_lists_id_fkey")
+}
+
+model conference_updates {
+  id                         String   @id @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  coaching                   Boolean?
+  friendly_name              String?
+  sequence_number            Int?
+  conference_sid             String
+  end_conference_on_exit     Boolean?
+  call_sid                   String?
+  status_callback_event      String?
+  start_conference_on_enter  Boolean?
+  hold                       Boolean?
+  account_sid                String
+  muted                      Boolean?
+  created_at                 DateTime @default(now()) @db.Timestamptz(6)
+  inserted_at                DateTime @default(now()) @db.Timestamptz(6)
+  updated_at                 DateTime @default(now()) @db.Timestamptz(6)
+  call_sid_ending_conference String?
+  reason                     String?
+  participant_label          String?
+  reason_conference_ended    String?
 }
 
 model donations {
@@ -131,6 +155,8 @@ model emails {
   inserted_at     DateTime  @default(now()) @db.Timestamptz(6)
   primary_for     String?   @unique @db.Uuid
   updated_at      DateTime  @default(now()) @db.Timestamptz(6)
+  remove_date     DateTime?
+  remove_user     String?   @db.Uuid
   people          people    @relation(fields: [person_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
@@ -198,6 +224,7 @@ model people {
   custom_field_1  String?
   custom_field_2  String?
   custom_field_3  String?
+  bio             String?
   donations       donations[]
   emails          emails[]
   interactions    interactions[]
@@ -207,80 +234,105 @@ model people {
 }
 
 model phone_numbers {
-  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  created_at      DateTime @default(now()) @db.Timestamptz(6)
-  person_id       String   @db.Uuid
-  organization_id String   @default(dbgenerated("requesting_org_id()"))
-  batch_id        String?  @db.Uuid
-  inserted_at     DateTime @default(now()) @db.Timestamptz(6)
-  updated_at      DateTime @default(now()) @db.Timestamptz(6)
-  primary_for     String?  @unique @db.Uuid
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at      DateTime  @default(now()) @db.Timestamptz(6)
+  person_id       String    @db.Uuid
+  organization_id String    @default(dbgenerated("requesting_org_id()"))
+  batch_id        String?   @db.Uuid
+  inserted_at     DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime  @default(now()) @db.Timestamptz(6)
+  primary_for     String?   @unique @db.Uuid
   phone_number    BigInt
-  people          people   @relation(fields: [person_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-}
-
-model tags {
-  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  created_at      DateTime @default(now()) @db.Timestamptz(6)
-  inserted_at     DateTime @default(now()) @db.Timestamptz(6)
-  updated_at      DateTime @default(now()) @db.Timestamptz(6)
-  tag             String
-  person_id       String   @db.Uuid
-  organization_id String   @default(dbgenerated("requesting_org_id()"))
-  batch_id        String?  @db.Uuid
-  people          people   @relation(fields: [person_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  remove_date     DateTime?
+  remove_user     String?   @db.Uuid
+  people          people    @relation(fields: [person_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model pledges {
-  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  person_id       String   @db.Uuid
-  batch_id        String?  @db.Uuid
-  created_at      DateTime @default(now()) @db.Timestamptz(6)
-  inserted_at     DateTime @default(now()) @db.Timestamptz(6)
-  updated_at      DateTime @default(now()) @db.Timestamptz(6)
-  amount          Decimal  @db.Decimal
-  fufilled        Boolean? @default(false)
-  organization_id String   @default(dbgenerated("requesting_org_id()"))
-  people          people   @relation(fields: [person_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  person_id       String    @db.Uuid
+  batch_id        String?   @db.Uuid
+  created_at      DateTime  @default(now()) @db.Timestamptz(6)
+  inserted_at     DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime  @default(now()) @db.Timestamptz(6)
+  amount          Decimal   @db.Decimal
+  fufilled        Boolean?  @default(false)
+  organization_id String    @default(dbgenerated("requesting_org_id()"))
+  remove_date     DateTime?
+  remove_user     String?   @db.Uuid
+  people          people    @relation(fields: [person_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model saved_lists {
   name            String
-  id              String   @id @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  created_at      DateTime @default(now()) @db.Timestamptz(6)
+  id              String          @id @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at      DateTime        @default(now()) @db.Timestamptz(6)
   query           String
-  organization_id String   @default(dbgenerated("requesting_org_id()"))
-  inserted_at     DateTime @default(now()) @db.Timestamptz(6)
-  updated_at      DateTime @default(now()) @db.Timestamptz(6)
+  organization_id String          @default(dbgenerated("requesting_org_id()"))
+  inserted_at     DateTime        @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime        @default(now()) @db.Timestamptz(6)
+  call_sessions   call_sessions[]
 }
 
-view donations_for_user_display {
-  id              String   @id @db.Uuid
-  date            String?
-  first_name      String?
-  last_name       String?
-  amount          Decimal? @db.Decimal
-  organization_id String
+model tags {
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at      DateTime  @default(now()) @db.Timestamptz(6)
+  inserted_at     DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime  @default(now()) @db.Timestamptz(6)
+  tag             String
+  person_id       String    @db.Uuid
+  organization_id String    @default(dbgenerated("requesting_org_id()"))
+  batch_id        String?   @db.Uuid
+  remove_date     DateTime?
+  remove_user     String?   @db.Uuid
+  people          people    @relation(fields: [person_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
+model conference_participants {
+  id                    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at            DateTime @default(now()) @db.Timestamptz(6)
+  number_dialed_in_from BigInt
+  organization_id       String   @default(dbgenerated("requesting_org_id()"))
+  user_id               String
+}
+
+/// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
 view dashboard_by_account {
-  organization_id              String @id
+  organization_id              String?
   total_sum_donations          Int?
   number_of_donations          Int?
   total_sum_unfufilled_pledges Int?
   number_of_unfufilled_pledges Int?
+
+  @@ignore
 }
 
+/// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+view donations_for_user_display {
+  id              String?  @db.Uuid
+  date            String?
+  first_name      String?
+  last_name       String?
+  amount          Decimal? @db.Decimal
+  organization_id String?
+
+  @@ignore
+}
+
+/// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
 view donations_rollup_by_person {
-  person_id            String   @id @db.Uuid
+  person_id            String?  @db.Uuid
   total_donated        Decimal? @db.Decimal
   number_of_donations  BigInt?
   most_recent_donation String?
   organization_id      String?
+
+  @@ignore
 }
 
+/// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
 view people_for_user_display {
-  id                        String    @id @db.Uuid
+  id                        String?   @db.Uuid
   created_at                DateTime? @db.Timestamptz(6)
   first_name                String?
   last_name                 String?
@@ -301,4 +353,6 @@ view people_for_user_display {
   list_of_committees_2020   String?
   number_of_committees_2020 BigInt?
   organization_id           String?
+
+  @@ignore
 }

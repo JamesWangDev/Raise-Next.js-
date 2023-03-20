@@ -26,6 +26,12 @@ import {
     ChevronDoubleRightIcon,
     UserPlusIcon,
     Cog6ToothIcon,
+    CloudArrowDownIcon,
+    ArrowUpOnSquareStackIcon,
+    LinkIcon,
+    ArrowsRightLeftIcon,
+    UserCircleIcon,
+    CurrencyDollarIcon,
 } from "@heroicons/react/24/outline";
 
 // import algoliasearch from "algoliasearch/lite";
@@ -40,16 +46,16 @@ import { DocSearch } from "@docsearch/react";
 
 const navigation = [
     { name: "Dashboard", href: "/", icon: HomeIcon, current: true },
-    { name: "People", href: "/people", icon: UsersIcon, current: false },
+    { name: "Create a List", href: "/people", icon: UsersIcon, current: false },
     {
         name: "Saved Lists",
         href: "/savedlists",
         icon: FolderIcon,
         current: false,
     },
-    { name: "Make Calls", href: "/makecalls", icon: PhoneIcon, current: false },
+    { name: "Make Calls", href: "/dialer", icon: PhoneIcon, current: false },
     {
-        name: "Contact History",
+        name: "Interaction History",
         href: "/contacthistory",
         icon: ClockIcon,
         current: false,
@@ -58,14 +64,26 @@ const navigation = [
     {
         name: "Donations",
         href: "/donations",
-        icon: CheckCircleIcon,
+        icon: CurrencyDollarIcon,
         current: false,
     },
     { name: "Reports", href: "/reports", icon: EnvelopeIcon, current: false },
     {
         name: "Import",
         href: "/import",
-        icon: ChevronDoubleRightIcon,
+        icon: ArrowUpOnSquareStackIcon,
+        current: false,
+    },
+    {
+        name: "Export",
+        href: "/export",
+        icon: CloudArrowDownIcon,
+        current: false,
+    },
+    {
+        name: "Sync Settings",
+        href: "/sync",
+        icon: ArrowsRightLeftIcon,
         current: false,
     },
     {
@@ -77,7 +95,7 @@ const navigation = [
     {
         name: "Login & Security",
         href: "/user",
-        icon: Cog6ToothIcon,
+        icon: UserCircleIcon,
         current: false,
     },
 ];
@@ -239,7 +257,9 @@ const Layout = ({ children }) => {
                                             <item.icon aria-hidden="true" />
                                             {item.name}
                                         </Link>
-                                        {["Make Calls", "Donations"].includes(item.name) ? (
+                                        {["Make Calls", "Donations", "Sync Settings"].includes(
+                                            item.name
+                                        ) ? (
                                             <div className="py-2">
                                                 <div className="flex-grow border-t border-gray-200"></div>
                                             </div>
@@ -405,7 +425,7 @@ const Layout = ({ children }) => {
                                                     // socialButtonsPlacement: "bottom",
                                                 },
                                                 variables: {
-                                                    colorPrimary: "#2d28ff",
+                                                    colorPrimary: "#388bff",
                                                 },
                                             }}
                                             // signInUrl=

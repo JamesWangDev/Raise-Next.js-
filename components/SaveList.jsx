@@ -4,7 +4,7 @@ import { Fragment } from "react";
 import { Menu, Transition, Button } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
-import { useSupabase } from "utils/supabaseHooks";
+import { useSupabase } from "lib/supabaseHooks";
 
 export default function SaveList({ formattedQuery, listName, listID }) {
     const [listNameTemp, setListNameTemp] = useState(listName ?? "");

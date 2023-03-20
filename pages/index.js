@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSupabase } from "utils/supabaseHooks";
+import { useSupabase } from "lib/supabaseHooks";
 import Breadcrumbs from "components/Breadcrumbs";
 import PageTitle from "components/PageTitle";
 import CallingSessionsGrid from "components/CallingSessionsGrid";
@@ -70,7 +70,7 @@ export function StatCard({ query, table, item }) {
             className="relative overflow-hidden rounded-lg bg-white px-4 pt-5 pb-0 shadow sm:px-6 sm:pt-6 ring-1 ring-opacity-5 ring-black"
         >
             <dt>
-                <div className="absolute rounded-md bg-gray-400 p-3">
+                <div className="absolute rounded-md bg-blue-200 p-3">
                     <item.icon className="h-6 w-6 text-white" aria-hidden="true" />
                 </div>
                 <p className="ml-16 truncate text-sm font-medium text-gray-500">{item.name}</p>
@@ -86,7 +86,7 @@ export function HomepageCards() {
     return (
         <>
             <div>
-                <h3>All Time Stats</h3>
+                <h3>Metrics</h3>
                 <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     {stats.map((item, i) => (
                         <StatCard
@@ -99,7 +99,7 @@ export function HomepageCards() {
                 </dl>
             </div>
             <div>
-                <h3>Join an Active Calling Session</h3>
+                <h3>Join an active calling session:</h3>
 
                 {/* map callingSessions to devs/cards in the same way as done in makecalls/start/... */}
                 <CallingSessionsGrid />
@@ -116,8 +116,8 @@ export default function Home() {
             <div className="mx-auto max-w-7xl px-2">
                 <Breadcrumbs pages={[{ name: "Dashboard", href: "/", current: false }]} />
                 <PageTitle
-                    title="Dashboard"
-                    descriptor="A real time picture of your fundraising so far."
+                    title="👋&nbsp; Dashboard"
+                    descriptor="Welcome to your fundraising home base!"
                 />
             </div>
             <div className="mx-auto max-w-7xl px-2">

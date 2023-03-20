@@ -1,7 +1,7 @@
 export default function PledgeHistory({ pledges }) {
     return (
         <div>
-            <h2>Pledge History</h2>
+            <h2>Pledges</h2>
             <ul role="list" className="divide-y divide-gray-200">
                 {pledges
                     ?.sort((a, b) => (new Date(a.created_at) < new Date(b.created_at) ? 1 : -1))

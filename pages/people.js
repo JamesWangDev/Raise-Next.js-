@@ -6,8 +6,11 @@ export default function PeoplePage() {
     return (
         <div className="">
             <div className="mx-auto max-w-7xl px-2 ">
-                <Breadcrumbs pages={[{ name: "People", href: "/people", current: false }]} />
-                <PageTitle title="People" descriptor="Donors and prospects." />
+                <Breadcrumbs pages={[{ name: "Create a List", href: "/people", current: false }]} />
+                <PageTitle
+                    title="🙂&nbsp; Create a List"
+                    descriptor="Browse donors and prospects, create queries, and save lists."
+                />
             </div>
             <div className="mx-auto max-w-7xl px-2  ">
                 <QueryBuilderProvider table="people_for_user_display" />

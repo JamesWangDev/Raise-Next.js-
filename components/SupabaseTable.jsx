@@ -1,15 +1,12 @@
 import useSWR, { preload } from "swr";
 import axios from "axios";
 const fetcher = (url) => axios.get(url).then((res) => res.data);
-
 import { useState } from "react";
 import Box from "@mui/material/Box";
-
-import Button from "@mui/material/Button";
 import { DataGrid } from "@mui/x-data-grid";
 import { Stack, Tooltip } from "@mui/material";
-
 import { useRouter } from "next/router";
+import { useSupabase } from "lib/supabaseHooks";
 
 export default function SupabaseTable({
     table,
@@ -178,6 +175,7 @@ const LoadListButton = (params) => {
 
 const MakeCallsButton = (params) => {
     const router = useRouter();
+    const supabase = useSupabase();
     return (
         <strong>
             <button
@@ -186,8 +184,16 @@ const MakeCallsButton = (params) => {
                 size="small"
                 onClick={(e) => {
                     e.stopPropagation();
-                    console.log(params, params.row);
-                    router.push("/makecalls/start/" + params.row.id);
+                    console.log("list row params", params, params.row);
+
+                    supabase
+                        .from("call_sessions")
+                        .insert({ list_id: params.row.id })
+                        .select()
+                        .single()
+                        .then((newCallSession) => {
+                            router.push("/dialer/" + newCallSession.data.id);
+                        });
                 }}
             >
                 New Call Session

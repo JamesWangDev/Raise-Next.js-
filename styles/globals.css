@@ -39,7 +39,7 @@ h3 {
 
 .qbp input,
 .qbp select {
-    @apply min-w-0 flex-1 rounded-none rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm mr-2;
+    @apply min-w-0 flex-1 rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm mr-2;
 }
 
 .qbp .btn {
@@ -83,7 +83,8 @@ pre {
 .cl-userButtonPopoverFooter,
 .cl-internal-b3fm6y,
 .cl-organizationSwitcherPopoverFooter,
-.cl-internal-1w7h4oz {
+.cl-internal-1w7h4oz,
+.cl-signUp-start div:last-child {
     display: none !important;
 }
 
@@ -177,7 +178,7 @@ main button[type]:not(.MuiButtonBase-root):not(.do-not-global-style).button-xs {
 
 .nav-item {
     border-color: white;
-    @apply p-2 text-gray-600;
+    @apply p-1.5 text-gray-600;
     @apply px-2.5;
     @apply mx-1 !important;
 }
@@ -187,11 +188,11 @@ main button[type]:not(.MuiButtonBase-root):not(.do-not-global-style).button-xs {
 
 .nav-item.current,
 .nav-item:hover {
-    box-shadow: 0px 0px 0px 1px rgba(0, 144, 237, 0.3);
+    box-shadow: 0px 0px 0px 1px rgba(50, 144, 237, 0.3);
 }
 
 .cl-socialButtonsBlockButton {
-    background: #2d28ff !important;
+    @apply bg-blue-600 !important;
 }
 .cl-socialButtonsBlockButton span {
     color: white !important;
@@ -200,18 +201,12 @@ main button[type]:not(.MuiButtonBase-root):not(.do-not-global-style).button-xs {
 
 button[type].btn-primary:not(.do-not-global-style) {
     @apply inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 !important;
-    background-color: #2d28ff !important;
+    @apply bg-blue-600 !important;
 }
 
 button[type].btn-primary.button-xs:not(.do-not-global-style) {
-    @apply inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-2.5 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-gray-50 focus:outline-none hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 !important;
-    background-color: #2d28ff !important;
-}
-
-.text-blue-600,
-.text-blue-500,
-.text-blue-700 {
-    color: #2d28ff !important;
+    @apply inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-2.5 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 !important;
+    @apply bg-blue-600 !important;
 }
 
 .brand {
@@ -252,9 +247,9 @@ button[type].btn-primary.button-xs:not(.do-not-global-style) {
 .MuiDataGrid-root {
     @apply rounded-lg border-0 ring-1 ring-black ring-opacity-5 shadow !important;
 }
-.MuiDataGrid-virtualScrollerRenderZone {
-    /* @apply min-w-full divide-y divide-gray-300 !important; */
-}
+/* .MuiDataGrid-virtualScrollerRenderZone {
+    @apply min-w-full divide-y divide-gray-300 !important;
+} */
 .MuiSvgIcon-root {
     color: #ccc !important;
 }
@@ -287,6 +282,25 @@ nav,
 nav .border-t {
     @apply border-0 mt-1 !important;
 }
-.border-r {
-    /* @apply border-r-gray-100; */
+/* .border-r {
+    @apply border-r-gray-100;
+} */
+.link {
+    @apply text-blue-600 underline;
+}
+.shaded-page-header {
+    @apply bg-gray-100 -mx-12 -mt-8 -mb-2 pb-5 pt-8 px-12;
+}
+
+.brand svg {
+    display: none;
+}
+.brand span {
+    background: #388bff;
+    padding: 4px 10px;
+    color: white !important;
+    @apply rounded -mt-0.5 mb-0.5;
+}
+.brand {
+    padding-bottom: 0.55rem;
 }

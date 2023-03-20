@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import "styles/globals.css";
 import "styles/docsearch.css";
 import "styles/dark.css";
 import Layout from "components/Layout";
 import { ClerkProvider, useAuth } from "@clerk/nextjs";
 import ChatWidgetWrapper from "components/ChatWidgetWrapper";
-import { createSupabaseClient, SupabaseProvider } from "utils/supabaseHooks";
+import { createSupabaseClient, SupabaseProvider } from "lib/supabaseHooks";
 
 // pages/_app.js
 import { Inter } from "@next/font/google";
@@ -47,12 +47,10 @@ function SupabaseWrapper({ children }) {
                         : "supabase-local-development",
             });
             // Create and set the client
-            let client = createSupabaseClient(supabaseAccessToken);
-            setSupabaseClient(client);
-            const { data, error } = await client.from("donations").select("*").limit(25);
-            console.log({ data, error });
+            setSupabaseClient(createSupabaseClient(supabaseAccessToken));
         };
         now();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userId, sessionId, orgId]);
 
     return (
