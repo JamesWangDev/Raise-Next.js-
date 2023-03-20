@@ -33,7 +33,9 @@ test.describe("Pledge followup flow", () => {
         const { data: person } = await db.from("people").select("*").eq("id", personId).single();
         await expect(page.locator("h1")).toHaveText(person.first_name + " " + person.last_name);
     });
-    test.skip("Line-item FEC data appear accurately in profiles", async ({ page }) => true);
+    test.skip("Line-item FEC data appear accurately in profiles", async ({ page }) => {
+        // Yup
+    });
     test.skip("Imported donations appear accurately in profiles", async ({ page }) => true);
     test.skip("Imported pledges appear accurately in profiles", async ({ page }) => true);
     test.skip("Add, remove, and 'make primary' different phone numbers and emails", async ({

@@ -4,7 +4,7 @@ export default function FECHistoryList({ FECHistory }) {
         <>
             <h2 className="mt-7">Past donations to other political committees</h2>
             {FECHistory?.map((donation) => (
-                <div>
+                <div className="">
                     Donated ${donation.transaction_amt} to {donation.cmte_id} on{" "}
                     {donation.transaction_dt}
                 </div>
