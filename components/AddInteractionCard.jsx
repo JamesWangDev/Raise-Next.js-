@@ -24,13 +24,13 @@ export default function AddInteractionCard({ person, appendInteraction }) {
     return (
         <div className="interaction-card">
             <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0">
+                {/* <div className="flex-shrink-0">
                     <img
                         className="inline-block h-10 w-10 rounded-full"
                         src={user.profileImageUrl}
                         alt=""
                     />
-                </div>
+                </div> */}
                 <div className="min-w-0 flex-1">
                     <form action="#" className="relative">
                         <div className="overflow-hidden rounded-lg border border-gray-200 shadow-sm focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500">
@@ -43,7 +43,6 @@ export default function AddInteractionCard({ person, appendInteraction }) {
                                 id="note"
                                 className="block w-full resize-none border-0 py-3 focus:ring-0 sm:text-sm"
                                 placeholder="Add your note..."
-                                defaultValue={""}
                                 onChange={(event) => {
                                     setNote(event.target.value);
                                 }}

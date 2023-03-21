@@ -255,7 +255,7 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
                             <h2 className="text-sm font-normal text-gray-600">
                                 {person.occupation} | {person.employer} | {person.state}
                             </h2>
-                            <p className="text-sm text-gray-900 font-semibold">
+                            <div className="text-sm text-gray-900 font-semibold">
                                 <span className="inline-flex mr-1.5">
                                     <DonationsSummary person={person} />
                                 </span>
@@ -301,7 +301,7 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
                                             : "Add a bio"}
                                     </button>
                                 </form>
-                            </p>
+                            </div>
                         </div>
                         <div className="text-right">
                             <div className=" flex-row gap-3 inline-flex">
@@ -353,7 +353,7 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
                             {...mutations}
                         />
                     </div>
-                    <div className="col-span-3">
+                    <div className="col-span-4">
                         <FECHistoryList FECHistory={FECHistory} />
                         {/* <PledgeHistory pledges={person?.pledges} {...mutations} />
                     <DonationHistory donations={person?.donations} {...mutations} /> */}
