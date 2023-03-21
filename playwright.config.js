@@ -14,7 +14,9 @@ const config = {
     // Test directory
     testDir: path.join(__dirname, "__e2e__"),
     // If a test fails, retry it additional 2 times
-    retries: 0, // 2,
+    retries: 2,
+    // Don't parallelize
+    workers: 1,
     // Artifacts folder where screenshots, videos, and traces are stored.
     outputDir: "test-results/",
 
