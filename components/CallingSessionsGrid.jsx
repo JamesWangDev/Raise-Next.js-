@@ -23,21 +23,20 @@ export default function CallingSessionsGrid() {
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
             {sessions?.map((session) => (
-                <div
-                    key={session.id}
-                    className="bg-white rounded-lg shadow-sm p-6 pt-0 hover:shadow-lg hover:cursor-pointer border"
-                >
-                    <h3>List ID: {session.list_id}</h3>
-                    <p className="text-gray-400 mt-2 font-normal">
-                        Started on: {new Date(session.started).toLocaleDateString()}
-                    </p>
-                    <Link
-                        href={"/dialer/" + session.id}
-                        className="block mt-4 text-blue-600 hover:underline underline underline-offset-4 text-base font-normal"
+                <Link href={"/dialer/" + session.id}>
+                    <div
+                        key={session.id}
+                        className="bg-white rounded-lg shadow-sm p-6 pt-0 hover:shadow-lg hover:cursor-pointer border"
                     >
-                        Join this session
-                    </Link>
-                </div>
+                        <h3>List ID: {session.list_id}</h3>
+                        <p className="text-gray-400 mt-2 font-normal">
+                            Started on: {new Date(session.started).toLocaleDateString()}
+                        </p>
+                        <span className="block mt-4 text-blue-600 hover:underline underline underline-offset-4 text-base font-normal">
+                            Join this session
+                        </span>
+                    </div>
+                </Link>
             ))}
         </div>
     );
