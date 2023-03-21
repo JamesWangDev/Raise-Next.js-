@@ -7,7 +7,7 @@ setup("Sign in for tests as Example User", async ({ page }) => {
     // If available, we set the target URL to a development/preview deployment URL
     // provided by the ENVIRONMENT_URL created by Vercel or locally by .env file.
     // Otherwise, we use the Production URL.
-    const targetUrl = process.env.ENVIRONMENT_URL || "https://www.raisemore.app/";
+    const targetUrl = "http://localhost:3000/";
 
     // We visit the page. This waits for the "load" event by default.
     const response = await page.goto(targetUrl);

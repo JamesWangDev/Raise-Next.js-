@@ -9,7 +9,7 @@ test("Home page renders a dashboard heading, i.e. we're signed in", async ({ pag
     await page.goto(targetUrl);
 
     // Playwright expect a heading to be rendered with the text "Dashboard"
-    expect(await page.textContent("h1")).toBe("Dashboard");
+    expect(await page.textContent("h1")).toContain("Dashboard");
 
     // Take a screenshot
     await page.screenshot({

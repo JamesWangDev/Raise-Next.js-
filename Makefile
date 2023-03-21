@@ -20,8 +20,15 @@ nuke: stop
 lint:
 	npm run lint
 
-test: stop start runtest stop
+test: stop start start-production-server runtest
 
 runtest:
 	npm run test
 	npm run test:e2e
+	supabase stop
+	pkill node || true
+	pm2 delete all || true
+
+start-production-server:
+	npm run build
+	npm run start &
