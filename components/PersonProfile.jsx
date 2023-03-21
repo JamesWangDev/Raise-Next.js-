@@ -338,7 +338,7 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
                                     onClick={() => next()}
                                     {...(!outbound && hasNext ? {} : { disabled: true })}
                                 >
-                                    Next
+                                    Skip
                                 </button>
                             </div>
                         </div>

@@ -8,8 +8,8 @@ import { useState, useEffect, useCallback, useReducer } from "react";
 import { useSupabase } from "lib/supabaseHooks";
 import { parseSQL } from "react-querybuilder";
 import Breadcrumbs from "components/Breadcrumbs";
-
 import PersonProfile from "components/PersonProfile";
+import { useUser } from "@clerk/nextjs";
 
 const reducer = (prevState, payload) => {
     console.log("reducer()");
@@ -38,14 +38,28 @@ const reducer = (prevState, payload) => {
 export default function StartCallingSession() {
     const router = useRouter();
     const { callSessionID } = router.query;
+
     const [session, setSession] = useState([]);
     const [conferenceUpdates, appendConferenceUpdate] = useReducer(reducer, []);
     const [conferenceSID, setConferenceSID] = useState(null);
     const [dialedIn, setDialedIn] = useState(false);
+    // Replaced the following with session.current_person_id server state
     // const [personID, setPersonID] = useState();
     const [outbound, setOutbound] = useState(false);
     const [peopleList, setPeopleList] = useState();
     const supabase = useSupabase();
+
+    const dialInReducer = (prevState, number_dialed_in_from) => {
+        supabase
+            .from("call_session_participants")
+            .upsert({
+                call_session_id: callSessionID,
+                number_dialed_in_from,
+            })
+            .then((response) => console.log);
+        return number_dialed_in_from;
+    };
+    const [dialedInFrom, setDialedInFrom] = useReducer(dialInReducer, null);
 
     // Find the current person in the list, and move to the next one.
     function nextPerson() {
@@ -251,13 +265,45 @@ export default function StartCallingSession() {
             <div className="mx-auto max-w-7xl px-2">
                 <div className="p-12">
                     <div className="relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-12 text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                        <p className="mb-5 text-gray-400 text-xl font-medium">
-                            <PhoneIcon className="h-10 w-10 text-gray-400 align-center inline-flex mx-auto mr-2" />{" "}
-                            {process.env.NEXT_PUBLIC_DIALER_NUMBER}
-                        </p>
-                        <span className="mt-2 block text-base text-gray-900">
-                            Call the above number from your cell phone to connect.
-                        </span>
+                        {!dialedInFrom && (
+                            <form
+                                onSubmit={(event) => {
+                                    event.preventDefault();
+                                    setDialedInFrom(
+                                        event.target.dialedInFromInput.value.replaceAll(
+                                            /[^0-9]/g,
+                                            ""
+                                        )
+                                    );
+                                }}
+                            >
+                                <h3 className="mt-0">What is your phone number?</h3>
+                                <div className="mt-4">
+                                    <input
+                                        type="tel"
+                                        name="dialedInFromInput"
+                                        id="dialedInFromInput"
+                                        className="mr-2 inline w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        placeholder="(555) 555 - 5555"
+                                    />
+                                    <button type="submit">Submit</button>
+                                </div>
+                            </form>
+                        )}
+                        {dialedInFrom && (
+                            <>
+                                <p className="mb-5 text-gray-400 text-xl font-medium">
+                                    <PhoneIcon className="h-10 w-10 text-gray-400 align-center inline-flex mx-auto mr-2" />{" "}
+                                    {process.env.NEXT_PUBLIC_DIALER_NUMBER}
+                                </p>
+                                <p className="mt-2 block text-base text-gray-900">
+                                    Call the above number from your cell phone to connect.
+                                </p>
+                                <p className="mt-2 block text-base text-gray-300 italic">
+                                    You should be calling in from {dialedInFrom}
+                                </p>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>
