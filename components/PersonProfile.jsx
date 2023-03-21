@@ -8,6 +8,8 @@ import PersonContactInfo from "./PersonContactInfo";
 import { Tooltip } from "@mui/material";
 import { useUser } from "@clerk/nextjs";
 import FECHistoryList from "./FECHistoryList";
+import PledgeHistory from "./PledgeHistory";
+import DonationHistory from "./DonationHistory";
 
 const pluralize = (single, plural, number) => (number > 1 ? plural : single);
 
@@ -245,8 +247,8 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
                             ]}
                         />
                     </div>
-                    <div id="person-header" className="grid grid-cols-2 gap-2">
-                        <div id="">
+                    <div id="person-header" className="grid grid-cols-12 gap-2">
+                        <div className="col-span-8">
                             <Tooltip title={"Person ID: " + personID} arrow>
                                 <h1 className="mb-0">
                                     {person.first_name} {person.last_name}
@@ -263,9 +265,10 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
                                 <span className="inline-flex mx-1.5">
                                     <PledgesSummary person={person} />
                                 </span>
-                                |
+                            </div>
+                            <div className="mt-1 text-sm">
                                 <form
-                                    className="inline-flex ml-1.5"
+                                    className="block"
                                     onSubmit={(event) => {
                                         event.preventDefault();
                                         if (bio == null) setBio(person?.bio || "");
@@ -303,7 +306,7 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
                                 </form>
                             </div>
                         </div>
-                        <div className="text-right">
+                        <div className="text-right col-span-4">
                             <div className=" flex-row gap-3 inline-flex">
                                 {
                                     <button
@@ -354,9 +357,9 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
                         />
                     </div>
                     <div className="col-span-4">
+                        <PledgeHistory pledges={person?.pledges} {...mutations} />
+                        <DonationHistory donations={person?.donations} {...mutations} />
                         <FECHistoryList FECHistory={FECHistory} />
-                        {/* <PledgeHistory pledges={person?.pledges} {...mutations} />
-                    <DonationHistory donations={person?.donations} {...mutations} /> */}
                     </div>
                 </div>
             </div>

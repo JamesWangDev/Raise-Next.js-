@@ -9,15 +9,15 @@ export default function FECHistoryList({ FECHistory }) {
     ];
     return (
         <>
-            <h2 className="mt-7">Past donations to other political committees</h2>
+            <h2 className="mt-6 border-t py-2">To other political committees</h2>
             {dedupedFECHistory?.map((donation) => (
-                <div key={donation?.sub_id} className="text-xs">
+                <div key={donation?.sub_id} className="text-xs text-gray-800">
                     ${donation.transaction_amt} to{" "}
                     {donation?.cmte_nm ? titleCase(donation?.cmte_nm) : donation.cmte_id},{" "}
                     {donation.transaction_dt}
                 </div>
             ))}
-            {!dedupedFECHistory?.length && <div>None</div>}
+            {!dedupedFECHistory?.length && <div className="text-sm">None</div>}
         </>
     );
 }
