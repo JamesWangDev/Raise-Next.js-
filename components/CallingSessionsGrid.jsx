@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSupabase } from "lib/supabaseHooks";
 
-export default function CallingSessionsGrid() {
+export default function CallingSessionsGrid({ hideStart }) {
     // get orgid using clerk
     const supabase = useSupabase();
 
@@ -24,20 +24,24 @@ export default function CallingSessionsGrid() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
             {sessions?.map((session) => (
                 <Link href={"/dialer/" + session.id}>
-                    <div
-                        key={session.id}
-                        className="bg-white rounded-lg shadow-md p-6 pt-0 hover:shadow-lg hover:cursor-pointer border"
-                    >
+                    <div key={session.id} className="call-session-card">
                         <h3 className="mt-6">List: {session.saved_lists.query}</h3>
                         <p className="text-gray-400 mt-2 font-normal">
                             Started on: {new Date(session.started).toLocaleDateString()}
                         </p>
-                        <span className="block mt-4 text-blue-600 hover:underline underline underline-offset-4 text-base font-normal">
-                            Join this session
-                        </span>
+                        <span className="call-session-card-link">Join this session</span>
                     </div>
                 </Link>
             ))}
+            {!hideStart && (
+                <Link href="/dialer">
+                    <div className="call-session-card">
+                        <h3 className="mt-6">Start a new session</h3>
+                        <p className="text-gray-400 mt-2 font-normal">Click to choose a list</p>
+                        <span className="call-session-card-link">Make calls</span>
+                    </div>
+                </Link>
+            )}
         </div>
     );
 }

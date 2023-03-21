@@ -213,26 +213,28 @@ export default function StartCallingSession() {
 
     return dialedIn ? (
         <>
-            <div className="mx-auto max-w-7xl mb-4 px-5 p-3 shadow-sm rounded-lg bg-white ">
+            <div className="mx-auto max-w-7xl mb-4 px-5 p-3 shadow-sm rounded-lg bg-white -mt-6 mb-12 pt-0 bg-blue-50 align-center">
                 <span className="flex-grow">You&apos;re dialed in to the call session!</span>
                 {/* Leave call session button */}
-                <button className="text-sm button-sm" type="button" onClick={leave}>
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-6 w-6 text-red-500"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M6 18L18 6M6 6l12 12"
-                        />
-                    </svg>
-                    &nbsp; Leave Session
-                </button>
+                <div className="inline-block mt-3 ml-7 py-0 mb-1">
+                    <button className="text-sm button-xs btn-xs" type="button" onClick={leave}>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-6 w-6 text-red-500"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M6 18L18 6M6 6l12 12"
+                            />
+                        </svg>
+                        &nbsp; Leave Session
+                    </button>
+                </div>
             </div>
             <PersonProfile
                 personID={session.current_person_id}

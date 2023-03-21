@@ -31,7 +31,7 @@ export default function MakeCallsPage() {
                     </button>
                 </Link>{" "}
                 {/* List currently active "calling sessions" as cards. */}
-                <CallingSessionsGrid />
+                <CallingSessionsGrid hideStart={true} />
             </div>
         </div>
     );
