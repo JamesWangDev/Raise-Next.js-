@@ -18,6 +18,8 @@ model call_sessions {
   inserted_at           DateTime     @default(now()) @db.Timestamptz(6)
   updated_at            DateTime     @default(now()) @db.Timestamptz(6)
   twilio_conference_sid String?      @unique
+  current_person_id     String?      @db.Uuid
+  people                people?      @relation(fields: [current_person_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   saved_lists           saved_lists? @relation(fields: [list_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "call_sessions_saved_lists_id_fkey")
 }
 
@@ -225,6 +227,7 @@ model people {
   custom_field_2  String?
   custom_field_3  String?
   bio             String?
+  call_sessions   call_sessions[]
   donations       donations[]
   emails          emails[]
   interactions    interactions[]
@@ -303,6 +306,7 @@ view dashboard_by_account {
   number_of_donations          Int?
   total_sum_unfufilled_pledges Int?
   number_of_unfufilled_pledges Int?
+  total_number_of_calls        BigInt?
 
   @@ignore
 }

@@ -42,48 +42,63 @@ export default function StartCallingSession() {
     const [conferenceUpdates, appendConferenceUpdate] = useReducer(reducer, []);
     const [conferenceSID, setConferenceSID] = useState(null);
     const [dialedIn, setDialedIn] = useState(false);
-    const [personID, setPersonID] = useState();
+    // const [personID, setPersonID] = useState();
     const [outbound, setOutbound] = useState(false);
     const [peopleList, setPeopleList] = useState();
     const supabase = useSupabase();
 
     // Find the current person in the list, and move to the next one.
     function nextPerson() {
-        let currentIndex = peopleList.indexOf(personID);
+        let currentIndex = peopleList.indexOf(session.current_person_id);
         let nextIndex = currentIndex + 1;
         if (nextIndex >= peopleList.length) return false;
         setPersonID(peopleList[nextIndex]);
     }
 
-    let hasNext = peopleList?.indexOf(personID) < peopleList?.length - 1;
+    let hasNext = peopleList?.indexOf(session.current_person_id) < peopleList?.length - 1;
 
     function leave() {
         router.push("/dialer");
     }
 
-    useEffect(() => {
-        // Fetch the list of calling sessions from the API.
+    // On mount, fetch session data
+    const fetchSessionData = useCallback(() => {
         supabase
             .from("call_sessions")
             .select("*, saved_lists (*)")
             .eq("id", callSessionID)
             .single()
-            .then(({ data, error }) => {
+            .then(({ data: currentSessionData, error }) => {
                 if (error) console.log("Error fetching call session+list", error);
-                else setSession(data);
-
-                console.log({ data });
-
+                else setSession(currentSessionData);
                 const urlToFetch = `/api/rq?query=${encodeURI(
-                    `select id from people where ${data.saved_lists.query}`
+                    `select id from people where ${currentSessionData.saved_lists.query}`
                 )}`;
-                axios.get(urlToFetch).then((res) => {
-                    let temporaryPeopleList = Array.from(res.data.map((row) => row.id));
+                axios.get(urlToFetch).then(({ data: currentListsData }) => {
+                    let temporaryPeopleList = Array.from(currentListsData.map((row) => row.id));
+                    console.log({ temporaryPeopleList });
                     setPeopleList(temporaryPeopleList);
-                    setPersonID(temporaryPeopleList[0]);
+                    if (!currentSessionData.current_person_id && temporaryPeopleList?.length) {
+                        // setPersonID(temporaryPeopleList[0]);
+                        setPersonID(temporaryPeopleList[0]);
+                    }
                 });
             });
-    }, [callSessionID, supabase]);
+    }, [callSessionID, supabase, session.current_person_id]);
+
+    useEffect(() => {
+        // Fetch the list of calling sessions from the API.
+        fetchSessionData();
+    }, [fetchSessionData]);
+
+    // Mutation of current person/page triggers fetch
+    function setPersonID(newID) {
+        supabase
+            .from("call_sessions")
+            .update({ current_person_id: newID })
+            .eq("id", callSessionID)
+            .then(fetchSessionData);
+    }
 
     // // Supabase realtime
     // const handleSubscription = (payload) => {
@@ -206,7 +221,7 @@ export default function StartCallingSession() {
                 </button>
             </div>
             <PersonProfile
-                personID={personID}
+                personID={session.current_person_id}
                 dial={dial}
                 hangup={hangup}
                 next={nextPerson}

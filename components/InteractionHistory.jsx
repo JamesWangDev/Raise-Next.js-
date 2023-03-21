@@ -24,8 +24,6 @@ export default function InteractionHistory({ person, interactions, appendInterac
                     ?.map((interaction, eventIdx) => {
                         interaction.iconBackground = "bg-gray-400";
                         interaction.icon = UserIcon;
-
-                        console.log({ interaction });
                         interaction.date = new Date(
                             interaction.created_at || interaction.date
                         ).toLocaleString("en-US", {

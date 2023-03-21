@@ -26,9 +26,9 @@ export default function CallingSessionsGrid() {
                 <Link href={"/dialer/" + session.id}>
                     <div
                         key={session.id}
-                        className="bg-white rounded-lg shadow-sm p-6 pt-0 hover:shadow-lg hover:cursor-pointer border"
+                        className="bg-white rounded-lg shadow-md p-6 pt-0 hover:shadow-lg hover:cursor-pointer border"
                     >
-                        <h3>List ID: {session.list_id}</h3>
+                        <h3 className="mt-6">List ID: {session.list_id}</h3>
                         <p className="text-gray-400 mt-2 font-normal">
                             Started on: {new Date(session.started).toLocaleDateString()}
                         </p>

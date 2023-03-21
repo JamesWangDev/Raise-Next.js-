@@ -10,6 +10,10 @@ export default function Breadcrumbs({ pages = [] }) {
                 <li>
                     <div>
                         <Link href="/" className="text-gray-400 hover:text-gray-700">
+                            {/* <HomeIcon
+                                className="h-5 w-5 flex-shrink-0 text-gray-300"
+                                aria-hidden="true"
+                            /> */}
                             Home
                         </Link>
                     </div>
