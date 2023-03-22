@@ -147,7 +147,7 @@ const Layout = ({ children }) => {
         activeIndex = navigation.findIndex((element) => element.href == basePath);
     if (activeIndex in navigation) navigation[activeIndex].current = true;
 
-    const hasOrg = user ? !!user.organizationMemberships.length : false;
+    const hasOrg = user ? !!user?.organizationMemberships?.length : false;
 
     return (
         <>

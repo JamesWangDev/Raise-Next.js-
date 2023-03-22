@@ -109,7 +109,8 @@ export function HomepageCards() {
     );
 }
 
-export default function Home() {
+export default function Home(props) {
+    console.log({ props });
     const { isSignedIn, isLoading, user } = useUser();
 
     return (
