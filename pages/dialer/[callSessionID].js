@@ -1,6 +1,5 @@
 import useSWR from "swr";
-import axios from "axios";
-const fetcher = (url) => axios.get(url).then((res) => res.data);
+const fetcher = (url) => fetch(url).then((r) => r.json());
 import { useRouter } from "next/router";
 import PageTitle from "components/PageTitle";
 import { PhoneIcon } from "@heroicons/react/24/outline";
@@ -55,7 +54,7 @@ export default function StartCallingSession() {
                 number_dialed_in_from,
             });
         }
-    }, [dialedInFrom, supabase]);
+    }, [dialedInFrom, supabase, callSessionID]);
 
     // Find the current person in the list, and move to the next one.
     function nextPerson() {
@@ -84,7 +83,7 @@ export default function StartCallingSession() {
                 const urlToFetch = `/api/rq?query=${encodeURI(
                     `select id from people where ${currentSessionData.saved_lists.query}`
                 )}`;
-                axios.get(urlToFetch).then(({ data: currentListsData }) => {
+                fetcher(urlToFetch).then(({ data: currentListsData }) => {
                     let temporaryPeopleList = Array.from(currentListsData.map((row) => row.id));
 
                     setPeopleList(temporaryPeopleList);
@@ -94,7 +93,7 @@ export default function StartCallingSession() {
                     }
                 });
             });
-    }, [callSessionID, supabase, session.current_person_id]);
+    }, [callSessionID, supabase, setPersonID]);
 
     useEffect(() => {
         // Fetch the list of calling sessions from the API.
@@ -102,13 +101,16 @@ export default function StartCallingSession() {
     }, [fetchSessionData]);
 
     // Mutation of current person/page triggers fetch
-    function setPersonID(newID) {
-        supabase
-            .from("call_sessions")
-            .update({ current_person_id: newID })
-            .eq("id", callSessionID)
-            .then(fetchSessionData);
-    }
+    const setPersonID = useCallback(
+        (newID) => {
+            supabase
+                .from("call_sessions")
+                .update({ current_person_id: newID })
+                .eq("id", callSessionID)
+                .then(fetchSessionData);
+        },
+        [supabase, callSessionID, fetchSessionData]
+    );
 
     // // Supabase realtime
     // const handleSubscription = (payload) => {

@@ -1,4 +1,4 @@
-import { Tooltip } from "@mui/material";
+import Tooltip from "@mui/material/Tooltip";
 import { useState } from "react";
 import { EMAIL_VALIDATION_REGEX } from "lib/validation";
 

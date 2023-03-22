@@ -1,10 +1,10 @@
 import useSWR, { preload } from "swr";
-import axios from "axios";
-const fetcher = (url) => axios.get(url).then((res) => res.data);
+const fetcher = (url) => fetch(url).then((r) => r.json());
 import { useState } from "react";
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
-import { Stack, Tooltip } from "@mui/material";
+import Tooltip from "@mui/material/Tooltip";
+import Stack from "@mui/material/Stack";
 import { useRouter } from "next/router";
 import { useSupabase } from "lib/supabaseHooks";
 

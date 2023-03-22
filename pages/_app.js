@@ -1,14 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
 import "styles/globals.css";
-import "styles/docsearch.css";
-import "styles/dark.css";
+// import "styles/docsearch.css";
+// import "styles/dark.css";
 import Layout from "components/Layout";
 import { ClerkProvider, useAuth } from "@clerk/nextjs";
 import ChatWidgetWrapper from "components/ChatWidgetWrapper";
 import { createSupabaseClient, SupabaseProvider } from "lib/supabaseHooks";
 
 // pages/_app.js
-import { Inter } from "@next/font/google";
+import { Inter } from "next/font/google";
 const inter = Inter({ subsets: ["latin"] });
 
 // for some reason vercel analytics breask jest
