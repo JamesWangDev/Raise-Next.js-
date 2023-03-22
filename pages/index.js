@@ -48,9 +48,10 @@ export function StatCard({ query, table, item }) {
         supabase
             .from(table)
             .select(query)
-            .single()
-            .then((data) => {
-                setData(data.data);
+            .maybeSingle()
+            .then(({ data, error }) => {
+                if (error) console.error(error);
+                setData(data);
                 setLoading(false);
             });
     }, [query, table, supabase]);

@@ -45,7 +45,7 @@ export default function QueryBuilderProvider({ table, children, listID }) {
                 .single()
                 .then((result) => {
                     let list = result.data;
-                    console.log("list.query", list.query);
+                    // console.log("list.query", list.query);
                     setQuery(parseSQL(list.query));
                     setList(list);
                 });
@@ -104,7 +104,7 @@ export default function QueryBuilderProvider({ table, children, listID }) {
                     <QueryBuilder
                         resetOnFieldChange="false"
                         resetOnOperatorChange="false"
-                        debugMode
+                        // debugMode
                         // showCombinatorsBetweenRules
                         fields={fields}
                         query={query}

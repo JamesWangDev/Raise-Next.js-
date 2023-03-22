@@ -12,8 +12,6 @@ import PersonProfile from "components/PersonProfile";
 import { useUser } from "@clerk/nextjs";
 
 const reducer = (prevState, payload) => {
-    console.log("reducer()");
-
     // Bulk update
     if (!payload?.hasOwnProperty("new")) {
         return [...payload];
@@ -49,17 +47,15 @@ export default function StartCallingSession() {
     const [peopleList, setPeopleList] = useState();
     const supabase = useSupabase();
 
-    const dialInReducer = (prevState, number_dialed_in_from) => {
-        supabase
-            .from("call_session_participants")
-            .upsert({
+    const [dialedInFrom, setDialedInFrom] = useState(null);
+    useEffect(() => {
+        if (dialedInFrom) {
+            supabase.from("call_session_participants").insert({
                 call_session_id: callSessionID,
                 number_dialed_in_from,
-            })
-            .then((response) => console.log);
-        return number_dialed_in_from;
-    };
-    const [dialedInFrom, setDialedInFrom] = useReducer(dialInReducer, null);
+            });
+        }
+    }, [dialedInFrom, supabase]);
 
     // Find the current person in the list, and move to the next one.
     function nextPerson() {
@@ -90,7 +86,7 @@ export default function StartCallingSession() {
                 )}`;
                 axios.get(urlToFetch).then(({ data: currentListsData }) => {
                     let temporaryPeopleList = Array.from(currentListsData.map((row) => row.id));
-                    console.log({ temporaryPeopleList });
+
                     setPeopleList(temporaryPeopleList);
                     if (!currentSessionData.current_person_id && temporaryPeopleList?.length) {
                         // setPersonID(temporaryPeopleList[0]);
