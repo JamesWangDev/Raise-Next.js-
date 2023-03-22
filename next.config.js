@@ -38,7 +38,7 @@ module.exports = nextConfig;
 // module.exports = withSentryConfig(module.exports, { silent: true }, { hideSourcemaps: true });
 
 // Next bundle analyzer
-const withBundleAnalyzer = require("@next/bundle-analyzer")({
-    enabled: process.env.ANALYZE === "true",
-});
-module.exports = withBundleAnalyzer(module.exports);
+// const withBundleAnalyzer = require("@next/bundle-analyzer")({
+//     enabled: process.env.ANALYZE === "true",
+// });
+// module.exports = withBundleAnalyzer(module.exports);
