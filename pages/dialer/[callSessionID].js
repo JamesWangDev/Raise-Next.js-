@@ -163,15 +163,15 @@ export default function StartCallingSession() {
 
         // Enable hangup button when outbound call is active, disable dial button
         if (
-            conferenceUpdates[0]?.status_callback_event == "participant-join" &&
-            conferenceUpdates[0]?.participant_label == "outboundCall"
+            conferenceUpdates[0]?.status_callback_event === "participant-join" &&
+            conferenceUpdates[0]?.participant_label?.includes("outboundCall")
         ) {
             setOutbound(true);
         }
         // Disable hangup button when outbound call ends, enable dial button
         else if (
-            conferenceUpdates[0]?.status_callback_event == "participant-leave" &&
-            conferenceUpdates[0]?.participant_label == "outboundCall"
+            conferenceUpdates[0]?.status_callback_event === "participant-leave" &&
+            conferenceUpdates[0]?.participant_label?.includes("outboundCall")
         ) {
             setOutbound(false);
         }
@@ -224,7 +224,9 @@ export default function StartCallingSession() {
                 "/api/dialer/dialOut?numberToDial=" +
                     number.toString() +
                     "&conferenceSID=" +
-                    conferenceSID
+                    conferenceSID +
+                    "&personID=" +
+                    session.current_person_id
             )
         ).json();
         console.log(response);

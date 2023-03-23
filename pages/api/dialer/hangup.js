@@ -8,9 +8,7 @@ export default async function handler(request) {
     const conferenceSID = searchParams.get("conferenceSID");
 
     const response = await fetch(
-        `${TWILIO_API_URL}/Conferences/${conferenceSID}/Participants/${
-            participantCallSidOrLabel || "outboundCall"
-        }.json`,
+        `${TWILIO_API_URL}/Conferences/${conferenceSID}/Participants/${participantCallSidOrLabel}.json`,
         {
             method: "DELETE",
             headers: new Headers({

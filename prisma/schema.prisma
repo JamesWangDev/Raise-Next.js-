@@ -204,6 +204,8 @@ model interactions {
   pledge_id          String?   @db.Uuid
   note               String?
   organization_id    String?   @default(dbgenerated("requesting_org_id()"))
+  ended_at           DateTime? @db.Timestamptz(6)
+  call_sid           String?
   people             people?   @relation(fields: [person_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 

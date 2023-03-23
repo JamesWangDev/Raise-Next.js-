@@ -11,20 +11,55 @@ export default async function handler(request) {
     delete bodyForInsert.timestamp;
 
     const supabase = createSupabaseClient(null, { serviceRole: true });
-    supabase
+    const response = await supabase
         .from("conference_updates")
         .insert(bodyForInsert)
         .select()
-        .single()
-        .then((response) => {
-            console.log("Conference update written to table: ", response);
-            return NextResponse.json(response);
-        })
-        .catch((erroredResponse) => {
-            console.error({
-                message: "Error adding conference update",
-                erroredResponse,
-                bodyForInsert,
-            });
+        .single();
+    // .catch((erroredResponse) => {
+    //     console.error({
+    //         message: "Error adding conference update",
+    //         erroredResponse,
+    //         bodyForInsert,
+    //     });
+    // });
+    console.log("Conference update written to table: ", response);
+
+    const { participant_label, status_callback_event, call_sid } = bodyForInsert;
+    const personID = participant_label?.includes("outboundCall")
+        ? participant_label?.split("|")[1]
+        : false;
+    if (personID && status_callback_event === "participant-join") {
+        console.log("start outgoing call");
+        await supabase.from("interactions").insert({
+            person_id: personID,
+            contact_type: "call",
+            call_sid,
+            // ended_at: new Date().toISOString(),
+            // "updated_at":new Date().toISOString(),
         });
+    }
+
+    if (personID && status_callback_event === "participant-leave") {
+        console.log("end outgoing call");
+        await supabase
+            .from("interactions")
+            .update({
+                person_id: personID,
+                contact_type: "call",
+                call_sid,
+                ended_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+            })
+            .eq("call_sid", call_sid);
+    }
+    /*
+// // bodyForInsert.callsid
+// record the starttime for a new outgoing call interaction
+
+// record the endtime for call
+
+    */
+
+    return NextResponse.json(response);
 }
