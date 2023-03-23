@@ -4,9 +4,9 @@ export default function FECHistoryList({ FECHistory }) {
     // return <pre>{JSON.stringify(FECHistory, 0, 2)}</pre>;
     // Not sure why we're getting duplicate sub_id but we're gonna dedupe
     let hash = [];
-    let dedupedFECHistory = [
-        ...new Map(FECHistory?.map((donation) => [donation.sub_id, donation])).values(),
-    ];
+    let dedupedFECHistory =
+        // FECHistory;
+        [...new Map(FECHistory?.map((donation) => [donation.sub_id, donation])).values()];
     return (
         <>
             <h2 className="mt-6 border-t py-2">To other political committees</h2>
