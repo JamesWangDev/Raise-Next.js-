@@ -27,3 +27,6 @@ runtestandstop:
 	supabase stop
 	pkill node || true
 	pm2 delete all || true
+
+new test:
+	npx playwright codegen localhost:3000
