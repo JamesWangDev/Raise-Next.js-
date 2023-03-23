@@ -139,12 +139,12 @@ const Layout = ({ children }) => {
     let basePath = "/" + router.pathname.split("/")[1];
 
     let activeIndex =
-        router.pathname == "/"
+        router.pathname === "/"
             ? 0
-            : navigation.findIndex((element) => element.href == router.pathname);
+            : navigation.findIndex((element) => element.href === router.pathname);
     // If the page is not found, set the parent page as active
-    if (activeIndex == -1)
-        activeIndex = navigation.findIndex((element) => element.href == basePath);
+    if (activeIndex === -1)
+        activeIndex = navigation.findIndex((element) => element.href === basePath);
     if (activeIndex in navigation) navigation[activeIndex].current = true;
 
     const hasOrg = user ? !!user?.organizationMemberships?.length : false;
