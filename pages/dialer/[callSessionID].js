@@ -44,6 +44,7 @@ export default function StartCallingSession() {
     // const [personID, setPersonID] = useState();
     const [outbound, setOutbound] = useState(false);
     const [peopleList, setPeopleList] = useState();
+    const [forceFetchValue, forceFetchPersonProfile] = useReducer((old) => old + 1, 0);
     const supabase = useSupabase();
 
     const [dialedInFrom, setDialedInFrom] = useState(null);
@@ -175,6 +176,8 @@ export default function StartCallingSession() {
         ) {
             setOutbound(false);
         }
+
+        forceFetchPersonProfile();
     }, [conferenceUpdates, conferenceSID]);
 
     // useEffectOnMount to setup subscription
@@ -265,6 +268,7 @@ export default function StartCallingSession() {
                 next={nextPerson}
                 hasNext={hasNext}
                 outbound={outbound}
+                forceFetch={forceFetchValue}
             />
         </>
     ) : (

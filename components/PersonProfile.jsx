@@ -100,7 +100,15 @@ function PersonTagList({ person, addTag, deleteTag, restoreTag }) {
     );
 }
 
-export default function PersonProfile({ personID, dial, hangup, outbound, hasNext, next }) {
+export default function PersonProfile({
+    personID,
+    dial,
+    hangup,
+    outbound,
+    hasNext,
+    next,
+    forceFetch,
+}) {
     const { id: userID } = useUser();
     const supabase = useSupabase();
     const [person, setPerson] = useState();
@@ -135,7 +143,7 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
 
     useEffect(() => {
         fetchPerson();
-    }, [fetchPerson]);
+    }, [fetchPerson, forceFetch]);
 
     const mutations = useMemo(
         (person) => ({

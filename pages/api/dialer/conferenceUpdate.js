@@ -11,19 +11,31 @@ export default async function handler(request) {
     delete bodyForInsert.timestamp;
 
     const supabase = createSupabaseClient(null, { serviceRole: true });
-    const response = await supabase
+
+    const callSessionID = bodyForInsert?.friendly_name;
+    let { data } = await supabase.from("call_sessions").select().eq("id", callSessionID).single();
+    const orgID = data?.organization_id;
+    if (!orgID) {
+        throw Error("no corresponding session with an org id exists to this conference update");
+    }
+
+    let response = await supabase
         .from("conference_updates")
-        .insert(bodyForInsert)
+        .insert({
+            ...bodyForInsert,
+            organization_id: orgID,
+        })
         .select()
         .single();
-    // .catch((erroredResponse) => {
-    //     console.error({
-    //         message: "Error adding conference update",
-    //         erroredResponse,
-    //         bodyForInsert,
-    //     });
-    // });
-    console.log("Conference update written to table: ", response);
+    if (response?.error) {
+        throw Error({
+            message: "Error adding conference update",
+            data,
+            error,
+        });
+    }
+    console.log("Conference update written to table");
+    console.log({ data });
 
     const { participant_label, status_callback_event, call_sid } = bodyForInsert;
     const personID = participant_label?.includes("outboundCall")
@@ -35,8 +47,7 @@ export default async function handler(request) {
             person_id: personID,
             contact_type: "call",
             call_sid,
-            // ended_at: new Date().toISOString(),
-            // "updated_at":new Date().toISOString(),
+            organization_id: orgID,
         });
     }
 
@@ -50,6 +61,7 @@ export default async function handler(request) {
                 call_sid,
                 ended_at: new Date().toISOString(),
                 updated_at: new Date().toISOString(),
+                organization_id: orgID,
             })
             .eq("call_sid", call_sid);
     }
