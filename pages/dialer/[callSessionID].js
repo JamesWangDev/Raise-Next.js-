@@ -49,20 +49,15 @@ export default function StartCallingSession() {
     const [dialedInFrom, setDialedInFrom] = useState(null);
     useEffect(() => {
         if (dialedInFrom) {
-            supabase.from("call_session_participants").insert({
-                call_session_id: callSessionID,
-                number_dialed_in_from,
-            });
+            supabase
+                .from("call_session_participants")
+                .insert({
+                    call_session_id: callSessionID,
+                    number_dialed_in_from: dialedInFrom,
+                })
+                .then(console.log);
         }
     }, [dialedInFrom, supabase, callSessionID]);
-
-    // Find the current person in the list, and move to the next one.
-    function nextPerson() {
-        let currentIndex = peopleList.indexOf(session.current_person_id);
-        let nextIndex = currentIndex + 1;
-        if (nextIndex >= peopleList.length) return false;
-        setPersonID(peopleList[nextIndex]);
-    }
 
     let hasNext = peopleList?.indexOf(session.current_person_id) < peopleList?.length - 1;
 
@@ -83,26 +78,43 @@ export default function StartCallingSession() {
                 const urlToFetch = `/api/rq?query=${encodeURI(
                     `select id from people where ${currentSessionData.saved_lists.query}`
                 )}`;
-                fetcher(urlToFetch).then(({ data: currentListsData }) => {
+                fetcher(urlToFetch).then((currentListsData) => {
                     let temporaryPeopleList = Array.from(currentListsData.map((row) => row.id));
-
                     setPeopleList(temporaryPeopleList);
-                    if (!currentSessionData.current_person_id && temporaryPeopleList?.length) {
-                        // setPersonID(temporaryPeopleList[0]);
-                        setPersonID(temporaryPeopleList[0]);
-                    }
                 });
             });
-    }, [callSessionID, supabase, setPersonID]);
+    }, [callSessionID, supabase]);
 
+    // On mount
     useEffect(() => {
         // Fetch the list of calling sessions from the API.
         fetchSessionData();
+
+        console.log("subscribeToPageChanges()");
+        const channel = supabase
+            .channel("call_sessions")
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: "call_sessions",
+                },
+                ({ new: updated }) => {
+                    console.log(updated.current_person_id);
+                    setSession({ ...session, current_person_id: updated.current_person_id });
+                }
+            )
+            .subscribe();
+        return () => {
+            // supabase.removeChannel(channel);
+        };
     }, [fetchSessionData]);
 
     // Mutation of current person/page triggers fetch
     const setPersonID = useCallback(
         (newID) => {
+            console.log("setPersonID");
             supabase
                 .from("call_sessions")
                 .update({ current_person_id: newID })
@@ -112,12 +124,22 @@ export default function StartCallingSession() {
         [supabase, callSessionID, fetchSessionData]
     );
 
-    // // Supabase realtime
-    // const handleSubscription = (payload) => {
+    // Find the current person in the list, and move to the next one.
+    const nextPerson = useCallback(() => {
+        let currentIndex = peopleList.indexOf(session.current_person_id);
+        let nextIndex = currentIndex + 1;
+        if (nextIndex >= peopleList.length) return false;
+        setPersonID(peopleList[nextIndex]);
+    }, [setPersonID, peopleList?.length, session?.current_person_id]);
 
-    //     // updateConference([payload.new, ...conferenceUpdates]);
-    //     appendConferenceUpdate(payload.new);
-    // };
+    useEffect(() => {
+        if (!session?.current_person_id && peopleList?.length) {
+            // setPersonID(temporaryPeopleList[0]);
+            setPersonID(peopleList[0]);
+        }
+    }, [setPersonID, peopleList?.length, session?.current_person_id]);
+
+    // Supabase realtime
     useEffect(() => {
         console.log("useffect1");
         console.log("conferenceUpdates", conferenceUpdates);
@@ -209,7 +231,7 @@ export default function StartCallingSession() {
         return response;
     }
 
-    return dialedIn ? (
+    return dialedIn && dialedInFrom ? (
         <>
             <div className="mx-auto max-w-7xl mb-4 px-5 p-3 shadow-sm rounded-lg bg-white -mt-6 mb-12 pt-0 bg-blue-50 align-center">
                 <span className="flex-grow">You&apos;re dialed in to the call session!</span>
