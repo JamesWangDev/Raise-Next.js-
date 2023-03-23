@@ -30,13 +30,57 @@ test.describe("Pledge followup flow", () => {
         await page.waitForURL(/.*\/people\/[a-z0-9-]+/);
         // Get the last component (after the last slash) of the url
         const personId = page.url().split("/").pop();
-        const { data: person } = await db.from("people").select("*").eq("id", personId).single();
+        const { data: person } = await db
+            .from("people")
+            .select("*")
+            .eq("id", personId)
+            .limit(1)
+            .single();
         await expect(page.locator("h1")).toHaveText(person.first_name + " " + person.last_name);
     });
-    test.skip("Line-item FEC data appear accurately in profiles", async ({ page }) => {
-        // Yup
+    test("Line-item FEC data appear accurately in profiles", async ({ page }) => {
+        // Go to people search
+        await page.goto("/people");
+        // Add first name
+        await page.getByRole("button", { name: "Add Filter Step" }).click();
+        await page.getByTestId("operators").selectOption("=");
+        await page.getByRole("textbox", { name: "Value" }).click();
+        await page.getByRole("textbox", { name: "Value" }).fill("Eileen");
+        // Check to see if any search was run
+        await page.getByRole("cell", { name: "Eileen" }).click();
+        // Last name
+        await page.getByRole("button", { name: "Add Filter Step" }).click();
+        await page.getByTestId("fields").nth(1).selectOption("last_name");
+        await page.getByRole("textbox", { name: "Value" }).nth(1).click();
+        await page.getByRole("textbox", { name: "Value" }).nth(1).fill("Farbman");
+        // Check to see if any search was run
+        await page.getByRole("cell", { name: "Farbman" }).click();
+        // Go over to the persons page
+        await page.getByRole("button", { name: "View Person" }).click();
+        // Count up the donations
+        await page.getByText("$500 to");
+        await expect(page.getByText("$500 to")).toHaveCount(14);
+        /*
+            TODO: The imported donations don't match official records exactly
+            Additionally, "Actblue" shows up as the committe recieving a lot of donations
+            and we should replace it with the committe ID noted in the memo line of AB donations
+        */
     });
-    test.skip("Imported donations appear accurately in profiles", async ({ page }) => true);
+    test.skip("Imported donations appear accurately in profiles", async ({ page }) => {
+        //
+        // Go to people search
+        const {
+            id,
+            data: { donations },
+        } = await db.from("people").select("*, donations (*)").limit(1).single();
+        await page.goto(`/people/${id}`);
+        donations.forEach(
+            async (donation) =>
+                await expect(page.locator(".DonationHistory li")).toContainText(
+                    donation.amount.toString()
+                )
+        );
+    });
     test.skip("Imported pledges appear accurately in profiles", async ({ page }) => true);
     test.skip("Add, remove, and 'make primary' different phone numbers and emails", async ({
         page,

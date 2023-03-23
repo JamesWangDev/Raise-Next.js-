@@ -12,6 +12,12 @@
 -   Lets you send a followup text + email to pledges.
 -   Lets you dial your lists from the browser, and conference in your candidate principal on their phone.
 
+Possible future features:
+
+- Transcribe and summarize notes from each recorded phone call with voice AI
+- Realtime summary reports to Slack and email
+- 
+
 ## Technical details:
 
 -   Built with Next.js and Postgres, deployed to Vercel and Supabase.
