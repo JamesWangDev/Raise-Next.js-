@@ -1,7 +1,5 @@
 import { test, expect } from "@playwright/test";
 
-test.use({ actionTimeout: 20000 });
-
 test("Home page renders a dashboard heading, i.e. we're signed in", async ({ page }) => {
     // Login is automatically run beforehand.
     // Go to homepage.

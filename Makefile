@@ -28,5 +28,13 @@ runtestandstop:
 	pkill node || true
 	pm2 delete all || true
 
+runtestdebugandstop:
+	npx playwright test --debug
+	supabase stop
+	pkill node || true
+	pm2 delete all || true
+
 new test:
 	npx playwright codegen localhost:3000
+
+debug tests: stop start runtestdebugandstop

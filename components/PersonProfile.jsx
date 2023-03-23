@@ -184,7 +184,11 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
                     .update({ remove_date: new Date().toISOString(), remove_user: userID })
                     .eq("id", id)
                     .then(fetchPerson),
-            addTag: (newTag) => supabase.from("tags").insert({ tag: newTag, person_id: personID }),
+            addTag: (newTag) =>
+                supabase
+                    .from("tags")
+                    .insert({ tag: newTag, person_id: personID })
+                    .then(fetchPerson),
             restorePhone: (id) =>
                 supabase
                     .from("phone_numbers")

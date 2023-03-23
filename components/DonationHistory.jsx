@@ -1,6 +1,6 @@
 export default function DonationHistory({ donations }) {
     return (
-        <div class="DonationHistory">
+        <div className="DonationHistory">
             <h2 className="mt-4">Donations to your committee</h2>
             <ul role="list" className="divide-y divide-gray-200">
                 {donations
