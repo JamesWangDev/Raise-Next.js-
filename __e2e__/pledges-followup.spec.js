@@ -79,20 +79,28 @@ test.describe("Pledge followup flow", () => {
         await expect(page.locator(".DonationHistory li")).toHaveCount(donations.length);
         await checkDonationsArePresent(donations);
 
-        // Mock data check
-        // donations = {};
-        // checkDonationsArePresent(donations);
-
         // Helper function
         async function checkDonationsArePresent(donations) {
             for (let donation of donations) {
                 await expect(
-                    page.getByText("$" + donation.amount.toString() + " - ")
+                    page
+                        .getByRole("listitem")
+                        .filter({ hasText: "$" + donation.amount.toString() + " - " })
                 ).toBeVisible();
             }
         }
     });
-    test.skip("Imported pledges appear accurately in profiles", async ({ page }) => {});
+    test.skip("Imported pledges appear accurately in profiles", async ({ page }) => {
+        // Live db check
+        let { data: pledge } = await db.from("pledges").select("*, people (*)").limit(1).single();
+        let id = pledge.people.id;
+        expect(pledge).toBeTruthy();
+        expect(id).toBeTruthy();
+        await page.goto(`/people/${id}`);
+        await expect(
+            page.getByRole("listitem").filter({ hasText: "$" + pledge.amount.toString() + " - " })
+        ).toBeVisible();
+    });
     test("Add, remove, and 'make primary' different phone numbers and emails", async ({ page }) => {
         // Importing phones and emails now has the right data structures and works
         // Primary is un-implemented
@@ -145,7 +153,27 @@ test.describe("Pledge followup flow", () => {
         // TODO: Make primary
     });
 
-    test.skip("Create a single-table list", async ({ page }) => {});
+    test("Create a single-table list", async ({ page }) => {
+        await page.goto("/people");
+        await page.getByRole("button", { name: "Add Filter Step" }).click();
+        await page.getByTestId("fields").selectOption("state");
+        await page.getByRole("textbox", { name: "Value" }).fill("NY");
+        await page.getByRole("button", { name: "Save List" }).click();
+        await page
+            .getByRole("menu", { name: "Save List" })
+            .getByRole("textbox")
+            .fill("Everyone in New York");
+        await page.getByRole("menuitem", { name: "Save" }).click();
+        await page.goto("/savedlists");
+        const navigationPromise = page.waitForNavigation();
+        await page.getByRole("button", { name: "Edit Query" }).click();
+        await navigationPromise;
+        // Take a screenshot
+        await page.screenshot({
+            path: `__e2e__/results/debug.png`,
+        });
+        await expect(page.getByText("Everyone in New York")).toBeVisible();
+    });
     test.skip("Create a multi-table list re: pledges, past donations, and FEC data", async ({
         page,
     }) => {});

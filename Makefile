@@ -34,7 +34,10 @@ runtestdebugandstop:
 	pkill node || true
 	pm2 delete all || true
 
-new test:
+newtest: stop start codegen stop
+	
+codegen:
+	npm run dev &
 	npx playwright codegen localhost:3000
 
 debug tests: stop start runtestdebugandstop
