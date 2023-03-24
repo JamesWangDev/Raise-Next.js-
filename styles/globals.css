@@ -300,6 +300,7 @@ nav .border-t {
     padding: 4px 10px;
     color: white !important;
     @apply rounded -mt-0.5 mb-0.5;
+    @apply shadow-md -mt-1 mb-1 px-3 font-bold !important;
 }
 .brand {
     padding-bottom: 0.55rem;

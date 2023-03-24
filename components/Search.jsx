@@ -8,15 +8,18 @@ export default function Search() {
     return (
         <>
             <SearchModal setOpen={setOpen} open={open} />
-            <div className="flex">
+            <div className="flex  -mt-0.5">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-12">
-                    <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                    <MagnifyingGlassIcon
+                        className="h-5 w-5 text-gray-400  -mt-1"
+                        aria-hidden="true"
+                    />
                 </div>
                 <input
                     type="text"
                     id="search-bar"
                     placeholder="Search..."
-                    className="rounded-full ring-0 ring-gray-300 hover:ring-indigo-600 border-0 w-full px-8 mx-6 bg-gray-100 pl-14 mr-0"
+                    className="rounded-full ring-0 ring-gray-300 hover:ring-indigo-600 border-0 w-full px-8 mx-6 bg-gray-100 pl-14 mr-0 shadow"
                     onMouseDown={() => {
                         setOpen(true);
                     }}
