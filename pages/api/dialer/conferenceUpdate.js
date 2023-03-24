@@ -28,7 +28,7 @@ export default async function handler(request) {
         .select()
         .single();
     if (response?.error) {
-        throw Error({
+        console.error({
             message: "Error adding conference update",
             data,
             error,
