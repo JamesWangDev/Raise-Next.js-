@@ -21,14 +21,10 @@ import {
     PhoneIcon,
     ClockIcon,
     HandRaisedIcon,
-    CheckCircleIcon,
     EnvelopeIcon,
-    ChevronDoubleRightIcon,
     UserPlusIcon,
-    Cog6ToothIcon,
     CloudArrowDownIcon,
     ArrowUpOnSquareStackIcon,
-    LinkIcon,
     ArrowsRightLeftIcon,
     UserCircleIcon,
     CurrencyDollarIcon,
@@ -36,13 +32,12 @@ import {
 
 // import algoliasearch from "algoliasearch/lite";
 // import { InstantSearch, SearchBox, Hits } from "react-instantsearch-dom";
-// const searchClient = algoliasearch(
-//   "latency",
-//   process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_ONLY_API_KEY
-// );
+// const searchClient = algoliasearch("latency", process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_ONLY_API_KEY);
 // import { DocSearch } from "@docsearch/react";
-// Commented out for Jest testing
+// // Commented out for Jest testing
 // import "@docsearch/css";
+
+import Search from "components/Search";
 
 const navigation = [
     { name: "Dashboard", href: "/", icon: HomeIcon, current: true },
@@ -301,6 +296,7 @@ const Layout = ({ children }) => {
                                                             .NEXT_PUBLIC_ALGOLIA_SEARCH_ONLY_API_KEY
                                                     }
                                                 /> */}
+                                                <Search />
                                             </div>
                                         </form>
                                     </div>

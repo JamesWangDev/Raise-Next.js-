@@ -24,7 +24,7 @@ const stats = [
         changeType: "increase",
         query: "total_sum_unfufilled_pledges",
         icon: HandRaisedIcon,
-        href: "/pleges",
+        href: "/pledges",
     },
     {
         name: "Phone Calls Made",
