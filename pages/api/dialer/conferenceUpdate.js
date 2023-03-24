@@ -16,7 +16,7 @@ export default async function handler(request) {
     let { data } = await supabase.from("call_sessions").select().eq("id", callSessionID).single();
     const orgID = data?.organization_id;
     if (!orgID) {
-        throw Error("no corresponding session with an org id exists to this conference update");
+        console.error("no corresponding session with an org id exists to this conference update");
     }
 
     let response = await supabase
