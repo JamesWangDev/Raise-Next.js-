@@ -103,14 +103,17 @@ export default function StartCallingSession() {
                 },
                 ({ new: updated }) => {
                     console.log(updated.current_person_id);
-                    setSession({ ...session, current_person_id: updated.current_person_id });
+                    setSession((prevState) => ({
+                        ...prevState,
+                        current_person_id: updated.current_person_id,
+                    }));
                 }
             )
             .subscribe();
         return () => {
-            // supabase.removeChannel(channel);
+            supabase.removeChannel(channel);
         };
-    }, [fetchSessionData]);
+    }, [fetchSessionData, supabase]);
 
     // Mutation of current person/page triggers fetch
     const setPersonID = useCallback(
@@ -135,7 +138,6 @@ export default function StartCallingSession() {
 
     useEffect(() => {
         if (!session?.current_person_id && peopleList?.length) {
-            // setPersonID(temporaryPeopleList[0]);
             setPersonID(peopleList[0]);
         }
     }, [setPersonID, peopleList?.length, session?.current_person_id]);

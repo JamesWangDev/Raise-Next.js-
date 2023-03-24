@@ -31,7 +31,7 @@ export default async function handler(request) {
         console.error({
             message: "Error adding conference update",
             data,
-            error,
+            response?.error,
         });
     }
     console.log("Conference update written to table");
