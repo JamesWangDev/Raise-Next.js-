@@ -33,7 +33,7 @@ export default function SaveList({ listName, saveList }) {
                         onSubmit={(event) => {
                             // listNameTemp
                             event.preventDefault();
-                            saveList(listNameTemp);
+                            saveList(typeof listNameTemp === "undefined" ? listName : listNameTemp);
                         }}
                     >
                         <div className="px-4 py-3">
@@ -46,7 +46,6 @@ export default function SaveList({ listName, saveList }) {
                                         event.stopPropagation();
                                     }
                                     if (event.code == "Enter") {
-                                        console.log({ event });
                                         event.target.form.requestSubmit();
                                     }
                                 }}

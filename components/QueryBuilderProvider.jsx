@@ -100,7 +100,7 @@ export default function QueryBuilderProvider({
             .select()
             .single();
 
-        if (error) throw Error("Couldn't save list");
+        if (error) throw error;
         setListID(upsertedList.id);
         fetchList();
         router.push("/savedlists/" + upsertedList.id);
