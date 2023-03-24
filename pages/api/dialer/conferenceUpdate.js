@@ -30,8 +30,8 @@ export default async function handler(request) {
     if (response?.error) {
         console.error({
             message: "Error adding conference update",
-            data,
-            response.error
+            data: data,
+            error: response.error,
         });
     }
     console.log("Conference update written to table");

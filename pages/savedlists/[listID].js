@@ -24,7 +24,7 @@ export default function SpecificListPage() {
             .then(({ data, error }) => {
                 setList(data);
             });
-    }, [supabase]);
+    }, [supabase, listID]);
 
     return (
         <div className="">
