@@ -23,9 +23,9 @@ async function updateParticipantAndGetSessionID(caller, callSID) {
             // .eq("id", data.id);
             .eq("call_session_id", data?.call_session_id)
             .eq("number_dialed_in_from", caller);
-    }
 
-    console.log({ response });
+        console.log({ response });
+    }
 
     return data?.call_session_id;
 }
