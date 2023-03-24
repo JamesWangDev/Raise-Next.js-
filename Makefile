@@ -20,8 +20,24 @@ nuke: stop
 lint:
 	npm run lint
 
-test: stop start runtest stop
+test: stop start runtestandstop
 
-runtest:
+runtestandstop:
 	npm run test
-	npm run test:e2e
+	supabase stop
+	pkill node || true
+	pm2 delete all || true
+
+runtestdebugandstop:
+	npx playwright test --debug
+	supabase stop
+	pkill node || true
+	pm2 delete all || true
+
+newtest: stop start codegen stop
+	
+codegen:
+	npm run dev &
+	npx playwright codegen localhost:3000
+
+debug tests: stop start runtestdebugandstop

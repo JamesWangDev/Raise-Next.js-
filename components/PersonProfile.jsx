@@ -8,6 +8,8 @@ import PersonContactInfo from "./PersonContactInfo";
 import { Tooltip } from "@mui/material";
 import { useUser } from "@clerk/nextjs";
 import FECHistoryList from "./FECHistoryList";
+import PledgeHistory from "./PledgeHistory";
+import DonationHistory from "./DonationHistory";
 
 const pluralize = (single, plural, number) => (number > 1 ? plural : single);
 
@@ -98,7 +100,15 @@ function PersonTagList({ person, addTag, deleteTag, restoreTag }) {
     );
 }
 
-export default function PersonProfile({ personID, dial, hangup, outbound, hasNext, next }) {
+export default function PersonProfile({
+    personID,
+    dial,
+    hangup,
+    outbound,
+    hasNext,
+    next,
+    forceFetch,
+}) {
     const { id: userID } = useUser();
     const supabase = useSupabase();
     const [person, setPerson] = useState();
@@ -107,12 +117,12 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
     const [isLoading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (person?.last_name) {
+        if (person?.last_name && person?.zip?.toString()?.length > 0) {
             supabase
                 .from("alltime_individual_contributions")
                 .select("*")
                 .eq("name", (person?.last_name + ", " + person?.first_name).toUpperCase())
-                .eq("zip_code", person.zip)
+                .like("zip_code", person.zip.toString() + "%")
                 .then((result) => setFECHistory(result.data));
         }
     }, [supabase, person?.first_name, person?.last_name, person?.zip]);
@@ -133,7 +143,7 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
 
     useEffect(() => {
         fetchPerson();
-    }, [fetchPerson]);
+    }, [fetchPerson, forceFetch]);
 
     const mutations = useMemo(
         (person) => ({
@@ -182,7 +192,11 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
                     .update({ remove_date: new Date().toISOString(), remove_user: userID })
                     .eq("id", id)
                     .then(fetchPerson),
-            addTag: (newTag) => supabase.from("tags").insert({ tag: newTag, person_id: personID }),
+            addTag: (newTag) =>
+                supabase
+                    .from("tags")
+                    .insert({ tag: newTag, person_id: personID })
+                    .then(fetchPerson),
             restorePhone: (id) =>
                 supabase
                     .from("phone_numbers")
@@ -245,8 +259,8 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
                             ]}
                         />
                     </div>
-                    <div id="person-header" className="grid grid-cols-2 gap-2">
-                        <div id="">
+                    <div id="person-header" className="grid grid-cols-12 gap-2">
+                        <div className="col-span-8">
                             <Tooltip title={"Person ID: " + personID} arrow>
                                 <h1 className="mb-0">
                                     {person.first_name} {person.last_name}
@@ -255,7 +269,7 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
                             <h2 className="text-sm font-normal text-gray-600">
                                 {person.occupation} | {person.employer} | {person.state}
                             </h2>
-                            <p className="text-sm text-gray-900 font-semibold">
+                            <div className="text-sm text-gray-900 font-semibold">
                                 <span className="inline-flex mr-1.5">
                                     <DonationsSummary person={person} />
                                 </span>
@@ -263,9 +277,10 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
                                 <span className="inline-flex mx-1.5">
                                     <PledgesSummary person={person} />
                                 </span>
-                                |
+                            </div>
+                            <div className="mt-1 text-sm">
                                 <form
-                                    className="inline-flex ml-1.5"
+                                    className="block"
                                     onSubmit={(event) => {
                                         event.preventDefault();
                                         if (bio == null) setBio(person?.bio || "");
@@ -301,9 +316,9 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
                                             : "Add a bio"}
                                     </button>
                                 </form>
-                            </p>
+                            </div>
                         </div>
-                        <div className="text-right">
+                        <div className="text-right col-span-4">
                             <div className=" flex-row gap-3 inline-flex">
                                 {
                                     <button
@@ -335,7 +350,7 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
                                     onClick={() => next()}
                                     {...(!outbound && hasNext ? {} : { disabled: true })}
                                 >
-                                    Next
+                                    Skip
                                 </button>
                             </div>
                         </div>
@@ -353,10 +368,10 @@ export default function PersonProfile({ personID, dial, hangup, outbound, hasNex
                             {...mutations}
                         />
                     </div>
-                    <div className="col-span-3">
+                    <div className="col-span-4">
+                        <PledgeHistory pledges={person?.pledges} {...mutations} />
+                        <DonationHistory donations={person?.donations} {...mutations} />
                         <FECHistoryList FECHistory={FECHistory} />
-                        {/* <PledgeHistory pledges={person?.pledges} {...mutations} />
-                    <DonationHistory donations={person?.donations} {...mutations} /> */}
                     </div>
                 </div>
             </div>

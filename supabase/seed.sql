@@ -70,5 +70,5 @@ create foreign table alltime_individual_contributions (
   memo_cd varchar,
   memo_text varchar,
   sub_id int8 not null,
-  concat_name varchar not null
+  cmte_nm text
 ) SERVER fec;

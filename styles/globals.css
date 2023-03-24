@@ -289,7 +289,7 @@ nav .border-t {
     @apply text-blue-600 underline;
 }
 .shaded-page-header {
-    @apply bg-gray-100 -mx-12 -mt-8 -mb-2 pb-5 pt-8 px-12;
+    @apply bg-gray-50 -mx-12 -mt-8 -mb-2 pb-5 pt-8 px-12;
 }
 
 .brand svg {
@@ -303,4 +303,11 @@ nav .border-t {
 }
 .brand {
     padding-bottom: 0.55rem;
+}
+
+.call-session-card {
+    @apply bg-white rounded-lg shadow-md p-6 pt-0 hover:shadow-lg hover:cursor-pointer border;
+}
+.call-session-card-link {
+    @apply block mt-4 text-blue-600 hover:underline underline underline-offset-4 text-base font-normal;
 }

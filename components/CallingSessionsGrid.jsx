@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSupabase } from "lib/supabaseHooks";
 
-export default function CallingSessionsGrid() {
+export default function CallingSessionsGrid({ hideStart }) {
     // get orgid using clerk
     const supabase = useSupabase();
 
@@ -13,7 +13,7 @@ export default function CallingSessionsGrid() {
         // Fetch the list of calling sessions from the API.
         supabase
             .from("call_sessions")
-            .select("*")
+            .select("*, saved_lists (*)")
             .then(({ data, error }) => {
                 if (error) console.error("Error fetching sessions", error);
                 else setSessions(data);
@@ -23,22 +23,25 @@ export default function CallingSessionsGrid() {
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
             {sessions?.map((session) => (
-                <div
-                    key={session.id}
-                    className="bg-white rounded-lg shadow-sm p-6 pt-0 hover:shadow-lg hover:cursor-pointer border"
-                >
-                    <h3>List ID: {session.list_id}</h3>
-                    <p className="text-gray-400 mt-2 font-normal">
-                        Started on: {new Date(session.started).toLocaleDateString()}
-                    </p>
-                    <Link
-                        href={"/dialer/" + session.id}
-                        className="block mt-4 text-blue-600 hover:underline underline underline-offset-4 text-base font-normal"
-                    >
-                        Join this session
-                    </Link>
-                </div>
+                <Link href={"/dialer/" + session.id} key={session.id}>
+                    <div className="call-session-card">
+                        <h3 className="mt-6">List: {session.saved_lists.query}</h3>
+                        <p className="text-gray-400 mt-2 font-normal">
+                            Started on: {new Date(session.started).toLocaleDateString()}
+                        </p>
+                        <span className="call-session-card-link">Join this session</span>
+                    </div>
+                </Link>
             ))}
+            {!hideStart && (
+                <Link href="/dialer">
+                    <div className="call-session-card">
+                        <h3 className="mt-6">Start a new session</h3>
+                        <p className="text-gray-400 mt-2 font-normal">Click to choose a list</p>
+                        <span className="call-session-card-link">Make calls</span>
+                    </div>
+                </Link>
+            )}
         </div>
     );
 }

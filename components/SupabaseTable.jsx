@@ -1,10 +1,10 @@
 import useSWR, { preload } from "swr";
-import axios from "axios";
-const fetcher = (url) => axios.get(url).then((res) => res.data);
+const fetcher = (url) => fetch(url).then((r) => r.json());
 import { useState } from "react";
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
-import { Stack, Tooltip } from "@mui/material";
+import Tooltip from "@mui/material/Tooltip";
+import Stack from "@mui/material/Stack";
 import { useRouter } from "next/router";
 import { useSupabase } from "lib/supabaseHooks";
 
@@ -125,7 +125,7 @@ export default function SupabaseTable({
                         ),
                     }}
                     paginationMode="server"
-                    rowCount={rowCount || 0}
+                    rowCount={Number(rowCount) || 0}
                     loading={!data}
                     rows={rows}
                     columns={columns}
@@ -136,7 +136,7 @@ export default function SupabaseTable({
                     className="bg-white"
                     // disable sorting and filtering
                     disableColumnMenu
-                    // rowHeight={44}
+                    rowHeight={44}
                     sx={{
                         fontSize: "0.85rem",
                         my: 2,
@@ -163,7 +163,7 @@ const LoadListButton = (params) => {
                 size="small"
                 onClick={(e) => {
                     e.stopPropagation();
-                    console.log(params, params.row);
+                    // console.log(params, params.row);
                     router.push("/savedlists/" + params.row.id);
                 }}
             >
@@ -184,7 +184,7 @@ const MakeCallsButton = (params) => {
                 size="small"
                 onClick={(e) => {
                     e.stopPropagation();
-                    console.log("list row params", params, params.row);
+                    // console.log("list row params", params, params.row);
 
                     supabase
                         .from("call_sessions")
@@ -212,7 +212,7 @@ const ViewPersonButton = (params) => {
                 size="small"
                 onClick={(e) => {
                     e.stopPropagation();
-                    console.log(router.asPath);
+                    // console.log(router.asPath);
                     router.push(
                         (router.asPath == "/people" ? "" : router.asPath) +
                             "/people/" +

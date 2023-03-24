@@ -52,11 +52,16 @@ export default function SaveList({ formattedQuery, listName, listID }) {
                             <input
                                 type="text"
                                 className="form-input"
+                                onKeyDown={(event) => {
+                                    if (event.code == "Space") {
+                                        event.stopPropagation();
+                                    }
+                                }}
                                 onChange={(event) => {
                                     setListNameTemp(event.target.value);
                                 }}
                                 value={listNameTemp}
-                                onSubmit={saveList}
+                                autoFocus
                             />
                         </div>
                         <div className="pt-1">

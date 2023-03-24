@@ -24,15 +24,13 @@ export default function InteractionHistory({ person, interactions, appendInterac
                     ?.map((interaction, eventIdx) => {
                         interaction.iconBackground = "bg-gray-400";
                         interaction.icon = UserIcon;
-
-                        interaction.date = new Date(interaction.created_at).toLocaleString(
-                            "en-US",
-                            {
-                                month: "short",
-                                day: "numeric",
-                                year: "numeric",
-                            }
-                        );
+                        interaction.date = new Date(
+                            interaction.created_at || interaction.date
+                        ).toLocaleString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                        });
                         interaction.datetime = new Date(interaction.created_at).toString();
                         interaction.href = "";
 

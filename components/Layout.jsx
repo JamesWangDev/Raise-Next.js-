@@ -40,7 +40,7 @@ import {
 //   "latency",
 //   process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_ONLY_API_KEY
 // );
-import { DocSearch } from "@docsearch/react";
+// import { DocSearch } from "@docsearch/react";
 // Commented out for Jest testing
 // import "@docsearch/css";
 
@@ -139,15 +139,15 @@ const Layout = ({ children }) => {
     let basePath = "/" + router.pathname.split("/")[1];
 
     let activeIndex =
-        router.pathname == "/"
+        router.pathname === "/"
             ? 0
-            : navigation.findIndex((element) => element.href == router.pathname);
+            : navigation.findIndex((element) => element.href === router.pathname);
     // If the page is not found, set the parent page as active
-    if (activeIndex == -1)
-        activeIndex = navigation.findIndex((element) => element.href == basePath);
+    if (activeIndex === -1)
+        activeIndex = navigation.findIndex((element) => element.href === basePath);
     if (activeIndex in navigation) navigation[activeIndex].current = true;
 
-    const hasOrg = user ? !!user.organizationMemberships.length : false;
+    const hasOrg = user ? !!user?.organizationMemberships?.length : false;
 
     return (
         <>
@@ -292,14 +292,15 @@ const Layout = ({ children }) => {
                                             method="GET"
                                         >
                                             <div className="mr-5 relative pt-3 w-full text-gray-400 focus-within:text-gray-600">
-                                                <DocSearch
+                                                {/* Node package size reduction */}
+                                                {/* <DocSearch
                                                     appId={process.env.ALGOLIA_APPLICATION_ID}
                                                     indexName="RaiseMoreClientSearch"
                                                     apiKey={
                                                         process.env
                                                             .NEXT_PUBLIC_ALGOLIA_SEARCH_ONLY_API_KEY
                                                     }
-                                                />
+                                                /> */}
                                             </div>
                                         </form>
                                     </div>

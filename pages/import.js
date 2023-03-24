@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import "lib/randomUUID-polyfill";
+import { randomUUID } from "lib/randomUUID-polyfill";
 import { CheckIcon } from "@heroicons/react/24/solid";
 import { RadioGroup } from "@headlessui/react";
 import { CheckCircleIcon } from "@heroicons/react/20/solid";
@@ -84,7 +84,7 @@ const Uploaders = ({ importType, nextStep, setUploadResult }) => {
             console.time("upload and process");
 
             // Create a root reference
-            var filepath = `${[Date.now().toString(), crypto.randomUUID(), organization.id].join(
+            var filepath = `${[Date.now().toString(), randomUUID(), organization.id].join(
                 "_"
             )}.csv`;
 

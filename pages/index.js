@@ -48,9 +48,10 @@ export function StatCard({ query, table, item }) {
         supabase
             .from(table)
             .select(query)
-            .single()
-            .then((data) => {
-                setData(data.data);
+            .maybeSingle()
+            .then(({ data, error }) => {
+                if (error) console.error(error);
+                setData(data);
                 setLoading(false);
             });
     }, [query, table, supabase]);
@@ -67,7 +68,7 @@ export function StatCard({ query, table, item }) {
     return (
         <div
             key={item.id}
-            className="relative overflow-hidden rounded-lg bg-white px-4 pt-5 pb-0 shadow sm:px-6 sm:pt-6 ring-1 ring-opacity-5 ring-black"
+            className="relative overflow-hidden rounded-lg bg-white px-4 pt-5 pb-0 shadow sm:px-6 sm:pt-6 rounded-lg shadow-md border"
         >
             <dt>
                 <div className="absolute rounded-md bg-blue-200 p-3">
@@ -86,7 +87,7 @@ export function HomepageCards() {
     return (
         <>
             <div>
-                <h3>Metrics</h3>
+                <h3 className="mt-5">Metrics</h3>
                 <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     {stats.map((item, i) => (
                         <StatCard
@@ -108,7 +109,8 @@ export function HomepageCards() {
     );
 }
 
-export default function Home() {
+export default function Home(props) {
+    console.log({ props });
     const { isSignedIn, isLoading, user } = useUser();
 
     return (

@@ -6,10 +6,26 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Breadcrumbs from "components/Breadcrumbs";
 import PageTitle from "components/PageTitle";
+import { useSupabase } from "lib/supabaseHooks";
 
 export default function SpecificListPage() {
+    const supabase = useSupabase();
+
     const router = useRouter();
     const { listID } = router.query;
+
+    const [list, setList] = useState();
+    useEffect(() => {
+        supabase
+            .from("saved_lists")
+            .select()
+            .eq("id", listID)
+            .maybeSingle()
+            .then(({ data, error }) => {
+                setList(data);
+            });
+    }, [supabase, listID]);
+
     return (
         <div className="">
             <div className="mx-auto max-w-7xl px-2 ">
@@ -23,7 +39,7 @@ export default function SpecificListPage() {
                         },
                     ]}
                 />
-                <PageTitle title={"List " + listID} descriptor="You're editing this query." />
+                <PageTitle title={"List " + list.name} descriptor="You're editing this query." />
             </div>
             <div className="mx-auto max-w-7xl px-2  ">
                 <QueryBuilderProvider table="people_for_user_display" listID={listID} />
