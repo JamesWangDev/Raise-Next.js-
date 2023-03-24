@@ -5,6 +5,7 @@ import PageTitle from "components/PageTitle";
 import CallingSessionsGrid from "components/CallingSessionsGrid";
 import { useUser } from "@clerk/nextjs";
 import { CurrencyDollarIcon, HandRaisedIcon, PhoneIcon } from "@heroicons/react/24/outline";
+import Link from "next/link";
 
 const stats = [
     {
@@ -14,6 +15,7 @@ const stats = [
         changeType: "increase",
         query: "total_sum_donations",
         icon: CurrencyDollarIcon,
+        href: "/donations",
     },
     {
         name: "Unfufilled Pledges",
@@ -22,6 +24,7 @@ const stats = [
         changeType: "increase",
         query: "total_sum_unfufilled_pledges",
         icon: HandRaisedIcon,
+        href: "/pleges",
     },
     {
         name: "Phone Calls Made",
@@ -30,6 +33,7 @@ const stats = [
         changeType: "increase",
         query: "total_number_of_calls",
         icon: PhoneIcon,
+        href: "/contacthistory",
     },
 ];
 
@@ -38,13 +42,10 @@ function classNames(...classes) {
 }
 
 export function StatCard({ query, table, item }) {
-    const [isLoading, setLoading] = useState(false);
     const [data, setData] = useState(null);
     const supabase = useSupabase();
 
     useEffect(() => {
-        setLoading(true);
-
         supabase
             .from(table)
             .select(query)
@@ -52,7 +53,6 @@ export function StatCard({ query, table, item }) {
             .then(({ data, error }) => {
                 if (error) console.error(error);
                 setData(data);
-                setLoading(false);
             });
     }, [query, table, supabase]);
 
@@ -66,53 +66,23 @@ export function StatCard({ query, table, item }) {
         item.stat = "$" + Number(item.stat).toLocaleString();
 
     return (
-        <div
-            key={item.id}
-            className="relative overflow-hidden rounded-lg bg-white px-4 pt-5 pb-0 shadow sm:px-6 sm:pt-6 rounded-lg shadow-md border"
-        >
-            <dt>
-                <div className="absolute rounded-md bg-blue-200 p-3">
-                    <item.icon className="h-6 w-6 text-white" aria-hidden="true" />
-                </div>
-                <p className="ml-16 truncate text-sm font-medium text-gray-500">{item.name}</p>
-            </dt>
-            <dd className="ml-16 flex items-baseline pb-6 sm:pb-7">
-                <p className="text-2xl font-semibold text-gray-900">{item.stat}</p>
-            </dd>
-        </div>
+        <Link href={item?.href} key={item.id}>
+            <div className="relative overflow-hidden rounded-lg bg-white px-4 pt-7 pb-0 shadow sm:px-6 rounded-lg shadow-md border hover:shadow-lg hover:cursor-pointer">
+                <dt>
+                    <div className="absolute rounded-md bg-blue-200 p-3">
+                        <item.icon className="h-6 w-6 text-white" aria-hidden="true" />
+                    </div>
+                    <p className="ml-16 truncate text-sm font-medium text-gray-500">{item.name}</p>
+                </dt>
+                <dd className="ml-16 flex items-baseline pb-6 sm:pb-7">
+                    <p className="text-2xl font-semibold text-gray-900">{item.stat}</p>
+                </dd>
+            </div>
+        </Link>
     );
 }
 
-export function HomepageCards() {
-    return (
-        <>
-            <div>
-                <h3 className="mt-5">Metrics</h3>
-                <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                    {stats.map((item, i) => (
-                        <StatCard
-                            key={i}
-                            item={item}
-                            query={item.query}
-                            table="dashboard_by_account"
-                        />
-                    ))}
-                </dl>
-            </div>
-            <div>
-                <h3>Join an active calling session:</h3>
-
-                {/* map callingSessions to devs/cards in the same way as done in makecalls/start/... */}
-                <CallingSessionsGrid />
-            </div>
-        </>
-    );
-}
-
-export default function Home(props) {
-    console.log({ props });
-    const { isSignedIn, isLoading, user } = useUser();
-
+export default function Home() {
     return (
         <div className="">
             <div className="mx-auto max-w-7xl px-2">
@@ -123,7 +93,23 @@ export default function Home(props) {
                 />
             </div>
             <div className="mx-auto max-w-7xl px-2">
-                <HomepageCards />
+                <div>
+                    <h3 className="mt-7">Metrics</h3>
+                    <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                        {stats.map((item, i) => (
+                            <StatCard
+                                key={i}
+                                item={item}
+                                query={item.query}
+                                table="dashboard_by_account"
+                            />
+                        ))}
+                    </dl>
+                </div>
+                <div>
+                    <h3>Join an active calling session:</h3>
+                    <CallingSessionsGrid />
+                </div>
             </div>
         </div>
     );
