@@ -92,17 +92,16 @@ function SearchModal({ setOpen, open }) {
                                 </div>
 
                                 {query === "" && (
-                                    <div className="border-t border-gray-100 py-14 px-6 text-center text-sm sm:px-14">
+                                    <div className="border-t border-gray-100 py-14 px-6 text-center text sm:px-14">
                                         <GlobeAmericasIcon
-                                            className="mx-auto h-6 w-6 text-gray-400"
+                                            className="mx-auto h-12 w-12 text-gray-300"
                                             aria-hidden="true"
                                         />
-                                        <p className="mt-4 font-semibold text-gray-900">
-                                            Search for clients and projects
+                                        <p className="mt-1 font-semibold text-gray-700">
+                                            Quick search
                                         </p>
-                                        <p className="mt-2 text-gray-500">
-                                            Quickly access clients and projects by running a global
-                                            search.
+                                        <p className="mt-1 text-gray-400">
+                                            all donors, lists, notes, pledges, etc...
                                         </p>
                                     </div>
                                 )}
