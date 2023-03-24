@@ -1,8 +1,5 @@
-import Head from "next/head";
-import Image from "next/image";
-import Link from "next/link";
 import QueryBuilderProvider from "components/QueryBuilderProvider";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
 import Breadcrumbs from "components/Breadcrumbs";
 import PageTitle from "components/PageTitle";
@@ -15,7 +12,7 @@ export default function SpecificListPage() {
     const { listID } = router.query;
 
     const [list, setList] = useState();
-    useEffect(() => {
+    const fetchList = useCallback(() => {
         supabase
             .from("saved_lists")
             .select()
@@ -25,24 +22,31 @@ export default function SpecificListPage() {
                 setList(data);
             });
     }, [supabase, listID]);
+    useEffect(() => {
+        fetchList();
+    }, [fetchList]);
 
     return (
         <div className="">
             <div className="mx-auto max-w-7xl px-2 ">
                 <Breadcrumbs
                     pages={[
-                        { name: "Lists", href: "/savedlists", current: false },
+                        { name: "Saved Lists", href: "/savedlists", current: false },
                         {
-                            name: listID,
+                            name: list?.name || "listname",
                             href: "/savedlists/" + listID,
                             current: true,
                         },
                     ]}
                 />
-                <PageTitle title={"List " + list.name} descriptor="You're editing this query." />
+                <PageTitle title={`List "${list?.name}"`} descriptor="You're editing this query." />
             </div>
             <div className="mx-auto max-w-7xl px-2  ">
-                <QueryBuilderProvider table="people_for_user_display" listID={listID} />
+                <QueryBuilderProvider
+                    table="people_for_user_display"
+                    listID={listID}
+                    forceListUpdate={fetchList}
+                />
             </div>
         </div>
     );

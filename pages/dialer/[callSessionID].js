@@ -216,33 +216,6 @@ export default function StartCallingSession() {
 
         console.log({ _dialedIn, _outbound });
 
-        // if (
-        //     (conferenceUpdates[0]?.status_callback_event === "conference-end" ||
-        //         conferenceUpdates[1]?.status_callback_event === "conference-end") &&
-        //     conferenceUpdates[0]?.status_callback_event !== "participant-join"
-        // ) {
-        //     // Determine if we're currently dialed in
-        //     setDialedIn(false);
-        // } else {
-        //     console.log();
-        //     setDialedIn(true);
-        // }
-
-        // // Enable hangup button when outbound call is active, disable dial button
-        // if (
-        //     conferenceUpdates[0]?.status_callback_event === "participant-join" &&
-        //     conferenceUpdates[0]?.participant_label?.includes("outboundCall")
-        // ) {
-        //     setOutbound(true);
-        // }
-        // // Disable hangup button when outbound call ends, enable dial button
-        // else if (
-        //     conferenceUpdates[0]?.status_callback_event === "participant-leave" &&
-        //     conferenceUpdates[0]?.participant_label?.includes("outboundCall")
-        // ) {
-        //     setOutbound(false);
-        // }
-
         forceFetchPersonProfile();
     }, [conferenceUpdates, conferenceSID, me?.call_sid]);
 

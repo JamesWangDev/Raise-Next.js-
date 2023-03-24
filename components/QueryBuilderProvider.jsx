@@ -8,6 +8,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useSupabase } from "lib/supabaseHooks";
 import SaveList from "./SaveList";
 import SupabaseTable from "./SupabaseTable";
+import { useRouter } from "next/router";
 
 import {
     formatQuery,
@@ -29,34 +30,44 @@ const initialQuery = {
     rules: [],
 };
 
-export default function QueryBuilderProvider({ table, children, listID }) {
+export default function QueryBuilderProvider({
+    table,
+    children,
+    listID: initialListID,
+    forceListUpdate,
+}) {
+    const router = useRouter();
     const supabase = useSupabase();
     const [list, setList] = useState({});
     const [query, setQuery] = useState(initialQuery);
+    const [listID, setListID] = useState(initialListID);
 
-    // Load the list id, name, and query if present on page load
-    useEffect(() => {
+    const fetchList = useCallback(() => {
         if (listID) {
             supabase
                 .from("saved_lists")
                 .select()
                 .eq("id", listID)
                 .single()
-                .then((result) => {
-                    let list = result.data;
-                    // console.log("list.query", list.query);
-                    setQuery(parseSQL(list.query));
-                    setList(list);
+                .then(({ data }) => {
+                    console.log({ data });
+                    setQuery(parseSQL(data.query));
+                    setList(data);
                 });
         }
-    }, [listID, supabase]);
+    }, [supabase, listID, initialListID]);
 
-    var formatted = formatQuery(query, {
+    // Load the list id, name, and query if present on page load
+    useEffect(() => {
+        fetchList();
+    }, [fetchList]);
+
+    var formattedQuery = formatQuery(query, {
         format: "sql",
         parseNumbers: true,
     });
     // .replaceAll("like '%", "like '%");
-    // console.log("formatted", formatted);
+    // console.log("formattedQuery", formattedQuery);
 
     const { data: rowsForColumns, error } = useSWR(
         `/api/rq?&query=${encodeURI(`select * from ${table} where (1 = 1) limit 25`)}`,
@@ -77,6 +88,25 @@ export default function QueryBuilderProvider({ table, children, listID }) {
         );
     }, []);
 
+    const saveList = async (listNameTemp) => {
+        const listObject = {
+            name: listNameTemp,
+            query: formattedQuery,
+        };
+        if (listID) listObject.id = listID;
+        let { data: upsertedList, error } = await supabase
+            .from("saved_lists")
+            .upsert(listObject, { onConflict: "id" })
+            .select()
+            .single();
+
+        if (error) throw Error("Couldn't save list");
+        setListID(upsertedList.id);
+        fetchList();
+        router.push("/savedlists/" + upsertedList.id);
+        if (forceListUpdate) forceListUpdate();
+    };
+
     return (
         <>
             <div className="qbp">
@@ -84,9 +114,9 @@ export default function QueryBuilderProvider({ table, children, listID }) {
                     <pre>
                         <code>
                             Query:{" "}
-                            {formatted == "(1 = 1)"
+                            {formattedQuery == "(1 = 1)"
                                 ? "No filters, returning all results.."
-                                : formatted}
+                                : formattedQuery}
                         </code>
                     </pre>
 
@@ -96,8 +126,7 @@ export default function QueryBuilderProvider({ table, children, listID }) {
                     >
                         Add Filter Step
                     </button>
-
-                    <SaveList formattedQuery={formatted} list={list} />
+                    <SaveList listName={list?.name} saveList={saveList} />
                 </div>
                 <QueryBuilderBootstrap>
                     <QueryBuilder
@@ -115,7 +144,7 @@ export default function QueryBuilderProvider({ table, children, listID }) {
                     />
                 </QueryBuilderBootstrap>
             </div>
-            <SupabaseTable table={table} currentQuery={formatted} />
+            <SupabaseTable table={table} currentQuery={formattedQuery} />
         </>
     );
 }
