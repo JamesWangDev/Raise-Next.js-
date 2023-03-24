@@ -3,7 +3,7 @@ export const config = { runtime: "edge" };
 import { createSupabaseClient } from "lib/supabaseHooks";
 const supabaseServiceRole = createSupabaseClient(null, { serviceRole: true });
 
-async function getCallSessionID(caller) {
+async function updateParticipantAndGetSessionID(caller, callSID) {
     // Get the most recent call session associated with the caller's number
     const { data, error } = await supabaseServiceRole
         .from("call_session_participants")
@@ -12,6 +12,20 @@ async function getCallSessionID(caller) {
         .order("created_at", { ascending: false })
         .limit(1)
         .single();
+
+    console.log({ callSID });
+
+    if (data?.call_session_id) {
+        // Mark the caller as called-in
+        const response = await supabaseServiceRole
+            .from("call_session_participants")
+            .update({ dialed_in: true, call_sid: callSID })
+            // .eq("id", data.id);
+            .eq("call_session_id", data?.call_session_id)
+            .eq("number_dialed_in_from", caller);
+    }
+
+    console.log({ response });
 
     return data?.call_session_id;
 }
@@ -25,9 +39,8 @@ export default async function webhookDialInConference(request) {
 
     const { searchParams } = new URL(request.url);
     const caller = searchParams.get("Caller").replace(/^\+1/, "");
-
-    const callSessionID = await getCallSessionID(caller);
-    console.log({ callSessionID });
+    const callSID = searchParams.get("CallSid");
+    const callSessionID = await updateParticipantAndGetSessionID(caller, callSID);
 
     if (!callSessionID) {
         return new Response(

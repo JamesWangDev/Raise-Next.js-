@@ -302,7 +302,11 @@ model call_session_participants {
   organization_id       String         @default(dbgenerated("requesting_org_id()"))
   user_id               String         @default(dbgenerated("requesting_user_id()"))
   call_session_id       BigInt?
+  dialed_in             Boolean        @default(false)
+  call_sid              String?        @unique
   call_sessions         call_sessions? @relation(fields: [call_session_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([call_session_id, number_dialed_in_from])
 }
 
 /// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.

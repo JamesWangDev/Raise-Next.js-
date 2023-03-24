@@ -28,36 +28,48 @@ const reducer = (prevState, payload) => {
         return false;
     }
 
-    // Append to beginning
-    return [payload.new, ...prevState];
+    // Append to end
+    return [...prevState, payload.new];
 };
 
 export default function StartCallingSession() {
     const router = useRouter();
     const { callSessionID } = router.query;
+    const supabase = useSupabase();
 
     const [session, setSession] = useState([]);
     const [conferenceUpdates, appendConferenceUpdate] = useReducer(reducer, []);
     const [conferenceSID, setConferenceSID] = useState(null);
     const [dialedIn, setDialedIn] = useState(false);
-    // Replaced the following with session.current_person_id server state
-    // const [personID, setPersonID] = useState();
     const [outbound, setOutbound] = useState(false);
     const [peopleList, setPeopleList] = useState();
     const [forceFetchValue, forceFetchPersonProfile] = useReducer((old) => old + 1, 0);
-    const supabase = useSupabase();
-
     const [dialedInFrom, setDialedInFrom] = useState(null);
+
+    const me =
+        session?.call_session_participants?.filter(
+            (participant) => participant.number_dialed_in_from == dialedInFrom
+        )[0] || null;
+
+    console.log({ me });
+
+    // Handler for dialing in
     useEffect(() => {
-        if (dialedInFrom) {
-            supabase
-                .from("call_session_participants")
-                .insert({
+        // Ignore onMount
+        if (!dialedInFrom) return () => {};
+
+        // Upsert the new dialedInFrom status
+        // TODO: correct uniqueness test for upsert
+        supabase
+            .from("call_session_participants")
+            .upsert(
+                {
                     call_session_id: callSessionID,
                     number_dialed_in_from: dialedInFrom,
-                })
-                .then(console.log);
-        }
+                },
+                { onConflict: "call_session_id,number_dialed_in_from" }
+            )
+            .then(console.log);
     }, [dialedInFrom, supabase, callSessionID]);
 
     let hasNext = peopleList?.indexOf(session.current_person_id) < peopleList?.length - 1;
@@ -70,7 +82,7 @@ export default function StartCallingSession() {
     const fetchSessionData = useCallback(() => {
         supabase
             .from("call_sessions")
-            .select("*, saved_lists (*)")
+            .select("*, saved_lists (*), call_session_participants (*)")
             .eq("id", callSessionID)
             .single()
             .then(({ data: currentSessionData, error }) => {
@@ -92,7 +104,7 @@ export default function StartCallingSession() {
         fetchSessionData();
 
         console.log("subscribeToPageChanges()");
-        const channel = supabase
+        const sessionChannel = supabase
             .channel("call_sessions")
             .on(
                 "postgres_changes",
@@ -110,8 +122,29 @@ export default function StartCallingSession() {
                 }
             )
             .subscribe();
+
+        // Subscribe to call_session_participants to get updated participants and callsids
+        const participantsChannel = supabase
+            .channel("call_session_participants")
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: "call_session_participants",
+                    filter: "call_session_id=eq." + callSessionID,
+                },
+                (payload) => {
+                    console.log({ payload });
+                    // Temporary simple solution:
+                    fetchSessionData();
+                }
+            )
+            .subscribe();
+
         return () => {
-            supabase.removeChannel(channel);
+            supabase.removeChannel(sessionChannel);
+            supabase.removeChannel(participantsChannel);
         };
     }, [fetchSessionData, supabase]);
 
@@ -145,7 +178,7 @@ export default function StartCallingSession() {
     // Supabase realtime
     useEffect(() => {
         console.log("useffect1");
-        console.log("conferenceUpdates", conferenceUpdates);
+        console.log({ conferenceUpdates });
 
         if (conferenceUpdates?.length === 0) {
             return () => {};
@@ -153,34 +186,65 @@ export default function StartCallingSession() {
 
         if (conferenceSID === null) setConferenceSID(conferenceUpdates[0].conference_sid);
 
-        if (
-            (conferenceUpdates[0]?.status_callback_event === "conference-end" ||
-                conferenceUpdates[1]?.status_callback_event === "conference-end") &&
-            conferenceUpdates[0]?.status_callback_event !== "participant-join"
-        ) {
-            // Determine if we're currently dialed in
-            setDialedIn(false);
-        } else {
-            setDialedIn(true);
-        }
+        let _dialedIn = false;
+        let _outbound = false;
+        for (const update of conferenceUpdates) {
+            const isItMe = update.call_sid == me?.call_sid;
 
-        // Enable hangup button when outbound call is active, disable dial button
-        if (
-            conferenceUpdates[0]?.status_callback_event === "participant-join" &&
-            conferenceUpdates[0]?.participant_label?.includes("outboundCall")
-        ) {
-            setOutbound(true);
+            // Dialed in?
+            if (isItMe) {
+                if (update.status_callback_event === "participant-join") {
+                    _dialedIn = true;
+                }
+                if (update.status_callback_event === "participant-leave") {
+                    _dialedIn = false;
+                }
+            }
+
+            // Outbound call active?
+            if (update?.participant_label?.includes("outboundCall")) {
+                if (update.status_callback_event === "participant-join") {
+                    _outbound = true;
+                }
+                if (update.status_callback_event === "participant-leave") {
+                    _outbound = false;
+                }
+            }
         }
-        // Disable hangup button when outbound call ends, enable dial button
-        else if (
-            conferenceUpdates[0]?.status_callback_event === "participant-leave" &&
-            conferenceUpdates[0]?.participant_label?.includes("outboundCall")
-        ) {
-            setOutbound(false);
-        }
+        setDialedIn(_dialedIn);
+        setOutbound(_outbound);
+
+        console.log({ _dialedIn, _outbound });
+
+        // if (
+        //     (conferenceUpdates[0]?.status_callback_event === "conference-end" ||
+        //         conferenceUpdates[1]?.status_callback_event === "conference-end") &&
+        //     conferenceUpdates[0]?.status_callback_event !== "participant-join"
+        // ) {
+        //     // Determine if we're currently dialed in
+        //     setDialedIn(false);
+        // } else {
+        //     console.log();
+        //     setDialedIn(true);
+        // }
+
+        // // Enable hangup button when outbound call is active, disable dial button
+        // if (
+        //     conferenceUpdates[0]?.status_callback_event === "participant-join" &&
+        //     conferenceUpdates[0]?.participant_label?.includes("outboundCall")
+        // ) {
+        //     setOutbound(true);
+        // }
+        // // Disable hangup button when outbound call ends, enable dial button
+        // else if (
+        //     conferenceUpdates[0]?.status_callback_event === "participant-leave" &&
+        //     conferenceUpdates[0]?.participant_label?.includes("outboundCall")
+        // ) {
+        //     setOutbound(false);
+        // }
 
         forceFetchPersonProfile();
-    }, [conferenceUpdates, conferenceSID]);
+    }, [conferenceUpdates, conferenceSID, me?.call_sid]);
 
     // useEffectOnMount to setup subscription
     useEffect(() => {
@@ -190,7 +254,7 @@ export default function StartCallingSession() {
         supabase
             .from("conference_updates")
             .select()
-            .order("inserted_at", { ascending: false })
+            .order("inserted_at", { ascending: true })
             .then((result) => {
                 appendConferenceUpdate(result?.data);
             });
