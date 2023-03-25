@@ -356,7 +356,7 @@ main > div {
 }
 
 .dialer-top-card {
-    @apply text-blue-700 p-3 px-8 pt-0 block w-full rounded-2xl bg-blue-50 ring-0 ring-opacity-5 border-gray-300  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ring-2 ring-blue-700 ring-opacity-10 shadow-sm;
+    @apply text-blue-700 p-3 px-8 pt-0 block w-full rounded-2xl bg-blue-50 ring-1 ring-blue-700 ring-opacity-10 shadow-sm -mt-5 mb-1;
 }
 
 .Breadcrumbs {

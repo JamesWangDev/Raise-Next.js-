@@ -1,7 +1,48 @@
 import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
+
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
+}
+
+function DispositionOptions() {
+    const [currentDisposition, setCurrentDisposition] = useState();
+    const dispositions = [
+        "Pledged!",
+        "Did not pledge",
+        "Not home / no answer",
+        "Please call me back",
+        "Wrong number",
+        "Left message",
+        "Refused / remove",
+        "Hostile",
+    ];
+    return (
+        <div>
+            <div className="hidden sm:block">
+                <nav className="" aria-label="Tabs">
+                    {dispositions.map((disposition) => (
+                        <button
+                            key={disposition}
+                            onClick={(event) => {
+                                console.log({ event });
+                                event.preventDefault();
+                                setCurrentDisposition(event.target.textContent);
+                            }}
+                            className={classNames(
+                                disposition == currentDisposition
+                                    ? "bg-blue-400 text-white text-gray-800"
+                                    : "bg-gray-100 text-gray-600 hover:text-gray-800 hover:bg-gray-200 hover:text-gray-800",
+                                "rounded-md px-3 py-2 text-sm font-medium mr-1 mb-1"
+                            )}
+                        >
+                            {disposition}
+                        </button>
+                    ))}
+                </nav>
+            </div>
+        </div>
+    );
 }
 
 export default function AddInteractionCard({ person, appendInteraction }) {
@@ -33,6 +74,7 @@ export default function AddInteractionCard({ person, appendInteraction }) {
                 </div> */}
                 <div className="min-w-0 flex-1">
                     <form action="#" className="relative">
+                        <DispositionOptions />
                         <div className="overflow-hidden rounded-lg border border-gray-200 shadow-sm focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500">
                             <label htmlFor="note" className="sr-only">
                                 Add your note
@@ -57,7 +99,6 @@ export default function AddInteractionCard({ person, appendInteraction }) {
                                 </div>
                             </div>
                         </div>
-
                         <div className="absolute inset-x-0 bottom-0 flex justify-between py-0 px-3 border-t">
                             <div className="placeholder-justify-the-rest-to-right"></div>
                             <div className="flex-shrink-0">
