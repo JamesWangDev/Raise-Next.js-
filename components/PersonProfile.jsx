@@ -292,6 +292,16 @@ export default function PersonProfile({
                 },
                 fetchPerson
             )
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: "tags",
+                    filter: `person_id=eq.${personID}`,
+                },
+                fetchPerson
+            )
             .subscribe();
         return () => {
             supabase.removeChannel(channel);
