@@ -302,7 +302,7 @@ export default function StartCallingSession() {
                 </div>
                 <div className="mx-auto max-w-7xl px-2">
                     <div className="p-0 block pb-3 mt-3">
-                        <div className="text-blue-700 p-3 px-8 pt-0 block w-full rounded-2xl bg-blue-50 ring-0 ring-opacity-5 border-gray-300  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        <div className="dialer-top-card">
                             {dialedIn ? (
                                 <div className="pt-3.5 pb-0.5">
                                     <span className="inline-block">

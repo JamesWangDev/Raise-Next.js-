@@ -321,15 +321,15 @@ nav .border-t {
 
 /* new design */
 .sticky {
-    @apply md:absolute bg-transparent right-0 border-0 ring-0 pt-3 pr-8;
+    @apply md:absolute bg-transparent right-0 border-0 ring-0 pt-2.5 pr-4;
     /* @apply flex-shrink-0; */
 }
 .sticky .Search {
     /* @apply hidden; */
-    @apply -mr-7 -mt-1.5;
+    @apply -mr-7 -mt-1;
 }
 .Search .SearchBar input {
-    @apply rounded-full ring-0 ring-gray-200 hover:ring-indigo-600 border-0 w-full px-8 mx-6 bg-gray-100 pl-14 mr-0 shadow;
+    @apply rounded-full ring-0 ring-gray-200 hover:ring-indigo-600 border-0 w-full px-8 mx-6 bg-gray-100 pl-14 mr-0 shadow text-sm;
 }
 .sticky .Search:hover,
 .sticky .Search input:hover {
@@ -353,4 +353,12 @@ main > div {
 }
 .cl-rootBox * {
     box-shadow: none !important;
+}
+
+.dialer-top-card {
+    @apply text-blue-700 p-3 px-8 pt-0 block w-full rounded-2xl bg-blue-50 ring-0 ring-opacity-5 border-gray-300  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ring-2 ring-blue-700 ring-opacity-10 shadow-sm;
+}
+
+.Breadcrumbs {
+    @apply mb-8;
 }

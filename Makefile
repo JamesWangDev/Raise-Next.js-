@@ -20,19 +20,11 @@ nuke: stop
 lint:
 	npm run lint
 
-test: stop start runtestandstop
+test: quick runtestandstop
 
 runtestandstop:
 	npm run test
-	supabase stop
 	pkill node || true
-	pm2 delete all || true
-
-runtestdebugandstop:
-	npx playwright test --debug
-	supabase stop
-	pkill node || true
-	pm2 delete all || true
 
 newtest: stop start codegen stop
 	
@@ -40,4 +32,11 @@ codegen:
 	npm run dev &
 	npx playwright codegen localhost:3000
 
-debug tests: stop start runtestdebugandstop
+debugtests: stop start runtestdebugandstop
+
+quick:
+	pkill node || true
+	pm2 restart all
+	psql "postgresql://postgres:postgres@localhost:54322/postgres" -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+	psql "postgresql://postgres:postgres@localhost:54322/postgres" -f ./supabase/seed.sql
+	npm run migrate
