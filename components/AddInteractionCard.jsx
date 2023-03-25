@@ -9,17 +9,17 @@ function DispositionOptions() {
     const [currentDisposition, setCurrentDisposition] = useState();
     const dispositions = [
         "Pledged!",
-        "Did not pledge",
-        "Not home / no answer",
-        "Please call me back",
-        "Wrong number",
+        "No pledge",
+        "Not home",
+        "Call back",
+        "Wrong number / disconnected",
         "Left message",
         "Refused / remove",
         "Hostile",
     ];
     return (
         <div>
-            <div className="hidden sm:block">
+            <div className="hidden sm:block -mt-1">
                 <nav className="" aria-label="Tabs">
                     {dispositions.map((disposition) => (
                         <button
@@ -33,7 +33,7 @@ function DispositionOptions() {
                                 disposition == currentDisposition
                                     ? "bg-blue-400 text-white text-gray-800"
                                     : "bg-gray-100 text-gray-600 hover:text-gray-800 hover:bg-gray-200 hover:text-gray-800",
-                                "rounded-md px-3 py-2 text-sm font-medium mr-1 mb-1"
+                                "rounded-md px-3 py-2 font-medium mr-1 mb-1 text-xs"
                             )}
                         >
                             {disposition}

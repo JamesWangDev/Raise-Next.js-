@@ -286,13 +286,12 @@ nav .border-t {
     @apply text-blue-600 underline;
 }
 .shaded-page-header {
-    @apply bg-gray-50 -mx-12 -mt-8 -mb-2 pb-5 pt-8 px-12;
+    @apply bg-gray-50 -mx-12 -mt-28 pt-24 -mb-2 pb-3 px-12;
 }
 .shaded-page-header .Breadcrumbs {
     @apply mb-10 !important;
 }
 .no-negative-top .shaded-page-header {
-    @apply mt-0 border-t;
 }
 .no-negative-top .shaded-page-header .Breadcrumbs {
     @apply hidden;
@@ -355,8 +354,13 @@ main > div {
     box-shadow: none !important;
 }
 
+main {
+    @apply relative;
+}
+
 .dialer-top-card {
-    @apply text-blue-700 p-3 px-8 pt-0 block w-full rounded-2xl bg-blue-50 ring-1 ring-blue-700 ring-opacity-10 shadow-sm -mt-5 mb-1;
+    @apply text-blue-700 p-3 px-8 pt-0 block w-full rounded-2xl bg-blue-50 ring-1 ring-blue-700 ring-opacity-20 shadow -mt-6 mb-0;
+    @apply absolute left-96 top-40;
 }
 
 .Breadcrumbs {
