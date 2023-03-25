@@ -234,12 +234,12 @@ const Layout = ({ children }) => {
                 </Transition.Root>
 
                 {/* Static sidebar for desktop */}
-                <div className="hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
+                <div className="desktop-sidebar hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
                     {/* Sidebar component, swap this element with another sidebar if you like */}
-                    <div className="pt-5 flex flex-grow flex-col overflow-y-auto border-r border-gray-200">
+                    <div className="desktop-sidebar-div-1 pt-5 flex flex-grow flex-col overflow-y-auto border-r border-gray-200">
                         <Brand />
 
-                        <div className="pt-5 flex flex-grow flex-col bg-gray-50">
+                        <div className="desktop-sidebar-div-2 pt-5 flex flex-grow flex-col ">
                             <nav className="flex-1 space-y-1 px-2 pb-4">
                                 {navigation.map((item, index) => (
                                     <div key={index}>

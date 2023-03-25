@@ -301,10 +301,10 @@ export default function StartCallingSession() {
                     /> */}
                 </div>
                 <div className="mx-auto max-w-7xl px-2">
-                    <div className="p-0 block py-3 pt-0 -mt-1">
+                    <div className="p-0 block pb-3 mt-3">
                         <div className="text-blue-700 p-3 px-8 pt-0 block w-full rounded-2xl bg-blue-50 ring-0 ring-opacity-5 border-gray-300  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                             {dialedIn ? (
-                                <div className="pt-3">
+                                <div className="pt-3.5 pb-0.5">
                                     <span className="inline-block">
                                         You&apos;re dialed in to the call session!
                                     </span>
@@ -360,7 +360,7 @@ export default function StartCallingSession() {
                                 </form>
                             ) : (
                                 <>
-                                    <p className="mt-3 text-blue-700 text-lg font-semibold inline-block mr-3">
+                                    <p className="mt-3.5 mb-1 text-blue-700 text-lg font-semibold inline-block mr-3">
                                         <PhoneIcon className="h-6 w-6 text-blue-700 align-center inline-flex mx-auto mr-2" />{" "}
                                         {process.env.NEXT_PUBLIC_DIALER_NUMBER}
                                     </p>
