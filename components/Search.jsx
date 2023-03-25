@@ -1,7 +1,10 @@
-import { Fragment, useState } from "react";
+import useSWR from "swr";
+import { Fragment, useState, useEffect } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { FaceFrownIcon, GlobeAmericasIcon } from "@heroicons/react/24/outline";
 import { Combobox, Dialog, Transition } from "@headlessui/react";
+import { useSupabase } from "lib/supabaseHooks";
+import { useRouter } from "next/router";
 
 export default function Search() {
     const [open, setOpen] = useState(false);
@@ -17,7 +20,8 @@ export default function Search() {
                     id="search-bar"
                     placeholder="Search..."
                     className="search-input"
-                    onMouseDown={() => {
+                    onMouseDown={(event) => {
+                        event.preventDefault();
                         setOpen(true);
                     }}
                 />
@@ -26,10 +30,10 @@ export default function Search() {
     );
 }
 
-const items = [
-    { id: 1, name: "Workflow Inc.", category: "Clients", url: "#" },
-    // More items...
-];
+// const items = [
+//     { id: 1, name: "Workflow Inc.", category: "Clients", url: "#" },
+//     // More items...
+// ];
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -37,13 +41,28 @@ function classNames(...classes) {
 
 function SearchModal({ setOpen, open }) {
     const [query, setQuery] = useState("");
+    const supabase = useSupabase();
+    const router = useRouter();
 
-    const filteredItems =
-        query === ""
-            ? []
-            : items.filter((item) => {
-                  return item.name.toLowerCase().includes(query.toLowerCase());
-              });
+    const [people, setPeople] = useState();
+    useEffect(() => {
+        supabase
+            ?.from("people")
+            .select()
+            .ilike("concat(first_name,' ',last_name)", `%${query.replaceAll(" ", "%")}%`)
+            .limit(25)
+            .then(({ data }) => {
+                const items = data.map(({ id, first_name, last_name }) => ({
+                    id,
+                    name: first_name + " " + last_name,
+                    category: "People",
+                    url: "/people/" + id,
+                }));
+                setPeople(items);
+            });
+    }, [query, supabase]);
+
+    const filteredItems = query === "" ? [] : people;
 
     const groups = filteredItems.reduce((groups, item) => {
         return { ...groups, [item.category]: [...(groups[item.category] || []), item] };
@@ -75,7 +94,12 @@ function SearchModal({ setOpen, open }) {
                         leaveTo="opacity-0 scale-95"
                     >
                         <Dialog.Panel className="mx-auto max-w-xl transform overflow-hidden rounded-xl bg-white shadow-2xl ring-1 ring-black ring-opacity-5 transition-all">
-                            <Combobox onChange={(item) => (window.location = item.url)}>
+                            <Combobox
+                                onChange={(item) => {
+                                    setOpen();
+                                    router.push(item.url);
+                                }}
+                            >
                                 <div className="relative">
                                     <MagnifyingGlassIcon
                                         className="pointer-events-none absolute top-3.5 left-4 h-5 w-5 text-gray-400"
@@ -98,7 +122,8 @@ function SearchModal({ setOpen, open }) {
                                             Quick search
                                         </p>
                                         <p className="mt-1 text-gray-400">
-                                            all donors, lists, notes, pledges, etc...
+                                            all donors by name (coming later: lists, notes, pledges,
+                                            etc...)
                                         </p>
                                     </div>
                                 )}
