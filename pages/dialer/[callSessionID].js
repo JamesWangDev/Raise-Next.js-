@@ -9,6 +9,7 @@ import { parseSQL } from "react-querybuilder";
 import Breadcrumbs from "components/Breadcrumbs";
 import PersonProfile from "components/PersonProfile";
 import { useUser } from "@clerk/nextjs";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 
 const reducer = (prevState, payload) => {
     // Bulk update
@@ -86,8 +87,9 @@ export default function StartCallingSession() {
             .eq("id", callSessionID)
             .single()
             .then(({ data: currentSessionData, error }) => {
-                if (error) console.log("Error fetching call session+list", error);
-                else setSession(currentSessionData);
+                if (error) {
+                    throw Error("Error fetching call session+list " + JSON.stringify(error));
+                } else setSession(currentSessionData);
                 const urlToFetch = `/api/rq?query=${encodeURI(
                     `select id from people where ${currentSessionData.saved_lists.query}`
                 )}`;
@@ -275,105 +277,119 @@ export default function StartCallingSession() {
         return response;
     }
 
-    return dialedIn && dialedInFrom ? (
+    return (
         <>
-            <div className="mx-auto max-w-7xl mb-4 px-5 p-3 shadow-sm rounded-lg bg-white -mt-6 mb-12 pt-0 bg-blue-50 align-center">
-                <span className="flex-grow">You&apos;re dialed in to the call session!</span>
-                {/* Leave call session button */}
-                <div className="inline-block mt-3 ml-7 py-0 mb-1">
-                    <button className="text-sm button-xs btn-xs" type="button" onClick={leave}>
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-6 w-6 text-red-500"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M6 18L18 6M6 6l12 12"
-                            />
-                        </svg>
-                        &nbsp; Leave Session
-                    </button>
+            <div className="">
+                <div className="mx-auto max-w-7xl px-2 ">
+                    <Breadcrumbs
+                        pages={[
+                            {
+                                name: "Make Calls",
+                                href: "/dialer",
+                                current: false,
+                            },
+                            {
+                                name: `Calling list "${session?.saved_lists?.name}"`,
+                                href: `/dialer/${callSessionID}`,
+                                current: false,
+                            },
+                        ]}
+                    />
+                    {/* <PageTitle
+                        title={`Dial list: "${session?.saved_lists?.name}"`}
+                        descriptor="Enter your phone number below and then dial in to connect."
+                    /> */}
                 </div>
-            </div>
-            <PersonProfile
-                personID={session.current_person_id}
-                dial={dial}
-                hangup={hangup}
-                next={nextPerson}
-                hasNext={hasNext}
-                outbound={outbound}
-                forceFetch={forceFetchValue}
-            />
-        </>
-    ) : (
-        <div className="">
-            <div className="mx-auto max-w-7xl px-2 ">
-                <Breadcrumbs
-                    pages={[
-                        {
-                            name: "Make Calls",
-                            href: "/dialer",
-                            current: false,
-                        },
-                        {
-                            name: `Call Session #${callSessionID}`,
-                            href: `/dialer/${callSessionID}`,
-                            current: false,
-                        },
-                    ]}
-                />
-                <PageTitle title="Start a new calling session" descriptor="Dial in to connect." />
-            </div>
-            <div className="mx-auto max-w-7xl px-2">
-                <div className="p-12">
-                    <div className="relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-12 text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                        {!dialedInFrom && (
-                            <form
-                                onSubmit={(event) => {
-                                    event.preventDefault();
-                                    setDialedInFrom(
-                                        event.target.dialedInFromInput.value.replaceAll(
-                                            /[^0-9]/g,
-                                            ""
-                                        )
-                                    );
-                                }}
-                            >
-                                <h3 className="mt-0">What is your phone number?</h3>
-                                <div className="mt-4">
-                                    <input
-                                        type="tel"
-                                        name="dialedInFromInput"
-                                        id="dialedInFromInput"
-                                        className="mr-2 inline w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                        placeholder="(555) 555 - 5555"
-                                    />
-                                    <button type="submit">Submit</button>
+                <div className="mx-auto max-w-7xl px-2">
+                    <div className="p-0 block py-3 pt-0 -mt-1">
+                        <div className="text-blue-700 p-3 px-8 pt-0 block w-full rounded-2xl bg-blue-50 ring-0 ring-opacity-5 border-gray-300  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                            {dialedIn ? (
+                                <div className="pt-3">
+                                    <span className="inline-block">
+                                        You&apos;re dialed in to the call session!
+                                    </span>
+                                    <div className="inline-block align-middle ml-3">
+                                        <button
+                                            className="text-sm button-xs btn-xs align-center"
+                                            type="button"
+                                            onClick={leave}
+                                        >
+                                            <XMarkIcon className="h-4 w-4 align-center inline-flex mx-auto mr-2" />
+                                            Leave Session
+                                        </button>
+                                    </div>
                                 </div>
-                            </form>
-                        )}
-                        {dialedInFrom && (
-                            <>
-                                <p className="mb-5 text-gray-400 text-xl font-medium">
-                                    <PhoneIcon className="h-10 w-10 text-gray-400 align-center inline-flex mx-auto mr-2" />{" "}
-                                    {process.env.NEXT_PUBLIC_DIALER_NUMBER}
-                                </p>
-                                <p className="mt-2 block text-base text-gray-900">
-                                    Call the above number from your cell phone to connect.
-                                </p>
-                                <p className="mt-2 block text-base text-gray-300 italic">
-                                    You should be calling in from {dialedInFrom}
-                                </p>
-                            </>
-                        )}
+                            ) : !dialedInFrom ? (
+                                <form
+                                    onSubmit={(event) => {
+                                        event.preventDefault();
+                                        setDialedInFrom(
+                                            event.target.dialedInFromInput.value.replaceAll(
+                                                /[^0-9]/g,
+                                                ""
+                                            )
+                                        );
+                                    }}
+                                >
+                                    <div className="mt-3 inline-block">
+                                        <span className="mr-2 inline-block font-normal text-sm">
+                                            Get started dialing:
+                                        </span>
+                                        <div className="relative inline-block">
+                                            <label
+                                                htmlFor="dialedInFromInput"
+                                                className="absolute -top-2 left-2 inline-block  px-1 text-xs font-medium text-gray-900 bg-blue-50"
+                                            >
+                                                <span className="inline-block px-1 text-blue-700">
+                                                    Your phone number
+                                                </span>
+                                            </label>
+                                            <input
+                                                type="tel"
+                                                name="dialedInFromInput"
+                                                id="dialedInFromInput"
+                                                className="mr-2 inline w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 ring-2 ring-inset ring-indigo-600 sm:text-sm sm:leading-6 bg-blue-50"
+                                                placeholder="(555) 555 - 5555"
+                                            />
+                                        </div>
+                                        <button type="submit" className="btn-primary">
+                                            Make calls
+                                        </button>
+                                    </div>
+                                    <h3 className="mt-0 text-blue-700 text-base inline-block ml-5"></h3>
+                                </form>
+                            ) : (
+                                <>
+                                    <p className="mt-3 text-blue-700 text-lg font-semibold inline-block mr-3">
+                                        <PhoneIcon className="h-6 w-6 text-blue-700 align-center inline-flex mx-auto mr-2" />{" "}
+                                        {process.env.NEXT_PUBLIC_DIALER_NUMBER}
+                                    </p>
+                                    <p className="mt-2 inline-block text-base font-normal text-blue-700">
+                                        Call this number with your phone to connect to the dialer.
+                                    </p>
+                                    {/* <p className="mt-2 inline-block text-base text-gray-300 italic">
+                                            You should be calling in from {dialedInFrom}
+                                        </p> */}
+                                </>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+            <>
+                <div class="no-negative-top">
+                    <PersonProfile
+                        enabled={dialedIn}
+                        personID={session.current_person_id}
+                        dial={dial}
+                        hangup={hangup}
+                        next={nextPerson}
+                        hasNext={hasNext}
+                        outbound={outbound}
+                        forceFetch={forceFetchValue}
+                    />
+                </div>
+            </>
+        </>
     );
 }

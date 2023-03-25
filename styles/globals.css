@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
 html,
 body {
     padding: 0;
@@ -19,8 +24,8 @@ main {
 }
 
 h1 {
-    @apply text-3xl font-bold leading-tight tracking-tight text-gray-900 mb-5;
-    @apply font-semibold text-gray-900;
+    @apply text-4xl font-bold leading-tight tracking-tight text-gray-900 mb-5;
+    @apply font-bold text-gray-900;
 }
 
 h2 {
@@ -107,7 +112,7 @@ pre {
 }
 
 .nav-item svg {
-    @apply mr-3 flex-shrink-0 h-6 w-6 text-gray-300 group-hover:text-gray-500;
+    @apply mr-4 flex-shrink-0 h-6 w-6 text-gray-300 group-hover:text-gray-500;
 }
 
 .nav-item.current,
@@ -163,7 +168,7 @@ main button[type]:not(.MuiButtonBase-root):not(.do-not-global-style).button-xs {
 }
 
 .nav-item {
-    @apply font-normal;
+    /* @apply font-normal; */
     @apply text-gray-600;
 }
 
@@ -173,7 +178,7 @@ main button[type]:not(.MuiButtonBase-root):not(.do-not-global-style).button-xs {
 }
 
 .page-title-descriptor {
-    @apply text-gray-500 text-base font-normal -mt-4 mb-3;
+    @apply text-gray-500 text-base font-medium -mt-4 mb-3;
 }
 
 .nav-item {
@@ -269,7 +274,7 @@ nav,
     margin-left: -1px !important;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
-    padding-left: 1.5rem;
+    padding-left: 1.6rem;
 }
 .nav-item:hover:not(.current),
 .nav-item:hover:not(.current) * {
@@ -289,7 +294,13 @@ nav .border-t {
     @apply text-blue-600 underline;
 }
 .shaded-page-header {
-    @apply bg-gray-50 -mx-12 -mt-8 -mb-2 pb-5 pt-8 px-12;
+    @apply bg-gray-100 -mx-12 -mt-8 -mb-2 pb-5 pt-8 px-12;
+}
+.no-negative-top .shaded-page-header {
+    @apply mt-0 border-t;
+}
+.no-negative-top .shaded-page-header .Breadcrumbs {
+    @apply hidden;
 }
 
 .brand svg {

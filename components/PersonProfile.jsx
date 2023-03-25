@@ -10,6 +10,7 @@ import { useUser } from "@clerk/nextjs";
 import FECHistoryList from "./FECHistoryList";
 import PledgeHistory from "./PledgeHistory";
 import DonationHistory from "./DonationHistory";
+import { randomUUID } from "lib/randomUUID-polyfill";
 
 const pluralize = (single, plural, number) => (number > 1 ? plural : single);
 
@@ -108,6 +109,7 @@ export default function PersonProfile({
     hasNext,
     next,
     forceFetch,
+    enabled = false,
 }) {
     const { id: userID } = useUser();
     const supabase = useSupabase();
@@ -225,6 +227,77 @@ export default function PersonProfile({
         [supabase, personID, fetchPerson, userID]
     );
 
+    // Placing a realtime listener on changes other folks make
+    useEffect(() => {
+        console.log("realtime person profile subscription ()");
+        const channel = supabase
+            .channel(randomUUID())
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: "people",
+                    filter: `id=eq.${personID}`,
+                },
+                fetchPerson
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: "interactions",
+                    filter: `person_id=eq.${personID}`,
+                },
+                fetchPerson
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: "pledges",
+                    filter: `person_id=eq.${personID}`,
+                },
+                fetchPerson
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: "donations",
+                    filter: `person_id=eq.${personID}`,
+                },
+                fetchPerson
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: "emails",
+                    filter: `person_id=eq.${personID}`,
+                },
+                fetchPerson
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: "phone_numbers",
+                    filter: `person_id=eq.${personID}`,
+                },
+                fetchPerson
+            )
+            .subscribe();
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [supabase, personID]);
+
     if (isLoading) return;
     if (!person) {
         return <>No person with that ID exists.</>;
@@ -320,38 +393,15 @@ export default function PersonProfile({
                         </div>
                         <div className="text-right col-span-4">
                             <div className=" flex-row gap-3 inline-flex">
-                                {
-                                    <button
-                                        type="button"
-                                        onClick={() => dial(primaryPhoneNumber)}
-                                        {...(!primaryPhoneNumber || outbound
-                                            ? { disabled: true }
-                                            : {})}
-                                    >
-                                        <PhoneIcon
-                                            className="-ml-1 mr-2 h-5 w-5 text-gray-400"
-                                            aria-hidden="true"
-                                        />
-                                        Call
-                                    </button>
-                                }
-                                {/* <button type="button">Merge Records</button> */}
-                                <button
-                                    type="button"
-                                    className="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                                    onClick={() => hangup()}
-                                    {...(outbound ? {} : { disabled: true })}
-                                >
-                                    Hang Up
-                                </button>
-                                <button
-                                    type="button"
-                                    className="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
-                                    onClick={() => next()}
-                                    {...(!outbound && hasNext ? {} : { disabled: true })}
-                                >
-                                    Skip
-                                </button>
+                                <DialerControls
+                                    enabled={enabled}
+                                    outbound={outbound}
+                                    primaryPhoneNumber={primaryPhoneNumber}
+                                    hasNext={hasNext}
+                                    next={next}
+                                    dial={dial}
+                                    hangup={hangup}
+                                />
                             </div>
                         </div>
                     </div>
@@ -377,4 +427,38 @@ export default function PersonProfile({
             </div>
         );
     }
+}
+
+function DialerControls({ outbound, primaryPhoneNumber, hasNext, next, enabled, dial, hangup }) {
+    return (
+        <>
+            {
+                <button
+                    type="button"
+                    onClick={() => dial(primaryPhoneNumber)}
+                    {...(!enabled || !primaryPhoneNumber || outbound ? { disabled: true } : {})}
+                >
+                    <PhoneIcon className="-ml-1 mr-2 h-5 w-5 text-gray-400" aria-hidden="true" />
+                    Call
+                </button>
+            }
+            {/* <button type="button">Merge Records</button> */}
+            <button
+                type="button"
+                className="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                onClick={() => hangup()}
+                {...(enabled && outbound ? {} : { disabled: true })}
+            >
+                Hang Up
+            </button>
+            <button
+                type="button"
+                className="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
+                onClick={() => next()}
+                {...(enabled && !outbound && hasNext ? {} : { disabled: true })}
+            >
+                Skip
+            </button>
+        </>
+    );
 }
