@@ -238,7 +238,13 @@ export default async function loadPledgesCSV(req, res) {
     console.time("upload pledges to db");
     const chunkSize = 100;
     const pledgesInsertResults = [];
-    const pledgesToInsert = stripKeys(fileParsedToJSON, ["person_id", "amount"]);
+    const pledgesToInsert = stripKeys(fileParsedToJSON, {
+        keep: ["person_id", "amount"],
+        require: ["person_id", "amount"],
+    });
+
+    console.log({ pledgesToInsert });
+
     // console.log({ pledgesToInsert });
     for (let i = 0; i < pledgesToInsert.length; i += chunkSize) {
         pledgesInsertResults.push(
@@ -260,11 +266,17 @@ export default async function loadPledgesCSV(req, res) {
     );
 }
 
-function stripKeys(arr, permitTheseKeys) {
+function stripKeys(arr, options) {
+    const permitTheseKeys = Array.isArray(options) ? options : options.keep;
+    const requiredKeys = options?.require || [];
     arr.forEach((row, index) => {
         for (const key in row) {
             if (!permitTheseKeys.includes(key)) delete arr[index][key];
         }
     });
-    return arr;
+    return arr.filter((row) =>
+        requiredKeys.every(
+            (requiredKey) => row.hasOwnProperty(requiredKey) && row[requiredKey] !== null
+        )
+    );
 }
