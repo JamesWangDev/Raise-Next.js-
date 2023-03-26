@@ -230,79 +230,37 @@ export default function PersonProfile({
     // Placing a realtime listener on changes other folks make
     useEffect(() => {
         console.log("realtime person profile subscription ()");
-        const channel = supabase
-            .channel(randomUUID())
-            .on(
+        let channel = supabase.channel(randomUUID()).on(
+            "postgres_changes",
+            {
+                event: "*",
+                schema: "public",
+                table: "people",
+                filter: `id=eq.${personID}`,
+            },
+            fetchPerson
+        );
+        const foreignTablesToListen = [
+            "interactions",
+            "pledges",
+            "donations",
+            "phone_numbers",
+            "emails",
+            "tags",
+        ];
+        for (let table in foreignTablesToListen) {
+            channel = channel.on(
                 "postgres_changes",
                 {
                     event: "*",
                     schema: "public",
-                    table: "people",
-                    filter: `id=eq.${personID}`,
-                },
-                fetchPerson
-            )
-            .on(
-                "postgres_changes",
-                {
-                    event: "*",
-                    schema: "public",
-                    table: "interactions",
+                    table: table,
                     filter: `person_id=eq.${personID}`,
                 },
                 fetchPerson
-            )
-            .on(
-                "postgres_changes",
-                {
-                    event: "*",
-                    schema: "public",
-                    table: "pledges",
-                    filter: `person_id=eq.${personID}`,
-                },
-                fetchPerson
-            )
-            .on(
-                "postgres_changes",
-                {
-                    event: "*",
-                    schema: "public",
-                    table: "donations",
-                    filter: `person_id=eq.${personID}`,
-                },
-                fetchPerson
-            )
-            .on(
-                "postgres_changes",
-                {
-                    event: "*",
-                    schema: "public",
-                    table: "emails",
-                    filter: `person_id=eq.${personID}`,
-                },
-                fetchPerson
-            )
-            .on(
-                "postgres_changes",
-                {
-                    event: "*",
-                    schema: "public",
-                    table: "phone_numbers",
-                    filter: `person_id=eq.${personID}`,
-                },
-                fetchPerson
-            )
-            .on(
-                "postgres_changes",
-                {
-                    event: "*",
-                    schema: "public",
-                    table: "tags",
-                    filter: `person_id=eq.${personID}`,
-                },
-                fetchPerson
-            )
-            .subscribe();
+            );
+        }
+        channel = channel.subscribe();
         return () => {
             supabase.removeChannel(channel);
         };

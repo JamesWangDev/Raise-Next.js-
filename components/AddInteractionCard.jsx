@@ -141,7 +141,8 @@ export default function AddInteractionCard({ person, appendInteraction }) {
                                     </button>
                                 )}
                                 <button type="button" className="btn btn-primary" onClick={newNote}>
-                                    Add Note{prompt && " + Pledge"}
+                                    Log interaction
+                                    {/* {prompt && " + Pledge"} */}
                                 </button>
                             </div>
                         </div>

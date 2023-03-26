@@ -229,6 +229,4 @@ test.describe("Pledge followup flow", () => {
     By multiple tables
     FEC summary view
 
-    QUICK SEARCH
-
 */
