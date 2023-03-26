@@ -55,25 +55,20 @@ export default function StartCallingSession() {
             (participant) => participant.number_dialed_in_from == dialedInFrom
         )[0] || null;
 
-    console.log({ me });
-
     // Handler for dialing in
     useEffect(() => {
         // Ignore onMount
         if (!dialedInFrom) return () => {};
 
         // Upsert the new dialedInFrom status
-        // TODO: correct uniqueness test for upsert
-        supabase
-            .from("call_session_participants")
-            .upsert(
-                {
-                    call_session_id: callSessionID,
-                    number_dialed_in_from: dialedInFrom,
-                },
-                { onConflict: "call_session_id,number_dialed_in_from" }
-            )
-            .then(console.log);
+        // DONE: correct uniqueness test for upsert
+        supabase.from("call_session_participants").upsert(
+            {
+                call_session_id: callSessionID,
+                number_dialed_in_from: dialedInFrom,
+            },
+            { onConflict: "call_session_id,number_dialed_in_from" }
+        );
     }, [dialedInFrom, supabase, callSessionID]);
 
     let hasNext = peopleList?.indexOf(session.current_person_id) < peopleList?.length - 1;
@@ -140,8 +135,6 @@ export default function StartCallingSession() {
                     filter: "call_session_id=eq." + callSessionID,
                 },
                 (payload) => {
-                    console.log({ payload });
-                    // Temporary simple solution:
                     fetchSessionData();
                 }
             )
@@ -180,46 +173,40 @@ export default function StartCallingSession() {
         }
     }, [setPersonID, peopleList?.length, session?.current_person_id]);
 
-    // Supabase realtime
+    // Process conference updates upon change
     useEffect(() => {
-        console.log("use Effect 1");
-        console.log({ conferenceUpdates });
-
         if (conferenceUpdates?.length === 0) {
             return () => {};
         }
+
+        console.log("use Effect 1");
+        console.log({ conferenceUpdates });
 
         let _dialedIn = false,
             _outbound = false,
             _conferenceSID = null;
         for (const update of conferenceUpdates) {
-            const isItMe = update.call_sid == me?.call_sid;
+            const isItMe = update.call_sid === me?.call_sid;
+            const isJoin = update.status_callback_event === "participant-join";
+            const isLeave = update.status_callback_event === "participant-leave";
+            const isOutbound = update?.participant_label?.includes("outboundCall");
 
-            // Dialed in?
-            if (isItMe) {
-                if (update.status_callback_event === "participant-join") {
-                    _dialedIn = true;
-                }
-                if (update.status_callback_event === "participant-leave") {
-                    _dialedIn = false;
-                }
-            }
+            // Dialed in? boolean
+            if (isItMe && isJoin) _dialedIn = true;
+            if (isItMe && isLeave) _dialedIn = false;
 
-            // Outbound call active?
-            if (update?.participant_label?.includes("outboundCall")) {
-                if (update.status_callback_event === "participant-join") {
-                    _outbound = true;
-                }
-                if (update.status_callback_event === "participant-leave") {
-                    _outbound = false;
-                    console.log(update);
-                }
-            }
+            // Outbound call? boolean
+            if (isOutbound && isJoin) _outbound = true;
+            if (isOutbound && isLeave) _outbound = false;
+
+            // Track the last open outbound interaction to force logging
+            _lastOutboundSid = update?.call_sid || _lastOutboundSid;
 
             _conferenceSID = update?.conference_sid || _conferenceSID;
         }
         setDialedIn(_dialedIn);
         setOutbound(_outbound);
+        setLastOutboundSID(_lastOutboundSid);
         setConferenceSID(_conferenceSID);
 
         console.log({ _dialedIn, _outbound });
@@ -227,7 +214,7 @@ export default function StartCallingSession() {
         forceFetchPersonProfile();
     }, [conferenceUpdates, conferenceSID, me?.call_sid]);
 
-    // useEffectOnMount to setup subscription
+    // On mount, bulk select and setup subscription for conference updates
     useEffect(() => {
         console.log("useEffect 2");
 
@@ -236,9 +223,7 @@ export default function StartCallingSession() {
             .from("conference_updates")
             .select()
             .order("inserted_at", { ascending: true })
-            .then((result) => {
-                appendConferenceUpdate(result?.data);
-            });
+            .then((result) => appendConferenceUpdate(result?.data));
 
         // Keep realtime updates
         const channel = supabase
@@ -251,29 +236,22 @@ export default function StartCallingSession() {
                     table: "conference_updates",
                     filter: "friendly_name=eq." + callSessionID,
                 },
-                (payload) => {
-                    appendConferenceUpdate(payload);
-                }
+                (payload) => appendConferenceUpdate(payload)
             )
             .subscribe();
-        return () => {
-            supabase.removeChannel(channel);
-        };
+        return () => supabase.removeChannel(channel);
     }, [supabase, callSessionID]);
 
     async function hangup() {
-        const response = await await fetch(
+        return await fetch(
             `/api/dialer/hangup?conferenceSID=${encodeURIComponent(
                 conferenceSID
             )}&participant=${encodeURIComponent(`outboundCall|${session.current_person_id}`)}`
         );
-        // .json();
-        console.log(response);
-        return response;
     }
 
     async function dial(number) {
-        const response = await (
+        return await (
             await fetch(
                 "/api/dialer/dialOut?numberToDial=" +
                     encodeURIComponent(number.toString()) +
@@ -283,13 +261,11 @@ export default function StartCallingSession() {
                     encodeURIComponent(session.current_person_id)
             )
         ).json();
-        console.log(response);
-        return response;
     }
 
     return (
-        <>
-            <div className="">
+        <div className="dialer-page">
+            <div className="dialer-page-above-profile">
                 <div className="mx-auto max-w-7xl px-2 ">
                     <Breadcrumbs
                         pages={[
@@ -386,36 +362,34 @@ export default function StartCallingSession() {
                     </div>
                 </div>
             </div>
-            <>
-                <div className="no-negative-top">
-                    <CallSessionContext.Provider
-                        value={{
-                            dialedIn,
-                            session,
-                            dial,
-                            hangup,
-                            next,
-                            hasNext,
-                            outbound,
-                            needsLogToAdvance,
-                            forceFetch: forceFetchValue,
-                        }}
-                    >
-                        {session?.current_person_id && (
-                            <PersonProfile
-                                enabled={dialedIn}
-                                personID={session.current_person_id}
-                                dial={dial}
-                                hangup={hangup}
-                                next={nextPerson}
-                                hasNext={hasNext}
-                                outbound={outbound}
-                                forceFetch={forceFetchValue}
-                            />
-                        )}
-                    </CallSessionContext.Provider>
-                </div>
-            </>
-        </>
+            <div className="no-negative-top person-profile">
+                <CallSessionContext.Provider
+                    value={{
+                        dialedIn,
+                        session,
+                        dial,
+                        hangup,
+                        next,
+                        hasNext,
+                        outbound,
+                        needsLogToAdvance,
+                        forceFetch: forceFetchValue,
+                    }}
+                >
+                    {session?.current_person_id && (
+                        <PersonProfile
+                            enabled={dialedIn}
+                            personID={session.current_person_id}
+                            dial={dial}
+                            hangup={hangup}
+                            next={nextPerson}
+                            hasNext={hasNext}
+                            outbound={outbound}
+                            forceFetch={forceFetchValue}
+                        />
+                    )}
+                </CallSessionContext.Provider>
+            </div>
+        </div>
     );
 }
