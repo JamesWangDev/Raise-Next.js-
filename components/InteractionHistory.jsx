@@ -16,9 +16,10 @@ export default function InteractionHistory({ person, interactions, appendInterac
 
     return (
         <div className="flow-root">
-            <h2>Interaction History</h2>
+            <h2>Log an Interaction:</h2>
             <AddInteractionCard person={person} appendInteraction={appendInteraction} />
-            <ul role="list" className="-mb-8 mt-6">
+            <h2 className="mt-5">Interaction History</h2>
+            <ul role="list" className="-mb-8 mt-3">
                 {interactions
                     ?.sort((a, b) => (new Date(a.created_at) < new Date(b.created_at) ? 1 : -1))
                     ?.map((interaction, eventIdx) => {

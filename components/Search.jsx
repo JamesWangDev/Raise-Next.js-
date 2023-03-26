@@ -30,11 +30,6 @@ export default function Search() {
     );
 }
 
-// const items = [
-//     { id: 1, name: "Workflow Inc.", category: "Clients", url: "#" },
-//     // More items...
-// ];
-
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -47,12 +42,10 @@ function SearchModal({ setOpen, open }) {
     const [people, setPeople] = useState();
     useEffect(() => {
         supabase
-            ?.from("people")
-            .select()
-            .ilike("concat(first_name,' ',last_name)", `%${query.replaceAll(" ", "%")}%`)
+            ?.rpc("search", { query })
             .limit(25)
             .then(({ data }) => {
-                const items = data.map(({ id, first_name, last_name }) => ({
+                const items = data?.map(({ id, first_name, last_name }) => ({
                     id,
                     name: first_name + " " + last_name,
                     category: "People",
@@ -62,9 +55,9 @@ function SearchModal({ setOpen, open }) {
             });
     }, [query, supabase]);
 
-    const filteredItems = query === "" ? [] : people;
+    const filteredItems = query !== "" && !Array.isArray(people) ? [] : people;
 
-    const groups = filteredItems.reduce((groups, item) => {
+    const groups = filteredItems?.reduce((groups, item) => {
         return { ...groups, [item.category]: [...(groups[item.category] || []), item] };
     }, {});
 
@@ -128,7 +121,7 @@ function SearchModal({ setOpen, open }) {
                                     </div>
                                 )}
 
-                                {filteredItems.length > 0 && (
+                                {filteredItems?.length > 0 && (
                                     <Combobox.Options
                                         static
                                         className="max-h-80 scroll-pt-11 scroll-pb-2 space-y-2 overflow-y-auto pb-2"
