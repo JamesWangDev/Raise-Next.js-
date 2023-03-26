@@ -42,9 +42,6 @@ export default function StartCallingSession() {
 
     const [session, setSession] = useState([]);
     const [conferenceUpdates, appendConferenceUpdate] = useReducer(reducer, []);
-    const [conferenceSID, setConferenceSID] = useState(null);
-    const [dialedIn, setDialedIn] = useState(false);
-    const [outbound, setOutbound] = useState(false);
     const [needsLogToAdvance, setNeedsLogToAdvance] = useState();
     const [peopleList, setPeopleList] = useState();
     const [forceFetchValue, forceFetchPersonProfile] = useReducer((old) => old + 1, 0);
@@ -54,6 +51,40 @@ export default function StartCallingSession() {
         session?.call_session_participants?.filter(
             (participant) => participant.number_dialed_in_from == dialedInFrom
         )[0] || null;
+
+    // Process conference updates upon change
+    // Update: this doesn't need to be a state effect since
+    // it's directly dependent on conferenceupdates
+    // useEffect(() => {
+    // const [conferenceSID, setConferenceSID] = useState(null);
+    // const [dialedIn, setDialedIn] = useState(false);
+    // const [outbound, setOutbound] = useState(false);
+    let conferenceSID = null,
+        dialedIn = false,
+        outbound = false,
+        lastOutboundSid = null;
+
+    if (conferenceUpdates?.length > 0) {
+        for (const update of conferenceUpdates) {
+            const isItMe = update.call_sid === me?.call_sid;
+            const isJoin = update.status_callback_event === "participant-join";
+            const isLeave = update.status_callback_event === "participant-leave";
+            const isOutbound = update?.participant_label?.includes("outboundCall");
+
+            // Dialed in? boolean
+            if (isItMe && isJoin) dialedIn = true;
+            if (isItMe && isLeave) dialedIn = false;
+
+            // Outbound call? boolean
+            if (isOutbound && isJoin) outbound = true;
+            if (isOutbound && isLeave) outbound = false;
+
+            // Track the last open outbound interaction to force logging
+            lastOutboundSid = update?.call_sid || _lastOutboundSid;
+
+            conferenceSID = update?.conference_sid || _conferenceSID;
+        }
+    }
 
     // Handler for dialing in
     useEffect(() => {
@@ -173,47 +204,6 @@ export default function StartCallingSession() {
         }
     }, [setPersonID, peopleList?.length, session?.current_person_id]);
 
-    // Process conference updates upon change
-    useEffect(() => {
-        if (conferenceUpdates?.length === 0) {
-            return () => {};
-        }
-
-        console.log("use Effect 1");
-        console.log({ conferenceUpdates });
-
-        let _dialedIn = false,
-            _outbound = false,
-            _conferenceSID = null;
-        for (const update of conferenceUpdates) {
-            const isItMe = update.call_sid === me?.call_sid;
-            const isJoin = update.status_callback_event === "participant-join";
-            const isLeave = update.status_callback_event === "participant-leave";
-            const isOutbound = update?.participant_label?.includes("outboundCall");
-
-            // Dialed in? boolean
-            if (isItMe && isJoin) _dialedIn = true;
-            if (isItMe && isLeave) _dialedIn = false;
-
-            // Outbound call? boolean
-            if (isOutbound && isJoin) _outbound = true;
-            if (isOutbound && isLeave) _outbound = false;
-
-            // Track the last open outbound interaction to force logging
-            _lastOutboundSid = update?.call_sid || _lastOutboundSid;
-
-            _conferenceSID = update?.conference_sid || _conferenceSID;
-        }
-        setDialedIn(_dialedIn);
-        setOutbound(_outbound);
-        setLastOutboundSID(_lastOutboundSid);
-        setConferenceSID(_conferenceSID);
-
-        console.log({ _dialedIn, _outbound });
-
-        forceFetchPersonProfile();
-    }, [conferenceUpdates, conferenceSID, me?.call_sid]);
-
     // On mount, bulk select and setup subscription for conference updates
     useEffect(() => {
         console.log("useEffect 2");
@@ -236,11 +226,14 @@ export default function StartCallingSession() {
                     table: "conference_updates",
                     filter: "friendly_name=eq." + callSessionID,
                 },
-                (payload) => appendConferenceUpdate(payload)
+                (payload) => {
+                    appendConferenceUpdate(payload);
+                    forceFetchPersonProfile();
+                }
             )
             .subscribe();
         return () => supabase.removeChannel(channel);
-    }, [supabase, callSessionID]);
+    }, [supabase, callSessionID, forceFetchPersonProfile]);
 
     async function hangup() {
         return await fetch(
