@@ -1,102 +1,45 @@
+// Switching to pledges over prospects to mirror the pledge=donation
+// relational structure of the other import code
+// TODO: refactor both files together to separate concerns/repetitive code
+
 export const config = { runtime: "edge" };
 import { getAuth } from "@clerk/nextjs/server";
 const { v4: uuid } = require("uuid");
 const Papa = require("papaparse"); // Handles csvs
 import { createSupabaseClient } from "lib/supabaseHooks";
 import { EMAIL_VALIDATION_REGEX } from "lib/validation";
+
 // List of columns in order from csv file
 let permitTheseColumns = [
     "id",
     "batch_id",
     "organization_id",
-    "receipt_id",
-    "date",
+    "first_name",
+    "last_name",
+    "zip",
+    "email",
+    "phone",
+    "pledge",
     "amount",
-    "recurring_total_months",
-    "recurrence_number",
-    "recipient",
-    "fundraising_page",
-    "fundraising_partner",
-    "reference_code_2",
-    "reference_code",
-    "donor_first_name",
-    "donor_last_name",
-    "donor_addr1",
-    "donor_addr2",
-    "donor_city",
-    "donor_state",
-    "donor_zip",
-    "donor_country",
-    "donor_occupation",
-    "donor_employer",
-    "donor_email",
-    "donor_phone",
-    "new_express_signup",
-    "comments",
-    "check_number",
-    "check_date",
-    "employer_addr1",
-    "employer_addr2",
-    "employer_city",
-    "employer_state",
-    "employer_zip",
-    "employer_country",
-    "donor_id",
-    "fundraiser_id",
-    "fundraiser_recipient_id",
-    "fundraiser_contact_email",
-    "fundraiser_contact_first_name",
-    "fundraiser_contact_last_name",
-    "partner_id",
-    "partner_contact_email",
-    "partner_contact_first_name",
-    "partner_contact_last_name",
-    "lineitem_id",
-    "ab_test_name",
-    "ab_variation",
-    "recipient_committee",
-    "recipient_id",
-    "recipient_gov_id",
-    "recipient_election",
-    "payment_id",
-    "payment_date",
-    "disbursement_id",
-    "disbursement_date",
-    "recovery_id",
-    "recovery_date",
-    "refund_id",
-    "refund_date",
-    "fee",
-    "recur_weekly",
-    "actblue_express_lane",
-    "card_type",
-    "mobile",
-    "recurring_upsell_shown",
-    "recurring_upsell_succeeded",
-    "double_down",
-    "smart_recurring",
-    "monthly_recurring_amount",
-    "apple_pay",
-    "card_replaced_by_account_updater",
-    "actblue_express_donor",
-    "custom_field_1_label",
-    "custom_field_1_value",
-    "donor_us_passport_number",
-    "text_message_opt_in",
-    "gift_identifier",
-    "gift_declined",
-    "shipping_addr1",
-    "shipping_city",
-    "shipping_state",
-    "shipping_zip",
-    "shipping_country",
-    "weekly_recurring_amount",
-    "smart_boost_amount",
-    "smart_boost_shown",
+    // More people IDs to permit?
 ];
 
-// Load csv of donations to donation and people table
-export default async function loadDonationsCSV(req, res) {
+// Standarized!
+function newPersonFromPledgeObject(data) {
+    // This is a placeholder function for manipulating
+    // column headers and adding metadata later
+    const normalized = {
+        first_name: data?.first_name,
+        last_name: data?.last_name,
+        zip: data?.zip,
+        email: data?.email,
+        phone: data?.phone,
+    };
+    return normalized;
+}
+
+// Load csv of pledges and people table
+export default async function loadPledgesCSV(req, res) {
     const { searchParams } = new URL(req.url);
     let fileName = searchParams.get("fileName");
 
@@ -127,7 +70,7 @@ export default async function loadDonationsCSV(req, res) {
     // Log the time of function execution
     console.time("functionexectime");
     console.log("------");
-    console.log("loadDonationsCSV()");
+    console.log("loadProspectsCSV()");
 
     console.time("load file");
     // Get the file from supabase storage
@@ -183,13 +126,13 @@ export default async function loadDonationsCSV(req, res) {
         newEmails = [],
         newPhones = [];
 
-    // Loop through donation objects
+    // Loop through pledge objects
     for (let index = 0; index < fileParsedToJSON.length; index++) {
-        const donation = fileParsedToJSON[index];
+        const pledge = fileParsedToJSON[index];
 
         // Create an object to hold new information, desctructre to remove the email and phone
         const { email, phone, ...newPerson } = {
-            ...newPersonFromDonationObject(donation),
+            ...newPersonFromPledgeObject(pledge),
             batch_id: batchID,
             organization_id: orgID,
         };
@@ -197,13 +140,13 @@ export default async function loadDonationsCSV(req, res) {
         // Does person already exist? Try by email and fullname and only coalesce to default upon nullish (?? instead of ||)
         let matchingIndex = email
             ? hashByEmail.get(email) ?? people.length
-            : hashByFullname.get(donation?.donor_first_name + "|" + donation?.donor_last_name) ??
+            : hashByFullname.get(newPerson?.first_name + "|" + newPerson?.last_name) ??
               people.length;
 
         // If the person doesn't already exist, assign them a new UUID
         const personID = matchingIndex == people.length ? uuid() : people[matchingIndex].id;
 
-        // Update person with donor info from donation
+        // Update person with donor info from pledge
         const oldPerson = people[matchingIndex];
         people[matchingIndex] = { ...oldPerson, ...newPerson, id: personID };
 
@@ -253,7 +196,7 @@ export default async function loadDonationsCSV(req, res) {
         hashByFullname.set(newPerson.first_name + "|" + newPerson.last_name, matchingIndex);
         if (email) hashByEmail.set(email, matchingIndex);
 
-        // Keep track of the changes we've made to people, and inject its id as new donation object's foreign key
+        // Keep track of the changes we've made to people, and inject its id as new pledge object's foreign key
         peopleIndexesToUpsert.push(matchingIndex);
         fileParsedToJSON[index].person_id = personID;
         // console.log({ matchingIndex });
@@ -266,10 +209,10 @@ export default async function loadDonationsCSV(req, res) {
     let peopleToUpsert = [...new Set(peopleIndexesToUpsert)].map(
         (recordIndex) => people[recordIndex]
     );
-    // Strip keys not present in newPersonFromDonationObject()
+    // Strip keys not present in newPersonFromPledgeObject()
     peopleToUpsert = stripKeys(
         peopleToUpsert,
-        Object.keys({ ...newPersonFromDonationObject(), id: null })
+        Object.keys({ ...newPersonFromPledgeObject(), id: null })
     );
 
     const peopleInsertResults = await supabase
@@ -292,17 +235,19 @@ export default async function loadDonationsCSV(req, res) {
 
     console.timeEnd("upsert records into people");
 
-    console.time("upload donations to db");
+    console.time("upload pledges to db");
     const chunkSize = 100;
-    const donationsInsertResults = [];
-    for (let i = 0; i < fileParsedToJSON.length; i += chunkSize) {
-        donationsInsertResults.push(
-            supabase.from("donations").insert(fileParsedToJSON.slice(i, i + chunkSize))
+    const pledgesInsertResults = [];
+    const pledgesToInsert = stripKeys(fileParsedToJSON, ["person_id", "amount"]);
+    // console.log({ pledgesToInsert });
+    for (let i = 0; i < pledgesToInsert.length; i += chunkSize) {
+        pledgesInsertResults.push(
+            supabase.from("pledges").insert(pledgesToInsert.slice(i, i + chunkSize))
         );
     }
-    await Promise.allSettled(donationsInsertResults);
     // TODO: Need better error handling:
-    console.timeEnd("upload donations to db");
+    console.log(await Promise.allSettled(pledgesInsertResults));
+    console.timeEnd("upload pledges to db");
 
     await supabase
         .from("import_batches")
@@ -313,27 +258,6 @@ export default async function loadDonationsCSV(req, res) {
     return new Response(
         `File uploaded successfully, and ${fileParsedToJSON.length} records processed.`
     );
-}
-
-// Standarized!
-function newPersonFromDonationObject(donation) {
-    return {
-        // Basic assignments
-        last_name: donation?.donor_last_name?.trim(),
-        first_name: donation?.donor_first_name?.trim(),
-        email: donation?.donor_email?.trim(),
-        phone: donation?.donor_phone?.trim(),
-        employer: donation?.donor_employer?.trim(),
-        occupation: donation?.donor_occupation?.trim(),
-
-        // Address
-        addr1: donation?.donor_addr1?.trim(),
-        addr2: donation?.donor_addr2?.trim(),
-        city: donation?.donor_city?.trim(),
-        state: donation?.donor_state?.trim(),
-        country: donation?.donor_country?.trim(),
-        zip: donation?.donor_zip?.trim(),
-    };
 }
 
 function stripKeys(arr, permitTheseKeys) {

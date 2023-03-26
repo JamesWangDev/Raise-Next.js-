@@ -127,7 +127,7 @@ const Uploaders = ({ importType, nextStep, setUploadResult }) => {
         },
     });
     const loadDonationsCSV = server("loadDonationsCSV");
-    const loadProspectsCSV = server("loadProspectsCSV");
+    const loadProspectsCSV = server("loadPledgesCSV");
     const loadPledgesCSV = server("loadPledgesCSV");
     return (
         <>

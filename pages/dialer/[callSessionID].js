@@ -11,7 +11,18 @@ import PersonProfile from "components/PersonProfile";
 import { useUser } from "@clerk/nextjs";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
-export const CallSessionContext = createContext();
+export const CallSessionContext = createContext({
+    personID: null,
+    dial: () => {},
+    hangup: () => {},
+    outbound: false,
+    hasNext: false,
+    next: () => {},
+    forceFetch: () => {},
+    enabled: true,
+    needsLogToAdvance: false,
+    callSessionID: null,
+});
 
 const reducer = (prevState, payload) => {
     // Bulk update
@@ -42,7 +53,6 @@ export default function StartCallingSession() {
 
     const [session, setSession] = useState([]);
     const [conferenceUpdates, appendConferenceUpdate] = useReducer(reducer, []);
-    const [needsLogToAdvance, setNeedsLogToAdvance] = useState();
     const [peopleList, setPeopleList] = useState();
     const [forceFetchValue, forceFetchPersonProfile] = useReducer((old) => old + 1, 0);
     const [dialedInFrom, setDialedInFrom] = useState(null);
@@ -52,13 +62,7 @@ export default function StartCallingSession() {
             (participant) => participant.number_dialed_in_from == dialedInFrom
         )[0] || null;
 
-    // Process conference updates upon change
-    // Update: this doesn't need to be a state effect since
-    // it's directly dependent on conferenceupdates
-    // useEffect(() => {
-    // const [conferenceSID, setConferenceSID] = useState(null);
-    // const [dialedIn, setDialedIn] = useState(false);
-    // const [outbound, setOutbound] = useState(false);
+    // Process conference updates in order to determine state
     let conferenceSID = null,
         dialedIn = false,
         outbound = false,
@@ -80,9 +84,9 @@ export default function StartCallingSession() {
             if (isOutbound && isLeave) outbound = false;
 
             // Track the last open outbound interaction to force logging
-            lastOutboundSid = update?.call_sid || _lastOutboundSid;
-
-            conferenceSID = update?.conference_sid || _conferenceSID;
+            lastOutboundSid = update?.call_sid || lastOutboundSid;
+            // Track the most recent twilio conference SID
+            conferenceSID = update?.conference_sid || conferenceSID;
         }
     }
 
@@ -93,13 +97,19 @@ export default function StartCallingSession() {
 
         // Upsert the new dialedInFrom status
         // DONE: correct uniqueness test for upsert
-        supabase.from("call_session_participants").upsert(
-            {
-                call_session_id: callSessionID,
-                number_dialed_in_from: dialedInFrom,
-            },
-            { onConflict: "call_session_id,number_dialed_in_from" }
-        );
+        supabase
+            .from("call_session_participants")
+            .upsert(
+                {
+                    call_session_id: callSessionID,
+                    number_dialed_in_from: dialedInFrom,
+                },
+                { onConflict: "call_session_id,number_dialed_in_from" }
+            )
+            .select()
+            .then((response) => {
+                console.log(response);
+            });
     }, [dialedInFrom, supabase, callSessionID]);
 
     let hasNext = peopleList?.indexOf(session.current_person_id) < peopleList?.length - 1;
@@ -129,12 +139,10 @@ export default function StartCallingSession() {
             });
     }, [callSessionID, supabase]);
 
-    // On mount
+    // On mount, fetch call_session state and subscribe to table and relational changes
     useEffect(() => {
-        // Fetch the list of calling sessions from the API.
         fetchSessionData();
-
-        console.log("subscribeToPageChanges()");
+        console.log("call_sessions.subscribe()");
         const sessionChannel = supabase
             .channel("call_sessions")
             .on(
@@ -144,11 +152,12 @@ export default function StartCallingSession() {
                     schema: "public",
                     table: "call_sessions",
                 },
+                // New is a reserved keyword in JS so to destructure we need to rename
                 ({ new: updated }) => {
                     console.log(updated.current_person_id);
                     setSession((prevState) => ({
                         ...prevState,
-                        current_person_id: updated.current_person_id,
+                        ...updated,
                     }));
                 }
             )
@@ -166,6 +175,7 @@ export default function StartCallingSession() {
                     filter: "call_session_id=eq." + callSessionID,
                 },
                 (payload) => {
+                    // TODO: clean this up as an update instead of relational refetch
                     fetchSessionData();
                 }
             )
@@ -365,7 +375,8 @@ export default function StartCallingSession() {
                         next,
                         hasNext,
                         outbound,
-                        needsLogToAdvance,
+                        needsLogToAdvance: !!session?.needs_log_to_advance,
+                        callSessionID: session?.id,
                         forceFetch: forceFetchValue,
                     }}
                 >

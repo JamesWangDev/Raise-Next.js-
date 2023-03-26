@@ -52,9 +52,11 @@ export default function AddInteractionCard({ person, appendInteraction }) {
     const [prompt, setPrompt] = useState(false);
     const [pledge, setPledge] = useState(null);
     const [currentDisposition, setCurrentDisposition] = useState();
-
-    // Stop prop drilling here
-    const { outbound, needsLogToAdvance } = useContext(CallSessionContext);
+    // const { outbound, needsLogToAdvance, sessionID } = useContext(CallSessionContext);
+    const csCTX = useContext(CallSessionContext);
+    const outbound = csCTX?.outbound;
+    const needsLogToAdvance = csCTX?.needsLogToAdvance;
+    const sessionID = csCTX?.sessionID;
 
     const newNote = () => {
         appendInteraction({
@@ -150,7 +152,12 @@ export default function AddInteractionCard({ person, appendInteraction }) {
                                         Add Pledge
                                     </button>
                                 )}
-                                <button type="button" className="btn btn-primary" onClick={newNote}>
+                                <button
+                                    type="button"
+                                    className="btn btn-primary"
+                                    onClick={newNote}
+                                    disabled={!currentDisposition?.length && needsLogToAdvance}
+                                >
                                     Save interaction
                                     {/* {prompt && " + Pledge"} */}
                                 </button>

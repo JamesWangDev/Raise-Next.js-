@@ -43,12 +43,24 @@ export default async function handler(request) {
         : false;
     if (personID && status_callback_event === "participant-join") {
         console.log("start outgoing call");
-        await supabase.from("interactions").insert({
+        const addInteractionResponse = await supabase.from("interactions").insert({
             person_id: personID,
             contact_type: "call",
             call_sid,
             organization_id: orgID,
+            call_session_id: callSessionID,
         });
+        if (addInteractionResponse?.error) {
+            throw Error(JSON.stringify(addInteractionResponse?.error));
+        }
+        // Mark the call session as needing a log
+        const preventAdvanceBeforeLoggingResponse = await supabase
+            .from("call_sessions")
+            .update({ needs_log_to_advance: true })
+            .eq("id", callSessionID);
+        if (preventAdvanceBeforeLoggingResponse?.error) {
+            throw Error(JSON.stringify(preventAdvanceBeforeLoggingResponse?.error));
+        }
     }
 
     if (personID && status_callback_event === "participant-leave") {

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useSupabase } from "lib/supabaseHooks";
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useContext } from "react";
 import { CheckIcon, HandThumbUpIcon, UserIcon, PhoneIcon } from "@heroicons/react/20/solid";
 import InteractionHistory from "./InteractionHistory";
 import Breadcrumbs from "./Breadcrumbs";
@@ -11,6 +11,7 @@ import FECHistoryList from "./FECHistoryList";
 import PledgeHistory from "./PledgeHistory";
 import DonationHistory from "./DonationHistory";
 import { randomUUID } from "lib/randomUUID-polyfill";
+import { CallSessionContext } from "pages/dialer/[callSessionID]";
 
 const pluralize = (single, plural, number) => (number > 1 ? plural : single);
 
@@ -101,22 +102,24 @@ function PersonTagList({ person, addTag, deleteTag, restoreTag }) {
     );
 }
 
-export default function PersonProfile({
-    personID,
-    dial,
-    hangup,
-    outbound,
-    hasNext,
-    next,
-    forceFetch,
-    enabled = false,
-}) {
+export default function PersonProfile({ personID }) {
     const { id: userID } = useUser();
     const supabase = useSupabase();
     const [person, setPerson] = useState();
     const [FECHistory, setFECHistory] = useState();
     const [bio, setBio] = useState(null);
     const [isLoading, setLoading] = useState(true);
+    const {
+        needsLogToAdvance,
+        callSessionID,
+        dial,
+        hangup,
+        outbound,
+        hasNext,
+        next,
+        forceFetch,
+        enabled = false,
+    } = useContext(CallSessionContext);
 
     useEffect(() => {
         if (person?.last_name && person?.zip?.toString()?.length > 0) {
@@ -153,15 +156,42 @@ export default function PersonProfile({
                 let { pledge, ...newInteractionPrepared } = newInteraction;
                 newInteractionPrepared.person_id = personID;
 
+                let newPledgeID;
                 if (pledge) {
-                    await supabase.from("pledges").insert({
-                        person_id: personID,
-                        amount: pledge,
-                    });
+                    const { data: newPledge } = await supabase
+                        .from("pledges")
+                        .insert({
+                            person_id: personID,
+                            amount: pledge,
+                        })
+                        .select()
+                        .single();
+                    newPledgeID = newPledge.id;
                 }
 
                 if (newInteractionPrepared?.note?.length) {
-                    await supabase.from("interactions").insert(newInteractionPrepared);
+                    console.log({ needsLogToAdvance });
+                    if (needsLogToAdvance) {
+                        // Update existing call interaction
+                        console.log("needs update");
+                        await supabase
+                            .from("interactions")
+                            .update(newInteractionPrepared)
+                            .eq("contact_type", "call")
+                            .is("disposition", null)
+                            .eq("call_session_id", callSessionID)
+                            .order("inserted_at", { ascending: false })
+                            .limit(1);
+
+                        const loggingAdvanceResponse = await supabase
+                            .from("call_sessions")
+                            .update({ needs_log_to_advance: false })
+                            .eq("id", callSessionID);
+                        console.log({ loggingAdvanceResponse });
+                    } else {
+                        // New interaction
+                        await supabase.from("interactions").insert(newInteractionPrepared);
+                    }
                 }
 
                 fetchPerson();
@@ -224,7 +254,7 @@ export default function PersonProfile({
                     .eq("id", id)
                     .then(fetchPerson),
         }),
-        [supabase, personID, fetchPerson, userID]
+        [supabase, personID, fetchPerson, userID, callSessionID]
     );
 
     // Placing a realtime listener on changes other folks make
