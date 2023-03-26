@@ -17,7 +17,9 @@ export default async function handler(request) {
             }),
         }
     );
-    const responseJSON = await response.json();
-    console.log({ responseJSON });
-    return NextResponse.json(responseJSON);
+    // Hangup returns 204, with no body
+    const status = await response.status;
+    return new NextResponse(null, {
+        status,
+    });
 }
