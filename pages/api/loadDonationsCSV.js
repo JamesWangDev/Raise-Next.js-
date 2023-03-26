@@ -220,8 +220,8 @@ export default async function loadDonationsCSV(req, res) {
             newEmails.push(newEmailRecord);
         }
         // Phones
-        const validated_phone_number = Number(phone.toString().replaceAll("[^0-9]", ""));
-        const phoneIsValid = validated_phone_number.toString().length === 10;
+        const validated_phone_number = Number(phone?.toString().replaceAll("[^0-9]", ""));
+        const phoneIsValid = validated_phone_number?.toString().length === 10;
         // console.log(validated_phone_number);
         // console.log(
         //     !people[matchingIndex]?.phone_numbers
@@ -318,20 +318,20 @@ export default async function loadDonationsCSV(req, res) {
 function newPersonFromDonationObject(donation) {
     return {
         // Basic assignments
-        last_name: donation?.donor_last_name.trim(),
-        first_name: donation?.donor_first_name.trim(),
-        email: donation?.donor_email.trim(),
-        phone: donation?.donor_phone.trim(),
-        employer: donation?.donor_employer.trim(),
-        occupation: donation?.donor_occupation.trim(),
+        last_name: donation?.donor_last_name?.trim(),
+        first_name: donation?.donor_first_name?.trim(),
+        email: donation?.donor_email?.trim(),
+        phone: donation?.donor_phone?.trim(),
+        employer: donation?.donor_employer?.trim(),
+        occupation: donation?.donor_occupation?.trim(),
 
         // Address
-        addr1: donation?.donor_addr1.trim(),
-        addr2: donation?.donor_addr2.trim(),
-        city: donation?.donor_city.trim(),
-        state: donation?.donor_state.trim(),
-        country: donation?.donor_country.trim(),
-        zip: donation?.donor_zip.trim(),
+        addr1: donation?.donor_addr1?.trim(),
+        addr2: donation?.donor_addr2?.trim(),
+        city: donation?.donor_city?.trim(),
+        state: donation?.donor_state?.trim(),
+        country: donation?.donor_country?.trim(),
+        zip: donation?.donor_zip?.trim(),
     };
 }
 
