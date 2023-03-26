@@ -35,8 +35,7 @@ codegen:
 debugtests: stop start runtestdebugandstop
 
 quick:
-	pkill node || true
-	pm2 restart all
 	psql "postgresql://postgres:postgres@localhost:54322/postgres" -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
 	psql "postgresql://postgres:postgres@localhost:54322/postgres" -f ./supabase/seed.sql
 	npm run migrate
+	npm run dev
