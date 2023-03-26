@@ -6,7 +6,7 @@ generator client {
 datasource db {
   provider   = "postgresql"
   url        = env("PRISMA_DATABASE_URL")
-  extensions = [pg_trgm, uuid_ossp(map: "uuid-ossp", schema: "extensions")]
+  extensions = [pg_trgm]
 }
 
 model call_sessions {
@@ -315,8 +315,8 @@ view dashboard_by_account {
   organization_id              String?
   total_sum_donations          Int?
   number_of_donations          Int?
-  total_sum_unfufilled_pledges Int?
-  number_of_unfufilled_pledges Int?
+  total_sum_unfulfilled_pledges Int?
+  number_of_unfulfilled_pledges Int?
   total_number_of_calls        BigInt?
 
   @@ignore

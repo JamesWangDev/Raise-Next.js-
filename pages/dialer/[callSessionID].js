@@ -125,7 +125,7 @@ export default function StartCallingSession() {
             )
             .subscribe();
 
-        // Subscribe to call_session_participants to get updated participants and callsids
+        // Subscribe to call_session_participants to get updated participants and callSIDs
         const participantsChannel = supabase
             .channel("call_session_participants")
             .on(
@@ -179,7 +179,7 @@ export default function StartCallingSession() {
 
     // Supabase realtime
     useEffect(() => {
-        console.log("useffect1");
+        console.log("use Effect 1");
         console.log({ conferenceUpdates });
 
         if (conferenceUpdates?.length === 0) {
@@ -223,7 +223,7 @@ export default function StartCallingSession() {
 
     // useEffectOnMount to setup subscription
     useEffect(() => {
-        console.log("useffect2");
+        console.log("useEffect 2");
 
         // Load entire updates
         supabase
@@ -348,7 +348,7 @@ export default function StartCallingSession() {
                                                 type="tel"
                                                 name="dialedInFromInput"
                                                 id="dialedInFromInput"
-                                                className="mr-2 inline w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 ring-2 ring-inset ring-indigo-600 sm:text-sm sm:leading-6 bg-blue-50"
+                                                className="mr-2 inline w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 ring-2 ring-inset ring-indigo-600 sm:text-sm sm:leading-6 bg-blue-50"
                                                 placeholder="(555) 555 - 5555"
                                             />
                                         </div>

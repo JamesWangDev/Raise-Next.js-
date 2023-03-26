@@ -31,8 +31,8 @@ function DispositionOptions() {
                             }}
                             className={classNames(
                                 disposition == currentDisposition
-                                    ? "bg-blue-400 text-white text-gray-800"
-                                    : "bg-gray-100 text-gray-600 hover:text-gray-800 hover:bg-gray-200 hover:text-gray-800",
+                                    ? "bg-blue-400 text-gray-800"
+                                    : "bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-800",
                                 "rounded-md px-3 py-2 font-medium mr-1 mb-1 text-xs"
                             )}
                         >

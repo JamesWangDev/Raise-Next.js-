@@ -18,11 +18,11 @@ const stats = [
         href: "/donations",
     },
     {
-        name: "Unfufilled Pledges",
+        name: "Unfulfilled Pledges",
         previousStat: "---",
         change: "---",
         changeType: "increase",
-        query: "total_sum_unfufilled_pledges",
+        query: "total_sum_unfulfilled_pledges",
         icon: HandRaisedIcon,
         href: "/pledges",
     },
@@ -67,7 +67,7 @@ export function StatCard({ query, table, item }) {
 
     return (
         <Link href={item?.href} key={item.id}>
-            <div className="relative overflow-hidden rounded-lg bg-white px-4 pt-7 pb-0 shadow sm:px-6 rounded-lg shadow-md border hover:shadow-lg hover:cursor-pointer">
+            <div className="relative overflow-hidden bg-white px-4 pt-7 pb-0 sm:px-6 rounded-lg shadow-md border hover:shadow-lg hover:cursor-pointer">
                 <dt>
                     <div className="absolute rounded-md bg-blue-200 p-3">
                         <item.icon className="h-6 w-6 text-white" aria-hidden="true" />
