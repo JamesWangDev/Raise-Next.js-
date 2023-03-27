@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { useSupabase } from "lib/supabaseHooks";
+import { useSupabase, useQuery } from "lib/supabaseHooks";
 import Breadcrumbs from "components/Breadcrumbs";
 import PageTitle from "components/PageTitle";
 import CallingSessionsGrid from "components/CallingSessionsGrid";
-import { useUser } from "@clerk/nextjs";
+import { clerkClient, getAuth, buildClerkProps } from "@clerk/nextjs/server";
 import { CurrencyDollarIcon, HandRaisedIcon, PhoneIcon } from "@heroicons/react/24/outline";
+import Link from "next/link";
 
 const stats = [
     {
@@ -14,14 +15,16 @@ const stats = [
         changeType: "increase",
         query: "total_sum_donations",
         icon: CurrencyDollarIcon,
+        href: "/donations",
     },
     {
-        name: "Unfufilled Pledges",
+        name: "Unfulfilled Pledges",
         previousStat: "---",
         change: "---",
         changeType: "increase",
-        query: "total_sum_unfufilled_pledges",
+        query: "total_sum_unfulfilled_pledges",
         icon: HandRaisedIcon,
+        href: "/pledges",
     },
     {
         name: "Phone Calls Made",
@@ -30,6 +33,7 @@ const stats = [
         changeType: "increase",
         query: "total_number_of_calls",
         icon: PhoneIcon,
+        href: "/contacthistory",
     },
 ];
 
@@ -38,23 +42,7 @@ function classNames(...classes) {
 }
 
 export function StatCard({ query, table, item }) {
-    const [isLoading, setLoading] = useState(false);
-    const [data, setData] = useState(null);
-    const supabase = useSupabase();
-
-    useEffect(() => {
-        setLoading(true);
-
-        supabase
-            .from(table)
-            .select(query)
-            .maybeSingle()
-            .then(({ data, error }) => {
-                if (error) console.error(error);
-                setData(data);
-                setLoading(false);
-            });
-    }, [query, table, supabase]);
+    const { data, error } = useQuery(useSupabase().from(table).select(query).maybeSingle());
 
     item.stat = data ? (Object.keys(data) ? data[Object.keys(data)[0]] : 0) : 0;
 
@@ -66,53 +54,24 @@ export function StatCard({ query, table, item }) {
         item.stat = "$" + Number(item.stat).toLocaleString();
 
     return (
-        <div
-            key={item.id}
-            className="relative overflow-hidden rounded-lg bg-white px-4 pt-5 pb-0 shadow sm:px-6 sm:pt-6 rounded-lg shadow-md border"
-        >
-            <dt>
-                <div className="absolute rounded-md bg-blue-200 p-3">
-                    <item.icon className="h-6 w-6 text-white" aria-hidden="true" />
-                </div>
-                <p className="ml-16 truncate text-sm font-medium text-gray-500">{item.name}</p>
-            </dt>
-            <dd className="ml-16 flex items-baseline pb-6 sm:pb-7">
-                <p className="text-2xl font-semibold text-gray-900">{item.stat}</p>
-            </dd>
-        </div>
-    );
-}
-
-export function HomepageCards() {
-    return (
-        <>
-            <div>
-                <h3 className="mt-5">Metrics</h3>
-                <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                    {stats.map((item, i) => (
-                        <StatCard
-                            key={i}
-                            item={item}
-                            query={item.query}
-                            table="dashboard_by_account"
-                        />
-                    ))}
-                </dl>
+        <Link href={item?.href} key={item.id}>
+            <div className="relative overflow-hidden bg-white px-4 pt-7 pb-0 sm:px-6 rounded-lg shadow-md border hover:shadow-lg hover:cursor-pointer">
+                <dt>
+                    <div className="absolute rounded-md bg-blue-200 p-3">
+                        <item.icon className="h-6 w-6 text-white" aria-hidden="true" />
+                    </div>
+                    <p className="ml-16 truncate text-sm font-medium text-gray-500">{item.name}</p>
+                </dt>
+                <dd className="ml-16 flex items-baseline pb-6 sm:pb-7">
+                    <p className="text-2xl font-semibold text-gray-900">{item.stat}</p>
+                </dd>
             </div>
-            <div>
-                <h3>Join an active calling session:</h3>
-
-                {/* map callingSessions to devs/cards in the same way as done in makecalls/start/... */}
-                <CallingSessionsGrid />
-            </div>
-        </>
+        </Link>
     );
 }
 
 export default function Home(props) {
-    console.log({ props });
-    const { isSignedIn, isLoading, user } = useUser();
-
+    // return <pre>{JSON.stringify(props, 0, 2)}</pre>;
     return (
         <div className="">
             <div className="mx-auto max-w-7xl px-2">
@@ -123,8 +82,36 @@ export default function Home(props) {
                 />
             </div>
             <div className="mx-auto max-w-7xl px-2">
-                <HomepageCards />
+                <div>
+                    <h3 className="mt-7">Metrics</h3>
+                    <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                        {stats.map((item, i) => (
+                            <StatCard
+                                key={i}
+                                item={item}
+                                query={item.query}
+                                table="dashboard_by_account"
+                            />
+                        ))}
+                    </dl>
+                </div>
+                <div>
+                    <h3>Join an active calling session:</h3>
+                    <CallingSessionsGrid />
+                </div>
             </div>
         </div>
     );
 }
+
+// export const getServerSideProps = async ({ req }) => {
+//     // const { getToken, userId, sessionId, orgId } = getAuth(req);
+//     // const user = userId ? await clerkClient.users.getUser(userId) : undefined;
+//     const token = clerkClient.getToken({
+//         template:
+//             process.env.NEXT_PUBLIC_ENVIRONMENT != "development"
+//                 ? "supabase"
+//                 : "supabase-local-development",
+//     });
+//     return { props: { ...buildClerkProps(req, { token }) } };
+// };

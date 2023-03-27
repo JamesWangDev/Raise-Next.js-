@@ -177,11 +177,18 @@ test.describe("Pledge followup flow", () => {
     test.skip("Create a multi-table list re: pledges, past donations, and FEC data", async ({
         page,
     }) => {});
-    test.skip("Start a call session on multi-table list", async ({ page }) => {});
-    test.skip("Dialing-in begins the list view", async ({ page }) => {});
-    test.skip("Call three people in a row, add notes and pledges", async ({ page }) => {});
+    test.skip("Start a call session on multi-table list", async ({ page }) => {
+        // TODO
+    });
+    test.skip("Dialing-in begins the list view", async ({ page }) => {
+        // This works!
+    });
+    test.skip("Call three people in a row, add notes and pledges", async ({ page }) => {
+        // This should work but needs dispositions
+        // and disposition - based - control of "next/skip" button
+    });
     test.skip("New notes and pledges are persisted", async ({ page }) => {
-        // This should work
+        // This works
     });
     test.skip("Pledges page displays all pledges correctly", async ({ page }) => {
         // Yes but needs linking and customization, etc
@@ -207,3 +214,19 @@ test.describe("Pledge followup flow", () => {
     test.skip("API: Users can only access their own organization", async ({ page }) => {});
     test.skip("API: Users can only upload to their own organization", async ({ page }) => {});
 });
+
+/*
+    TODO:
+
+    IMPORT
+    Multiple phone fields
+    "Ask" field 
+    Field matching -> (a->b?)
+    Tags
+    PLEDGES
+
+    SEARCH:
+    By multiple tables
+    FEC summary view
+
+*/

@@ -1,24 +1,69 @@
-import { useState } from "react";
-import { useUser } from "@clerk/nextjs";
+import { useState, useContext, useEffect } from "react";
+import { CallSessionContext } from "pages/dialer/[callSessionID]";
+
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
 
+function DispositionOptions({ disposition, setDisposition }) {
+    const dispositions = [
+        "Pledged!",
+        "No pledge",
+        "Not home",
+        "Call back",
+        "Wrong number / disconnected",
+        "Left message",
+        "Refused / remove",
+        "Hostile",
+    ];
+    return (
+        <div>
+            <div className="hidden sm:block -mt-1">
+                <nav className="" aria-label="Tabs">
+                    <input type="hidden" value={disposition} />
+                    {dispositions.map((thisDisposition) => (
+                        <button
+                            key={thisDisposition}
+                            onClick={(event) => {
+                                console.log({ event });
+                                event.preventDefault();
+                                setDisposition(event.target.textContent);
+                            }}
+                            className={classNames(
+                                thisDisposition == disposition
+                                    ? "bg-blue-400 text-white"
+                                    : "bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-800",
+                                "rounded-md px-3 py-2 font-medium mr-1 mb-1 text-xs"
+                            )}
+                        >
+                            {thisDisposition}
+                        </button>
+                    ))}
+                </nav>
+            </div>
+        </div>
+    );
+}
+
 export default function AddInteractionCard({ person, appendInteraction }) {
-    const { user } = useUser();
+    // const { user } = useUser();
     const [note, setNote] = useState("");
     const [prompt, setPrompt] = useState(false);
     const [pledge, setPledge] = useState(null);
+    const [disposition, setDisposition] = useState();
+    const { outbound, needsLogToAdvance } = useContext(CallSessionContext);
 
     const newNote = () => {
         appendInteraction({
             note,
             resulted_in_pledge: !!pledge,
             pledge,
+            disposition,
         });
         setNote("");
         setPrompt(null);
         setPledge(null);
+        setDisposition();
     };
 
     return (
@@ -33,6 +78,12 @@ export default function AddInteractionCard({ person, appendInteraction }) {
                 </div> */}
                 <div className="min-w-0 flex-1">
                     <form action="#" className="relative">
+                        {(outbound || needsLogToAdvance) && (
+                            <DispositionOptions
+                                disposition={disposition}
+                                setDisposition={setDisposition}
+                            />
+                        )}
                         <div className="overflow-hidden rounded-lg border border-gray-200 shadow-sm focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500">
                             <label htmlFor="note" className="sr-only">
                                 Add your note
@@ -57,7 +108,6 @@ export default function AddInteractionCard({ person, appendInteraction }) {
                                 </div>
                             </div>
                         </div>
-
                         <div className="absolute inset-x-0 bottom-0 flex justify-between py-0 px-3 border-t">
                             <div className="placeholder-justify-the-rest-to-right"></div>
                             <div className="flex-shrink-0">
@@ -99,8 +149,14 @@ export default function AddInteractionCard({ person, appendInteraction }) {
                                         Add Pledge
                                     </button>
                                 )}
-                                <button type="button" className="btn btn-primary" onClick={newNote}>
-                                    Add Note{prompt && " + Pledge"}
+                                <button
+                                    type="button"
+                                    className="btn btn-primary"
+                                    onClick={newNote}
+                                    disabled={!disposition?.length && needsLogToAdvance}
+                                >
+                                    Save interaction
+                                    {/* {prompt && " + Pledge"} */}
                                 </button>
                             </div>
                         </div>

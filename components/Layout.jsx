@@ -7,6 +7,7 @@ import {
     CreateOrganization,
     OrganizationSwitcher,
     SignedOut,
+    SignedIn,
 } from "@clerk/nextjs";
 
 import { Fragment, useState } from "react";
@@ -21,14 +22,10 @@ import {
     PhoneIcon,
     ClockIcon,
     HandRaisedIcon,
-    CheckCircleIcon,
     EnvelopeIcon,
-    ChevronDoubleRightIcon,
     UserPlusIcon,
-    Cog6ToothIcon,
     CloudArrowDownIcon,
     ArrowUpOnSquareStackIcon,
-    LinkIcon,
     ArrowsRightLeftIcon,
     UserCircleIcon,
     CurrencyDollarIcon,
@@ -36,13 +33,12 @@ import {
 
 // import algoliasearch from "algoliasearch/lite";
 // import { InstantSearch, SearchBox, Hits } from "react-instantsearch-dom";
-// const searchClient = algoliasearch(
-//   "latency",
-//   process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_ONLY_API_KEY
-// );
+// const searchClient = algoliasearch("latency", process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_ONLY_API_KEY);
 // import { DocSearch } from "@docsearch/react";
-// Commented out for Jest testing
+// // Commented out for Jest testing
 // import "@docsearch/css";
+
+import Search from "components/Search";
 
 const navigation = [
     { name: "Dashboard", href: "/", icon: HomeIcon, current: true },
@@ -239,12 +235,12 @@ const Layout = ({ children }) => {
                 </Transition.Root>
 
                 {/* Static sidebar for desktop */}
-                <div className="hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
+                <div className="desktop-sidebar hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
                     {/* Sidebar component, swap this element with another sidebar if you like */}
-                    <div className="pt-5 flex flex-grow flex-col overflow-y-auto border-r border-gray-200">
+                    <div className="desktop-sidebar-div-1 pt-5 flex flex-grow flex-col overflow-y-auto border-r border-gray-200">
                         <Brand />
 
-                        <div className="pt-5 flex flex-grow flex-col bg-gray-50">
+                        <div className="desktop-sidebar-div-2 pt-5 flex flex-grow flex-col ">
                             <nav className="flex-1 space-y-1 px-2 pb-4">
                                 {navigation.map((item, index) => (
                                     <div key={index}>
@@ -286,23 +282,9 @@ const Layout = ({ children }) => {
                             {isSignedIn ? (
                                 <>
                                     <div className="flex flex-1">
-                                        <form
-                                            className="flex w-full md:ml-0"
-                                            action="#"
-                                            method="GET"
-                                        >
-                                            <div className="mr-5 relative pt-3 w-full text-gray-400 focus-within:text-gray-600">
-                                                {/* Node package size reduction */}
-                                                {/* <DocSearch
-                                                    appId={process.env.ALGOLIA_APPLICATION_ID}
-                                                    indexName="RaiseMoreClientSearch"
-                                                    apiKey={
-                                                        process.env
-                                                            .NEXT_PUBLIC_ALGOLIA_SEARCH_ONLY_API_KEY
-                                                    }
-                                                /> */}
-                                            </div>
-                                        </form>
+                                        <div className="mr-5 relative pt-3 w-full text-gray-400 focus-within:text-gray-600">
+                                            <Search />
+                                        </div>
                                     </div>
                                     <div className="ml-4 flex items-center md:ml-6 gap-5">
                                         <button
@@ -312,83 +294,11 @@ const Layout = ({ children }) => {
                                             <span className="sr-only">View notifications</span>
                                             <BellIcon className="h-6 w-6" aria-hidden="true" />
                                         </button>
-
-                                        {/* Profile dropdown */}
-
-                                        {/* <Menu as="div" className="relative ml-3"> */}
-                                        {/* <div>
-                        <Menu.Button className="flex max-w-xs items-center rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                          <span className="sr-only">Open user menu</span>
-
-                          <Image
-                            src={user.image}
-                            width="25"
-                            height="25"
-                            className="h-8 w-8 rounded-full inline align-text-top"
-                          />
-                        </Menu.Button>
-                      </div> */}
-
-                                        {/* <Menu.Button className="my-1 mx-2 group flex rounded-md bg-gray-100 px-3 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-100">
-                        <span className="flex w-full items-center justify-between">
-                          <span className="flex min-w-0 items-center justify-between space-x-3">
-                            <Image
-                              className="h-8 w-8 flex-shrink-0 rounded-full bg-gray-300"
-                              height="30"
-                              width="30"
-                              src={user.image}
-                              alt=""
-                            />
-
-                            <span className="flex min-w-0 flex-1 flex-col">
-                              <span className="truncate text-sm font-medium text-gray-900">
-                                {user.name}
-                              </span>
-                              <span className="truncate text-sm text-gray-500">
-                                Obama for Congress
-                              </span>
-                            </span>
-                          </span>
-                          <ChevronDownIcon
-                            className="ml-3 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
-                            aria-hidden="true"
-                          />
-                        </span>
-                      </Menu.Button> */}
-                                        {/* <Transition
-                        as={Fragment}
-                        enter="transition ease-out duration-100"
-                        enterFrom="transform opacity-0 scale-95"
-                        enterTo="transform opacity-100 scale-100"
-                        leave="transition ease-in duration-75"
-                        leaveFrom="transform opacity-100 scale-100"
-                        leaveTo="transform opacity-0 scale-95"
-                      >
-                        <Menu.Items className="absolute right-3 z-10 mt-2 w-100 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                          {userNavigation.map((item) => (
-                            <Menu.Item key={item.name}>
-                              {({ active }) => (
-                                <Link
-                                  href={item.href}
-                                  onClick={item.onClick}
-                                  className={classNames(
-                                    active ? "bg-gray-100" : "",
-                                    "block px-4 py-2 text-sm text-gray-700"
-                                  )}
-                                >
-                                  {item.name}
-                                </Link>
-                              )}
-                            </Menu.Item>
-                          ))}
-                        </Menu.Items>
-                      </Transition> */}
                                         <OrganizationSwitcher
                                             hidePersonal={true}
                                             afterSwitchOrganizationUrl="/"
                                         />
                                         <UserButton />
-                                        {/* </Menu> */}
                                     </div>
                                 </>
                             ) : (
@@ -399,37 +309,26 @@ const Layout = ({ children }) => {
 
                     <main className="flex-1">
                         <div className="py-6">
-                            {isSignedIn ? (
-                                hasOrg ? (
+                            <SignedIn>
+                                {hasOrg ? (
                                     children
                                 ) : (
-                                    <>
-                                        <div className="block min-h-full flex-col justify-center sm:px-6 lg:px-8">
-                                            <div className="sm:mx-auto w-75">
-                                                <CreateOrganization />
-                                            </div>
+                                    <div className="block min-h-full flex-col justify-center sm:px-6 lg:px-8">
+                                        <div className="sm:mx-auto w-75">
+                                            <CreateOrganization />
                                         </div>
-                                    </>
-                                )
-                            ) : (
-                                ""
-                            )}
-
+                                    </div>
+                                )}
+                            </SignedIn>
                             <SignedOut>
                                 <div className="flex min-h-full flex-col justify-center  sm:px-6 lg:px-8">
                                     <div className="sm:mx-auto sm:w-full sm:max-w-md">
                                         <SignUp
                                             appearance={{
-                                                layout: {
-                                                    // socialButtonsVariant:
-                                                    // "blockButton",
-                                                    // socialButtonsPlacement: "bottom",
-                                                },
                                                 variables: {
                                                     colorPrimary: "#388bff",
                                                 },
                                             }}
-                                            // signInUrl=
                                         />
                                     </div>
                                 </div>

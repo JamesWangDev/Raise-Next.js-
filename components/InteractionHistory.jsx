@@ -1,6 +1,4 @@
-import { useSupabase } from "lib/supabaseHooks";
-import { useState } from "react";
-import { CheckIcon, HandThumbUpIcon, UserIcon } from "@heroicons/react/20/solid";
+import { UserIcon } from "@heroicons/react/20/solid";
 
 function capitalize(input) {
     return input?.length > 0 ? input.charAt(0).toUpperCase() + input.slice(1) : "";
@@ -12,13 +10,12 @@ function classNames(...classes) {
 import AddInteractionCard from "./AddInteractionCard";
 
 export default function InteractionHistory({ person, interactions, appendInteraction }) {
-    const supabase = useSupabase();
-
     return (
         <div className="flow-root">
-            <h2>Interaction History</h2>
+            <h2>Log an Interaction:</h2>
             <AddInteractionCard person={person} appendInteraction={appendInteraction} />
-            <ul role="list" className="-mb-8 mt-6">
+            <h2 className="mt-5">Interaction History</h2>
+            <ul role="list" className="-mb-8 mt-3">
                 {interactions
                     ?.sort((a, b) => (new Date(a.created_at) < new Date(b.created_at) ? 1 : -1))
                     ?.map((interaction, eventIdx) => {
@@ -34,15 +31,19 @@ export default function InteractionHistory({ person, interactions, appendInterac
                         interaction.datetime = new Date(interaction.created_at).toString();
                         interaction.href = "";
 
-                        interaction.content = [
-                            capitalize(interaction?.type),
-                            interaction?.contact_type,
-                            interaction?.disposition,
-                            interaction?.note,
-                            interaction?.amount && "$" + interaction?.amount,
-                        ]
-                            .filter((item) => !!item)
-                            .join(", ");
+                        interaction.content =
+                            capitalize(
+                                interaction?.contact_type ||
+                                    (interaction?.note ? "Note" : interaction?.type || "")
+                            ) +
+                            ": " +
+                            [
+                                interaction?.disposition,
+                                interaction?.note,
+                                interaction?.amount && "$" + interaction?.amount,
+                            ]
+                                .filter((item) => !!item)
+                                .join(", ");
 
                         return (
                             <li key={interaction.id}>

@@ -1,10 +1,5 @@
-import Head from "next/head";
-import Image from "next/image";
 import Link from "next/link";
 import PageTitle from "components/PageTitle";
-
-import { useState, useEffect } from "react";
-import { useSupabase } from "lib/supabaseHooks";
 import Breadcrumbs from "components/Breadcrumbs";
 import CallingSessionsGrid from "components/CallingSessionsGrid";
 

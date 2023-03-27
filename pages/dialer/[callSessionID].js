@@ -1,14 +1,30 @@
+import { Transition } from "@headlessui/react";
 import useSWR from "swr";
 const fetcher = (url) => fetch(url).then((r) => r.json());
 import { useRouter } from "next/router";
-import PageTitle from "components/PageTitle";
+// import PageTitle from "components/PageTitle";
 import { PhoneIcon } from "@heroicons/react/24/outline";
-import { useState, useEffect, useCallback, useReducer } from "react";
-import { useSupabase } from "lib/supabaseHooks";
-import { parseSQL } from "react-querybuilder";
+import { useState, useEffect, useCallback, useReducer, createContext, useMemo } from "react";
+import { useQuery, useSupabase } from "lib/supabaseHooks";
+// import { parseSQL } from "react-querybuilder";
 import Breadcrumbs from "components/Breadcrumbs";
 import PersonProfile from "components/PersonProfile";
-import { useUser } from "@clerk/nextjs";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import { Fragment } from "react";
+
+export const CallSessionContext = createContext({
+    personID: null,
+    dial: () => {},
+    hangup: () => {},
+    outbound: false,
+    hasNext: false,
+    next: () => {},
+    forceFetch: () => {},
+    enabled: true,
+    needsLogToAdvance: false,
+    callSessionID: null,
+    session: null,
+});
 
 const reducer = (prevState, payload) => {
     // Bulk update
@@ -28,71 +44,107 @@ const reducer = (prevState, payload) => {
         return false;
     }
 
-    // Append to beginning
-    return [payload.new, ...prevState];
+    // Append to end
+    return [...prevState, payload.new];
 };
 
-export default function StartCallingSession() {
+export default function CallSessionPage() {
     const router = useRouter();
     const { callSessionID } = router.query;
-
-    const [session, setSession] = useState([]);
-    const [conferenceUpdates, appendConferenceUpdate] = useReducer(reducer, []);
-    const [conferenceSID, setConferenceSID] = useState(null);
-    const [dialedIn, setDialedIn] = useState(false);
-    // Replaced the following with session.current_person_id server state
-    // const [personID, setPersonID] = useState();
-    const [outbound, setOutbound] = useState(false);
-    const [peopleList, setPeopleList] = useState();
-    const [forceFetchValue, forceFetchPersonProfile] = useReducer((old) => old + 1, 0);
     const supabase = useSupabase();
 
+    const [conferenceUpdates, appendConferenceUpdate] = useReducer(reducer, []);
+    const [forceFetchValue, forceFetchPersonProfile] = useReducer((old) => old + 1, 0);
     const [dialedInFrom, setDialedInFrom] = useState(null);
+
+    const { data: session, mutate: mutateSession } = useQuery(
+        useSupabase()
+            .from("call_sessions")
+            .select("*, saved_lists (*), call_session_participants (*), interactions (*)")
+            .eq("id", callSessionID)
+            .single()
+    );
+    const { data: peopleResponse } = useSWR(
+        session?.saved_lists?.query
+            ? `/api/rq?query=${encodeURIComponent(
+                  `select id from people where ${session.saved_lists.query} ORDER BY inserted_at`
+              )}`
+            : null
+    );
+    const peopleList = Array.from(peopleResponse?.map((row) => row.id) ?? []);
+
+    const me =
+        session?.call_session_participants?.filter(
+            (participant) => participant.number_dialed_in_from == dialedInFrom
+        )[0] || null;
+
+    // Process conference updates, in order, memoized, to calculate current conference state
+    const { dialedIn, outbound, conferenceSID, lastOutboundSid } = useMemo(() => {
+        const memoized = {
+            conferenceSID: null,
+            dialedIn: false,
+            outbound: false,
+            lastOutboundSid: null,
+        };
+
+        // Return defaults if conference hasnt been initialized
+        if (!conferenceUpdates?.length) return memoized;
+
+        for (const update of conferenceUpdates) {
+            const isItMe = update.call_sid === me?.call_sid;
+            const isJoin = update.status_callback_event === "participant-join";
+            const isLeave = update.status_callback_event === "participant-leave";
+            const isOutbound = update?.participant_label?.includes("outboundCall");
+
+            // Dialed in? boolean
+            if (isItMe && isJoin) memoized.dialedIn = true;
+            if (isItMe && isLeave) memoized.dialedIn = false;
+
+            // Outbound call? boolean
+            if (isOutbound && isJoin) memoized.outbound = true;
+            if (isOutbound && isLeave) memoized.outbound = false;
+
+            // Track the last open outbound interaction to force logging
+            memoized.lastOutboundSid = update?.call_sid || memoized.lastOutboundSid;
+            // Track the most recent twilio conference SID
+            memoized.conferenceSID = update?.conference_sid || memoized.conferenceSID;
+        }
+
+        return memoized;
+    }, [conferenceUpdates?.length, session?.id, me?.call_sid]);
+
+    // Handler for dialing in
     useEffect(() => {
-        if (dialedInFrom) {
-            supabase
-                .from("call_session_participants")
-                .insert({
+        // Ignore onMount
+        if (!dialedInFrom) return () => {};
+
+        // Upsert the new dialedInFrom status
+        // DONE: correct uniqueness test for upsert
+        supabase
+            .from("call_session_participants")
+            .upsert(
+                {
                     call_session_id: callSessionID,
                     number_dialed_in_from: dialedInFrom,
-                })
-                .then(console.log);
-        }
+                },
+                { onConflict: "call_session_id,number_dialed_in_from" }
+            )
+            .select()
+            .then((response) => {
+                console.log(response);
+            });
     }, [dialedInFrom, supabase, callSessionID]);
 
-    let hasNext = peopleList?.indexOf(session.current_person_id) < peopleList?.length - 1;
+    let hasNext = peopleList?.indexOf(session?.current_person_id) < peopleList?.length - 1;
 
     function leave() {
         router.push("/dialer");
     }
 
-    // On mount, fetch session data
-    const fetchSessionData = useCallback(() => {
-        supabase
-            .from("call_sessions")
-            .select("*, saved_lists (*)")
-            .eq("id", callSessionID)
-            .single()
-            .then(({ data: currentSessionData, error }) => {
-                if (error) console.log("Error fetching call session+list", error);
-                else setSession(currentSessionData);
-                const urlToFetch = `/api/rq?query=${encodeURI(
-                    `select id from people where ${currentSessionData.saved_lists.query}`
-                )}`;
-                fetcher(urlToFetch).then((currentListsData) => {
-                    let temporaryPeopleList = Array.from(currentListsData.map((row) => row.id));
-                    setPeopleList(temporaryPeopleList);
-                });
-            });
-    }, [callSessionID, supabase]);
-
-    // On mount
+    // On mount, fetch call_session state and subscribe to table and relational changes
     useEffect(() => {
-        // Fetch the list of calling sessions from the API.
-        fetchSessionData();
-
-        console.log("subscribeToPageChanges()");
-        const channel = supabase
+        console.log("call_sessions.subscribe()");
+        const sessionChannel = supabase
             .channel("call_sessions")
             .on(
                 "postgres_changes",
@@ -100,32 +152,68 @@ export default function StartCallingSession() {
                     event: "*",
                     schema: "public",
                     table: "call_sessions",
+                    filter: "id=eq." + callSessionID,
                 },
+                // New is a reserved keyword in JS so to destructure we need to rename
                 ({ new: updated }) => {
-                    console.log(updated.current_person_id);
-                    setSession((prevState) => ({
-                        ...prevState,
-                        current_person_id: updated.current_person_id,
-                    }));
+                    // Single-table refresh
+                    // mutateSession((prevState) => ({
+                    //     ...prevState,
+                    //     ...updated,
+                    // }));
+                    // TODO: clean this up as an update instead of relational refetch
+                    mutateSession();
                 }
             )
             .subscribe();
+
+        // Subscribe to call_session_participants to get updated participants and callSIDs
+        const participantsChannel = supabase
+            .channel("call_session_participants")
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: "call_session_participants",
+                    filter: "call_session_id=eq." + callSessionID,
+                },
+                (payload) => {
+                    // TODO: clean this up as an update instead of relational refetch
+                    mutateSession();
+                }
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: "interactions",
+                    filter: "call_session_id=eq." + callSessionID,
+                },
+                (payload) => {
+                    // TODO: clean this up as an update instead of relational refetch
+                    mutateSession();
+                }
+            )
+            .subscribe();
+
         return () => {
-            supabase.removeChannel(channel);
+            supabase.removeChannel(sessionChannel);
+            supabase.removeChannel(participantsChannel);
         };
-    }, [fetchSessionData, supabase]);
+    }, [mutateSession, supabase, callSessionID]);
 
     // Mutation of current person/page triggers fetch
     const setPersonID = useCallback(
-        (newID) => {
+        async (newID) => {
             console.log("setPersonID");
-            supabase
+            await supabase
                 .from("call_sessions")
                 .update({ current_person_id: newID })
-                .eq("id", callSessionID)
-                .then(fetchSessionData);
+                .eq("id", callSessionID);
         },
-        [supabase, callSessionID, fetchSessionData]
+        [supabase, callSessionID]
     );
 
     // Find the current person in the list, and move to the next one.
@@ -134,66 +222,26 @@ export default function StartCallingSession() {
         let nextIndex = currentIndex + 1;
         if (nextIndex >= peopleList.length) return false;
         setPersonID(peopleList[nextIndex]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [setPersonID, peopleList?.length, session?.current_person_id]);
 
     useEffect(() => {
         if (!session?.current_person_id && peopleList?.length) {
             setPersonID(peopleList[0]);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [setPersonID, peopleList?.length, session?.current_person_id]);
 
-    // Supabase realtime
+    // On mount, bulk select and setup subscription for conference updates
     useEffect(() => {
-        console.log("useffect1");
-        console.log("conferenceUpdates", conferenceUpdates);
-
-        if (conferenceUpdates?.length === 0) {
-            return () => {};
-        }
-
-        if (conferenceSID === null) setConferenceSID(conferenceUpdates[0].conference_sid);
-
-        if (
-            (conferenceUpdates[0]?.status_callback_event === "conference-end" ||
-                conferenceUpdates[1]?.status_callback_event === "conference-end") &&
-            conferenceUpdates[0]?.status_callback_event !== "participant-join"
-        ) {
-            // Determine if we're currently dialed in
-            setDialedIn(false);
-        } else {
-            setDialedIn(true);
-        }
-
-        // Enable hangup button when outbound call is active, disable dial button
-        if (
-            conferenceUpdates[0]?.status_callback_event === "participant-join" &&
-            conferenceUpdates[0]?.participant_label?.includes("outboundCall")
-        ) {
-            setOutbound(true);
-        }
-        // Disable hangup button when outbound call ends, enable dial button
-        else if (
-            conferenceUpdates[0]?.status_callback_event === "participant-leave" &&
-            conferenceUpdates[0]?.participant_label?.includes("outboundCall")
-        ) {
-            setOutbound(false);
-        }
-
-        forceFetchPersonProfile();
-    }, [conferenceUpdates, conferenceSID]);
-
-    // useEffectOnMount to setup subscription
-    useEffect(() => {
-        console.log("useffect2");
+        console.log("useEffect 2");
 
         // Load entire updates
         supabase
             .from("conference_updates")
             .select()
-            .order("inserted_at", { ascending: false })
-            .then((result) => {
-                appendConferenceUpdate(result?.data);
-            });
+            .order("inserted_at", { ascending: true })
+            .then((result) => appendConferenceUpdate(result?.data));
 
         // Keep realtime updates
         const channel = supabase
@@ -204,138 +252,171 @@ export default function StartCallingSession() {
                     event: "INSERT",
                     schema: "public",
                     table: "conference_updates",
+                    filter: "friendly_name=eq." + callSessionID,
                 },
                 (payload) => {
                     appendConferenceUpdate(payload);
+                    forceFetchPersonProfile();
                 }
             )
             .subscribe();
-        return () => {
-            supabase.removeChannel(channel);
-        };
-    }, [supabase]);
+        return () => supabase.removeChannel(channel);
+    }, [supabase, callSessionID, forceFetchPersonProfile]);
 
     async function hangup() {
-        const response = await (
-            await fetch("/api/dialer/hangup?conferenceSID=" + conferenceSID)
-        ).json();
-        console.log(response);
-        return response;
+        return await fetch(
+            `/api/dialer/hangup?conferenceSID=${encodeURIComponent(
+                conferenceSID
+            )}&participant=${encodeURIComponent(`outboundCall|${session.current_person_id}`)}`
+        );
     }
 
     async function dial(number) {
-        const response = await (
+        return await (
             await fetch(
                 "/api/dialer/dialOut?numberToDial=" +
-                    number.toString() +
+                    encodeURIComponent(number.toString()) +
                     "&conferenceSID=" +
-                    conferenceSID +
+                    encodeURIComponent(conferenceSID) +
                     "&personID=" +
-                    session.current_person_id
+                    encodeURIComponent(session.current_person_id)
             )
         ).json();
-        console.log(response);
-        return response;
     }
 
-    return dialedIn && dialedInFrom ? (
-        <>
-            <div className="mx-auto max-w-7xl mb-4 px-5 p-3 shadow-sm rounded-lg bg-white -mt-6 mb-12 pt-0 bg-blue-50 align-center">
-                <span className="flex-grow">You&apos;re dialed in to the call session!</span>
-                {/* Leave call session button */}
-                <div className="inline-block mt-3 ml-7 py-0 mb-1">
-                    <button className="text-sm button-xs btn-xs" type="button" onClick={leave}>
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-6 w-6 text-red-500"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M6 18L18 6M6 6l12 12"
-                            />
-                        </svg>
-                        &nbsp; Leave Session
-                    </button>
+    return (
+        <div className="dialer-page">
+            <div className="dialer-page-above-profile">
+                <div className="mx-auto max-w-7xl px-2 ">
+                    <Breadcrumbs
+                        pages={[
+                            {
+                                name: "Make Calls",
+                                href: "/dialer",
+                                current: false,
+                            },
+                            {
+                                name: `Calling list "${session?.saved_lists?.name}"`,
+                                href: `/dialer/${callSessionID}`,
+                                current: false,
+                            },
+                        ]}
+                    />
+                    {/* <PageTitle
+                        title={`Dial list: "${session?.saved_lists?.name}"`}
+                        descriptor="Enter your phone number below and then dial in to connect."
+                    /> */}
                 </div>
-            </div>
-            <PersonProfile
-                personID={session.current_person_id}
-                dial={dial}
-                hangup={hangup}
-                next={nextPerson}
-                hasNext={hasNext}
-                outbound={outbound}
-                forceFetch={forceFetchValue}
-            />
-        </>
-    ) : (
-        <div className="">
-            <div className="mx-auto max-w-7xl px-2 ">
-                <Breadcrumbs
-                    pages={[
-                        {
-                            name: "Make Calls",
-                            href: "/dialer",
-                            current: false,
-                        },
-                        {
-                            name: `Call Session #${callSessionID}`,
-                            href: `/dialer/${callSessionID}`,
-                            current: false,
-                        },
-                    ]}
-                />
-                <PageTitle title="Start a new calling session" descriptor="Dial in to connect." />
-            </div>
-            <div className="mx-auto max-w-7xl px-2">
-                <div className="p-12">
-                    <div className="relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-12 text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                        {!dialedInFrom && (
-                            <form
-                                onSubmit={(event) => {
-                                    event.preventDefault();
-                                    setDialedInFrom(
-                                        event.target.dialedInFromInput.value.replaceAll(
-                                            /[^0-9]/g,
-                                            ""
-                                        )
-                                    );
-                                }}
-                            >
-                                <h3 className="mt-0">What is your phone number?</h3>
-                                <div className="mt-4">
-                                    <input
-                                        type="tel"
-                                        name="dialedInFromInput"
-                                        id="dialedInFromInput"
-                                        className="mr-2 inline w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                        placeholder="(555) 555 - 5555"
-                                    />
-                                    <button type="submit">Submit</button>
+                <div className="mx-auto max-w-7xl px-2">
+                    <div className="p-0 block pb-3 mt-3">
+                        <div className="dialer-top-card">
+                            {dialedIn ? (
+                                <div className="pt-3.5 pb-0.5">
+                                    <span className="inline-block">
+                                        You&apos;re dialed in to the call session!
+                                    </span>
+                                    <div className="inline-block align-middle ml-3">
+                                        <button
+                                            className="text-sm button-xs btn-xs align-center"
+                                            type="button"
+                                            onClick={leave}
+                                        >
+                                            <XMarkIcon className="h-4 w-4 align-center inline-flex mx-auto mr-2" />
+                                            Leave Session
+                                        </button>
+                                    </div>
                                 </div>
-                            </form>
-                        )}
-                        {dialedInFrom && (
-                            <>
-                                <p className="mb-5 text-gray-400 text-xl font-medium">
-                                    <PhoneIcon className="h-10 w-10 text-gray-400 align-center inline-flex mx-auto mr-2" />{" "}
-                                    {process.env.NEXT_PUBLIC_DIALER_NUMBER}
-                                </p>
-                                <p className="mt-2 block text-base text-gray-900">
-                                    Call the above number from your cell phone to connect.
-                                </p>
-                                <p className="mt-2 block text-base text-gray-300 italic">
-                                    You should be calling in from {dialedInFrom}
-                                </p>
-                            </>
-                        )}
+                            ) : !dialedInFrom ? (
+                                <form
+                                    onSubmit={(event) => {
+                                        event.preventDefault();
+                                        setDialedInFrom(
+                                            event.target.dialedInFromInput.value.replaceAll(
+                                                /[^0-9]/g,
+                                                ""
+                                            )
+                                        );
+                                    }}
+                                >
+                                    <div className="mt-3 inline-block">
+                                        <span className="mr-2 inline-block font-normal text-sm">
+                                            Get started dialing:
+                                        </span>
+                                        <div className="relative inline-block">
+                                            <label
+                                                htmlFor="dialedInFromInput"
+                                                className="absolute -top-2 left-2 inline-block  px-1 text-xs font-medium text-gray-900 bg-blue-50"
+                                            >
+                                                <span className="inline-block px-1 text-blue-700">
+                                                    Your phone number
+                                                </span>
+                                            </label>
+                                            <input
+                                                type="tel"
+                                                name="dialedInFromInput"
+                                                id="dialedInFromInput"
+                                                className="mr-2 inline w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 ring-2 ring-inset ring-indigo-600 sm:text-sm sm:leading-6 bg-blue-50"
+                                                placeholder="(555) 555 - 5555"
+                                            />
+                                        </div>
+                                        <button type="submit" className="btn-primary">
+                                            Make calls
+                                        </button>
+                                    </div>
+                                    <h3 className="mt-0 text-blue-700 text-base inline-block ml-5"></h3>
+                                </form>
+                            ) : (
+                                <>
+                                    <p className="mt-3.5 mb-1 text-blue-700 text-lg font-semibold inline-block mr-3">
+                                        <PhoneIcon className="h-6 w-6 text-blue-700 align-center inline-flex mx-auto mr-2" />{" "}
+                                        {process.env.NEXT_PUBLIC_DIALER_NUMBER}
+                                    </p>
+                                    <p className="mt-2 inline-block text-base font-normal text-blue-700">
+                                        Call this number with your phone to connect to the dialer.
+                                    </p>
+                                    {/* <p className="mt-2 inline-block text-base text-gray-300 italic">
+                                            You should be calling in from {dialedInFrom}
+                                        </p> */}
+                                </>
+                            )}
+                        </div>
                     </div>
                 </div>
+            </div>
+            <div className="no-negative-top person-profile">
+                <CallSessionContext.Provider
+                    value={{
+                        enabled: dialedIn,
+                        session,
+                        dial,
+                        hangup,
+                        next: nextPerson,
+                        hasNext,
+                        outbound,
+                        needsLogToAdvance: !!session?.needs_log_to_advance,
+                        callSessionID: session?.id,
+                        forceFetch: forceFetchValue,
+                        session,
+                        sessionInteractions: session?.interactions,
+                        currentPersonID: session?.current_person_id,
+                    }}
+                >
+                    {session?.current_person_id && (
+                        <Transition
+                            appear={true}
+                            show={true}
+                            enter="ease-in duration-500"
+                            enterFrom="opacity-0"
+                            enterTo="opacity-100"
+                            leave="ease-out duration-60"
+                            leaveFrom="opacity-100"
+                            leaveTo="opacity-0"
+                            key={session.current_person_id}
+                        >
+                            <PersonProfile personID={session.current_person_id} />
+                        </Transition>
+                    )}
+                </CallSessionContext.Provider>
             </div>
         </div>
     );

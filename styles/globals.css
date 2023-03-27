@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
 html,
 body {
     padding: 0;
@@ -19,8 +24,8 @@ main {
 }
 
 h1 {
-    @apply text-3xl font-bold leading-tight tracking-tight text-gray-900 mb-5;
-    @apply font-semibold text-gray-900;
+    @apply text-4xl font-bold leading-tight tracking-tight text-gray-900 mb-5;
+    @apply font-bold text-gray-900;
 }
 
 h2 {
@@ -107,7 +112,7 @@ pre {
 }
 
 .nav-item svg {
-    @apply mr-3 flex-shrink-0 h-6 w-6 text-gray-300 group-hover:text-gray-500;
+    @apply mr-4 flex-shrink-0 h-6 w-6 text-gray-300 group-hover:text-gray-500;
 }
 
 .nav-item.current,
@@ -122,16 +127,6 @@ pre {
     font-weight: 500 !important;
 }
 
-.DocSearch-Button {
-    @apply w-full block;
-    padding: 20px !important;
-    margin-top: 0 !important;
-}
-/* 
-body {
-    @apply h-full;
-} */
-
 .text-black,
 .current {
     color: #555 !important;
@@ -143,7 +138,7 @@ body {
 }
 
 .cl-organizationPreviewAvatarBox {
-    @apply bg-gray-300;
+    @apply bg-gray-200;
 }
 
 main button[type]:not(.MuiButtonBase-root):not(.do-not-global-style) {
@@ -163,17 +158,12 @@ main button[type]:not(.MuiButtonBase-root):not(.do-not-global-style).button-xs {
 }
 
 .nav-item {
-    @apply font-normal;
+    /* @apply font-normal; */
     @apply text-gray-600;
 }
 
-.brand,
-.brand * {
-    color: #2d28ff !important;
-}
-
 .page-title-descriptor {
-    @apply text-gray-500 text-base font-normal -mt-4 mb-3;
+    @apply text-gray-500 text-base font-medium -mt-4 mb-3;
 }
 
 .nav-item {
@@ -220,15 +210,12 @@ button[type].btn-primary.button-xs:not(.do-not-global-style) {
     margin-left: -1px;
 }
 
-.nav-item.current *,
-.nav-item:hover * {
-    /* @apply text-gray-500 !important; */
-    color: #1e6ebf70 !important;
+.nav-item.current {
+    color: #1e6ebf !important;
 }
 
-.nav-item.current,
-.nav-item:hover {
-    color: #1e6ebf !important;
+.nav-item.current svg {
+    color: #1e6ebf70 !important;
 }
 
 .MuiDataGrid-cellContent,
@@ -269,7 +256,7 @@ nav,
     margin-left: -1px !important;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
-    padding-left: 1.5rem;
+    padding-left: 1.6rem;
 }
 .nav-item:hover:not(.current),
 .nav-item:hover:not(.current) * {
@@ -289,7 +276,15 @@ nav .border-t {
     @apply text-blue-600 underline;
 }
 .shaded-page-header {
-    @apply bg-gray-50 -mx-12 -mt-8 -mb-2 pb-5 pt-8 px-12;
+    @apply bg-gray-50 -mx-12 -mt-28 pt-24 -mb-2 pb-3 px-12;
+}
+.shaded-page-header .Breadcrumbs {
+    @apply mb-10 !important;
+}
+.no-negative-top .shaded-page-header {
+}
+.no-negative-top .shaded-page-header .Breadcrumbs {
+    @apply hidden;
 }
 
 .brand svg {
@@ -300,6 +295,7 @@ nav .border-t {
     padding: 4px 10px;
     color: white !important;
     @apply rounded -mt-0.5 mb-0.5;
+    @apply shadow-md -mt-1 mb-1 px-3 font-bold !important;
 }
 .brand {
     padding-bottom: 0.55rem;
@@ -310,4 +306,68 @@ nav .border-t {
 }
 .call-session-card-link {
     @apply block mt-4 text-blue-600 hover:underline underline underline-offset-4 text-base font-normal;
+}
+
+/* new design */
+.sticky {
+    @apply md:absolute bg-transparent right-0 border-0 ring-0 pt-2 pr-4;
+    /* @apply flex-shrink-0; */
+}
+.sticky .Search {
+    /* @apply hidden; */
+    @apply -mr-7 -mt-0.5;
+}
+.Search .SearchBar input {
+    @apply rounded-full ring-0 ring-gray-200 hover:ring-indigo-600 border-0 xl:w-96 lg:w-60 w-20 px-8 mx-6 bg-gray-100 pl-14 mr-0 shadow text-sm xl:mr-12;
+}
+.sticky .Search:hover,
+.sticky .Search input:hover {
+    cursor: pointer !important;
+}
+.stick .Search input:focus {
+    @apply ring-2 ring-blue-600;
+}
+.nav-item {
+    @apply py-1;
+}
+.brand {
+    @apply border-b-0 -mb-3 mt-1 !important;
+}
+main > div {
+    @apply pt-4 !important;
+}
+.desktop-sidebar {
+    @apply bg-gray-50;
+    @apply bg-white;
+}
+.cl-rootBox * {
+    box-shadow: none !important;
+}
+
+main {
+    @apply relative;
+}
+
+.dialer-top-card {
+    @apply text-blue-700 p-3 px-8 pt-0 block w-full rounded-2xl bg-blue-50 ring-1 ring-blue-700 ring-opacity-20 shadow -mt-6 mb-0;
+    @apply absolute left-96 top-40;
+}
+
+.Breadcrumbs {
+    @apply mb-8;
+}
+
+.cl-navbar {
+    @apply hidden;
+}
+.cl-modalContent .cl-navbar {
+    @apply block;
+}
+
+.overflow-ellipsis {
+    max-width: 100% !important;
+    min-width: 0;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
 }
