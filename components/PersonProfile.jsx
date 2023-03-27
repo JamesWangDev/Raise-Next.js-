@@ -408,8 +408,17 @@ export default function PersonProfile({ personID }) {
 }
 
 function DialerControls({ primaryPhoneNumber }) {
-    const { outbound, needsLogToAdvance, hasNext, next, enabled, dial, hangup } =
-        useContext(CallSessionContext);
+    const {
+        outbound,
+        needsLogToAdvance,
+        hasNext,
+        next,
+        enabled,
+        dial,
+        hangup,
+        sessionInteractions,
+        currentPersonID,
+    } = useContext(CallSessionContext);
     return (
         <>
             {
@@ -439,7 +448,11 @@ function DialerControls({ primaryPhoneNumber }) {
                     ? {}
                     : { disabled: true })}
             >
-                Skip
+                {sessionInteractions
+                    ?.filter((item) => item.ended_at)
+                    ?.some((item) => item?.person_id == currentPersonID)
+                    ? "Next"
+                    : "Skip"}
             </button>
         </>
     );

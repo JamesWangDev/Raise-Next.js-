@@ -43,9 +43,7 @@ export default function SupabaseTable({
 
     // useSWR to get the count of rows in the table
     let encodedQuery = encodeURIComponent(
-        `select count(*) from ${table}` +
-            (!!currentQuery ? ` where ${currentQuery}` : "") +
-            " ORDER BY created_at"
+        `select count(*) from ${table}` + (!!currentQuery ? ` where ${currentQuery}` : "")
     );
     const { data: rowCountData, error: rowCountError } = useSWR(
         `/api/rq?query=${encodedQuery}`,

@@ -1,15 +1,16 @@
+import { Transition } from "@headlessui/react";
 import useSWR from "swr";
 const fetcher = (url) => fetch(url).then((r) => r.json());
 import { useRouter } from "next/router";
-import PageTitle from "components/PageTitle";
+// import PageTitle from "components/PageTitle";
 import { PhoneIcon } from "@heroicons/react/24/outline";
-import { useState, useEffect, useCallback, useReducer, createContext } from "react";
+import { useState, useEffect, useCallback, useReducer, createContext, useMemo } from "react";
 import { useQuery, useSupabase } from "lib/supabaseHooks";
-import { parseSQL } from "react-querybuilder";
+// import { parseSQL } from "react-querybuilder";
 import Breadcrumbs from "components/Breadcrumbs";
 import PersonProfile from "components/PersonProfile";
-import { useUser } from "@clerk/nextjs";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { Fragment } from "react";
 
 export const CallSessionContext = createContext({
     personID: null,
@@ -22,6 +23,7 @@ export const CallSessionContext = createContext({
     enabled: true,
     needsLogToAdvance: false,
     callSessionID: null,
+    session: null,
 });
 
 const reducer = (prevState, payload) => {
@@ -58,7 +60,7 @@ export default function CallSessionPage() {
     const { data: session, mutate: mutateSession } = useQuery(
         useSupabase()
             .from("call_sessions")
-            .select("*, saved_lists (*), call_session_participants (*)")
+            .select("*, saved_lists (*), call_session_participants (*), interactions (*)")
             .eq("id", callSessionID)
             .single()
     );
@@ -76,14 +78,18 @@ export default function CallSessionPage() {
             (participant) => participant.number_dialed_in_from == dialedInFrom
         )[0] || null;
 
-    // Process conference updates in order to determine state
-    let conferenceSID = null,
-        dialedIn = false,
-        outbound = false,
-        lastOutboundSid = null;
+    // Process conference updates, in order, memoized, to calculate current conference state
+    const { dialedIn, outbound, conferenceSID, lastOutboundSid } = useMemo(() => {
+        const memoized = {
+            conferenceSID: null,
+            dialedIn: false,
+            outbound: false,
+            lastOutboundSid: null,
+        };
 
-    console.log({ conferenceUpdates });
-    if (conferenceUpdates?.length > 0) {
+        // Return defaults if conference hasnt been initialized
+        if (!conferenceUpdates?.length) return memoized;
+
         for (const update of conferenceUpdates) {
             const isItMe = update.call_sid === me?.call_sid;
             const isJoin = update.status_callback_event === "participant-join";
@@ -91,20 +97,21 @@ export default function CallSessionPage() {
             const isOutbound = update?.participant_label?.includes("outboundCall");
 
             // Dialed in? boolean
-            if (isItMe && isJoin) dialedIn = true;
-            if (isItMe && isLeave) dialedIn = false;
+            if (isItMe && isJoin) memoized.dialedIn = true;
+            if (isItMe && isLeave) memoized.dialedIn = false;
 
             // Outbound call? boolean
-            if (isOutbound && isJoin) outbound = true;
-            if (isOutbound && isLeave) outbound = false;
+            if (isOutbound && isJoin) memoized.outbound = true;
+            if (isOutbound && isLeave) memoized.outbound = false;
 
             // Track the last open outbound interaction to force logging
-            lastOutboundSid = update?.call_sid || lastOutboundSid;
+            memoized.lastOutboundSid = update?.call_sid || memoized.lastOutboundSid;
             // Track the most recent twilio conference SID
-            conferenceSID = update?.conference_sid || conferenceSID;
+            memoized.conferenceSID = update?.conference_sid || memoized.conferenceSID;
         }
-    }
-    console.log({ dialedIn, outbound });
+
+        return memoized;
+    }, [conferenceUpdates?.length, session?.id, me?.call_sid]);
 
     // Handler for dialing in
     useEffect(() => {
@@ -149,10 +156,13 @@ export default function CallSessionPage() {
                 },
                 // New is a reserved keyword in JS so to destructure we need to rename
                 ({ new: updated }) => {
-                    mutateSession((prevState) => ({
-                        ...prevState,
-                        ...updated,
-                    }));
+                    // Single-table refresh
+                    // mutateSession((prevState) => ({
+                    //     ...prevState,
+                    //     ...updated,
+                    // }));
+                    // TODO: clean this up as an update instead of relational refetch
+                    mutateSession();
                 }
             )
             .subscribe();
@@ -166,6 +176,19 @@ export default function CallSessionPage() {
                     event: "*",
                     schema: "public",
                     table: "call_session_participants",
+                    filter: "call_session_id=eq." + callSessionID,
+                },
+                (payload) => {
+                    // TODO: clean this up as an update instead of relational refetch
+                    mutateSession();
+                }
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: "interactions",
                     filter: "call_session_id=eq." + callSessionID,
                 },
                 (payload) => {
@@ -373,10 +396,25 @@ export default function CallSessionPage() {
                         needsLogToAdvance: !!session?.needs_log_to_advance,
                         callSessionID: session?.id,
                         forceFetch: forceFetchValue,
+                        session,
+                        sessionInteractions: session?.interactions,
+                        currentPersonID: session?.current_person_id,
                     }}
                 >
                     {session?.current_person_id && (
-                        <PersonProfile personID={session.current_person_id} />
+                        <Transition
+                            appear={true}
+                            show={true}
+                            enter="ease-in duration-500"
+                            enterFrom="opacity-0"
+                            enterTo="opacity-100"
+                            leave="ease-out duration-60"
+                            leaveFrom="opacity-100"
+                            leaveTo="opacity-0"
+                            key={session.current_person_id}
+                        >
+                            <PersonProfile personID={session.current_person_id} />
+                        </Transition>
                     )}
                 </CallSessionContext.Provider>
             </div>
