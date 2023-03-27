@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from "react";
-import { useUser } from "@clerk/nextjs";
+// import { useUser } from "@clerk/nextjs";
 import { CallSessionContext } from "pages/dialer/[callSessionID]";
 
 function classNames(...classes) {
@@ -47,7 +47,7 @@ function DispositionOptions({ currentDisposition, setCurrentDisposition }) {
 }
 
 export default function AddInteractionCard({ person, appendInteraction }) {
-    const { user } = useUser();
+    // const { user } = useUser();
     const [note, setNote] = useState("");
     const [prompt, setPrompt] = useState(false);
     const [pledge, setPledge] = useState(null);

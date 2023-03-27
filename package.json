@@ -16,7 +16,7 @@
         "deploy": "vercel --prod"
     },
     "dependencies": {
-        "@clerk/nextjs": "^4.11.13",
+        "@clerk/nextjs": "^4.11.14",
         "@emotion/react": "^11.10.5",
         "@emotion/styled": "^11.10.5",
         "@fortawesome/fontawesome-svg-core": "^6.2.1",

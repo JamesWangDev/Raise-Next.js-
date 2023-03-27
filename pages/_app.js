@@ -52,6 +52,14 @@ function SupabaseWrapper({ children }) {
             });
             // Create and set the client
             setSupabaseClient(createSupabaseClient(supabaseAccessToken));
+
+            // Invalidate all previous SWR cached calls
+            const { mutate } = useSWRConfig();
+            mutate(
+                (key) => true, // which cache keys are updated
+                undefined, // update cache data to `undefined`
+                { revalidate: false } // do not revalidate
+            );
         };
         now();
         // eslint-disable-next-line react-hooks/exhaustive-deps
