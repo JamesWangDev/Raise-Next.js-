@@ -1,6 +1,4 @@
-import { useSupabase } from "lib/supabaseHooks";
-import { useState } from "react";
-import { CheckIcon, HandThumbUpIcon, UserIcon } from "@heroicons/react/20/solid";
+import { UserIcon } from "@heroicons/react/20/solid";
 
 function capitalize(input) {
     return input?.length > 0 ? input.charAt(0).toUpperCase() + input.slice(1) : "";
@@ -12,8 +10,6 @@ function classNames(...classes) {
 import AddInteractionCard from "./AddInteractionCard";
 
 export default function InteractionHistory({ person, interactions, appendInteraction }) {
-    const supabase = useSupabase();
-
     return (
         <div className="flow-root">
             <h2>Log an Interaction:</h2>

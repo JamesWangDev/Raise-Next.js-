@@ -368,11 +368,11 @@ export default function StartCallingSession() {
             <div className="no-negative-top person-profile">
                 <CallSessionContext.Provider
                     value={{
-                        dialedIn,
+                        enabled: dialedIn,
                         session,
                         dial,
                         hangup,
-                        next,
+                        next: nextPerson,
                         hasNext,
                         outbound,
                         needsLogToAdvance: !!session?.needs_log_to_advance,
@@ -381,16 +381,7 @@ export default function StartCallingSession() {
                     }}
                 >
                     {session?.current_person_id && (
-                        <PersonProfile
-                            enabled={dialedIn}
-                            personID={session.current_person_id}
-                            dial={dial}
-                            hangup={hangup}
-                            next={nextPerson}
-                            hasNext={hasNext}
-                            outbound={outbound}
-                            forceFetch={forceFetchValue}
-                        />
+                        <PersonProfile personID={session.current_person_id} />
                     )}
                 </CallSessionContext.Provider>
             </div>

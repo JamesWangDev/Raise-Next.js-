@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { useSupabase } from "lib/supabaseHooks";
+import { useSupabase, useQuery } from "lib/supabaseHooks";
 import { useState, useEffect, useCallback, useMemo, useContext } from "react";
-import { CheckIcon, HandThumbUpIcon, UserIcon, PhoneIcon } from "@heroicons/react/20/solid";
+import { PhoneIcon } from "@heroicons/react/20/solid";
 import InteractionHistory from "./InteractionHistory";
 import Breadcrumbs from "./Breadcrumbs";
 import PersonContactInfo from "./PersonContactInfo";
@@ -105,10 +105,9 @@ function PersonTagList({ person, addTag, deleteTag, restoreTag }) {
 export default function PersonProfile({ personID }) {
     const { id: userID } = useUser();
     const supabase = useSupabase();
-    const [person, setPerson] = useState();
-    const [FECHistory, setFECHistory] = useState();
+    // const [person, setPerson] = useState();
+    // const [FECHistory, setFECHistory] = useState();
     const [bio, setBio] = useState(null);
-    const [isLoading, setLoading] = useState(true);
     const {
         needsLogToAdvance,
         callSessionID,
@@ -121,34 +120,29 @@ export default function PersonProfile({ personID }) {
         enabled = false,
     } = useContext(CallSessionContext);
 
-    useEffect(() => {
-        if (person?.last_name && person?.zip?.toString()?.length > 0) {
-            supabase
-                .from("alltime_individual_contributions")
-                .select("*")
-                .eq("name", (person?.last_name + ", " + person?.first_name).toUpperCase())
-                .like("zip_code", person.zip.toString() + "%")
-                .then((result) => setFECHistory(result.data));
-        }
-    }, [supabase, person?.first_name, person?.last_name, person?.zip]);
-
-    const fetchPerson = useCallback(() => {
-        supabase
+    const {
+        data: person,
+        mutate: mutatePerson,
+        isLoading,
+    } = useQuery(
+        useSupabase()
             .from("people")
             .select(
                 "*, interactions ( * ), donations ( * ), pledges ( * ), emails ( * ), phone_numbers ( * ), tags ( * )"
             )
             .eq("id", personID)
             .single()
-            .then((result) => {
-                setPerson(result.data);
-                setLoading(false);
-            });
-    }, [supabase, personID]);
+    );
 
-    useEffect(() => {
-        fetchPerson();
-    }, [fetchPerson, forceFetch]);
+    console.log({ person });
+
+    const { data: FECHistory } = useQuery(
+        useSupabase()
+            .from("alltime_individual_contributions")
+            .select("*")
+            .eq("name", (person?.last_name + ", " + person?.first_name).toUpperCase())
+            .like("zip_code", person?.zip.toString() + "%")
+    );
 
     const mutations = useMemo(
         (person) => ({
@@ -194,72 +188,73 @@ export default function PersonProfile({ personID }) {
                     }
                 }
 
-                fetchPerson();
+                mutatePerson();
             },
             mutatePerson: (changedPersonObject) =>
                 supabase
                     .from("people")
                     .update(changedPersonObject)
                     .eq("id", personID)
-                    .then(fetchPerson),
+                    .then(mutatePerson),
             addPhone: (newPhone) =>
                 supabase
                     .from("phone_numbers")
                     .insert({ phone_number: newPhone, person_id: personID })
-                    .then(fetchPerson),
+                    .then(mutatePerson),
             addEmail: (newEmail) =>
                 supabase
                     .from("emails")
                     .insert({ email: newEmail, person_id: personID })
-                    .then(fetchPerson),
+                    .then(mutatePerson),
             deleteEmail: (id) =>
                 supabase
                     .from("emails")
                     .update({ remove_date: new Date().toISOString(), remove_user: userID })
                     .eq("id", id)
-                    .then(fetchPerson),
+                    .then(mutatePerson),
             deletePhone: (id) =>
                 supabase
                     .from("phone_numbers")
                     .update({ remove_date: new Date().toISOString(), remove_user: userID })
                     .eq("id", id)
-                    .then(fetchPerson),
+                    .then(mutatePerson),
             addTag: (newTag) =>
                 supabase
                     .from("tags")
                     .insert({ tag: newTag, person_id: personID })
-                    .then(fetchPerson),
+                    .then(mutatePerson),
             restorePhone: (id) =>
                 supabase
                     .from("phone_numbers")
                     .update({ remove_date: null, remove_user: null })
                     .eq("id", id)
-                    .then(fetchPerson),
+                    .then(mutatePerson),
             restoreEmail: (id) =>
                 supabase
                     .from("emails")
                     .update({ remove_date: null, remove_user: null })
                     .eq("id", id)
-                    .then(fetchPerson),
+                    .then(mutatePerson),
             deleteTag: (id) =>
                 supabase
                     .from("tags")
                     .update({ remove_date: new Date().toISOString(), remove_user: userID })
                     .eq("id", id)
-                    .then(fetchPerson),
+                    .then(mutatePerson),
             restoreTag: (id) =>
                 supabase
                     .from("tags")
                     .update({ remove_date: null, remove_user: null })
                     .eq("id", id)
-                    .then(fetchPerson),
+                    .then(mutatePerson),
         }),
-        [supabase, personID, fetchPerson, userID, callSessionID]
+        [supabase, personID, mutatePerson, userID, callSessionID]
     );
 
     // Placing a realtime listener on changes other folks make
     useEffect(() => {
-        console.log("realtime person profile subscription ()");
+        if (!personID) return () => {};
+        console.log("realtime person profile subscription ()" + personID);
         let channel = supabase.channel(randomUUID()).on(
             "postgres_changes",
             {
@@ -268,7 +263,7 @@ export default function PersonProfile({ personID }) {
                 table: "people",
                 filter: `id=eq.${personID}`,
             },
-            fetchPerson
+            mutatePerson
         );
         const foreignTablesToListen = [
             "interactions",
@@ -278,7 +273,7 @@ export default function PersonProfile({ personID }) {
             "emails",
             "tags",
         ];
-        for (let table in foreignTablesToListen) {
+        for (let table of foreignTablesToListen) {
             channel = channel.on(
                 "postgres_changes",
                 {
@@ -287,7 +282,7 @@ export default function PersonProfile({ personID }) {
                     table: table,
                     filter: `person_id=eq.${personID}`,
                 },
-                fetchPerson
+                mutatePerson
             );
         }
         channel = channel.subscribe();

@@ -127,16 +127,6 @@ pre {
     font-weight: 500 !important;
 }
 
-.DocSearch-Button {
-    @apply w-full block;
-    padding: 20px !important;
-    margin-top: 0 !important;
-}
-/* 
-body {
-    @apply h-full;
-} */
-
 .text-black,
 .current {
     color: #555 !important;
@@ -320,15 +310,15 @@ nav .border-t {
 
 /* new design */
 .sticky {
-    @apply md:absolute bg-transparent right-0 border-0 ring-0 pt-2.5 pr-4;
+    @apply md:absolute bg-transparent right-0 border-0 ring-0 pt-2 pr-4;
     /* @apply flex-shrink-0; */
 }
 .sticky .Search {
     /* @apply hidden; */
-    @apply -mr-7 -mt-1;
+    @apply -mr-7 -mt-0.5;
 }
 .Search .SearchBar input {
-    @apply rounded-full ring-0 ring-gray-200 hover:ring-indigo-600 border-0 w-full px-8 mx-6 bg-gray-100 pl-14 mr-0 shadow text-sm;
+    @apply rounded-full ring-0 ring-gray-200 hover:ring-indigo-600 border-0 xl:w-96 lg:w-60 w-20 px-8 mx-6 bg-gray-100 pl-14 mr-0 shadow text-sm xl:mr-12;
 }
 .sticky .Search:hover,
 .sticky .Search input:hover {

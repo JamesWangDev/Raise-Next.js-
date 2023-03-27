@@ -1,24 +1,12 @@
 // necessary imports
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useSupabase } from "lib/supabaseHooks";
+import { useSupabase, useQuery } from "lib/supabaseHooks";
 
 export default function CallingSessionsGrid({ hideStart }) {
-    // get orgid using clerk
-    const supabase = useSupabase();
-
-    const [sessions, setSessions] = useState([]);
-
-    useEffect(() => {
-        // Fetch the list of calling sessions from the API.
-        supabase
-            .from("call_sessions")
-            .select("*, saved_lists (*)")
-            .then(({ data, error }) => {
-                if (error) console.error("Error fetching sessions", error);
-                else setSessions(data);
-            });
-    }, [supabase]);
+    const { data: sessions, error } = useQuery(
+        useSupabase().from("call_sessions").select("*, saved_lists (*)")
+    );
 
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">

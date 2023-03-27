@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSupabase } from "lib/supabaseHooks";
+import { useSupabase, useQuery } from "lib/supabaseHooks";
 import Breadcrumbs from "components/Breadcrumbs";
 import PageTitle from "components/PageTitle";
 import CallingSessionsGrid from "components/CallingSessionsGrid";
@@ -42,19 +42,7 @@ function classNames(...classes) {
 }
 
 export function StatCard({ query, table, item }) {
-    const [data, setData] = useState(null);
-    const supabase = useSupabase();
-
-    useEffect(() => {
-        supabase
-            .from(table)
-            .select(query)
-            .maybeSingle()
-            .then(({ data, error }) => {
-                if (error) console.error(error);
-                setData(data);
-            });
-    }, [query, table, supabase]);
+    const { data, error } = useQuery(useSupabase().from(table).select(query).maybeSingle());
 
     item.stat = data ? (Object.keys(data) ? data[Object.keys(data)[0]] : 0) : 0;
 
