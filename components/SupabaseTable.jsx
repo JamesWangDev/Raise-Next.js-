@@ -20,7 +20,9 @@ export default function SupabaseTable({
     let offset = page > 0 ? " OFFSET " + page * perPage : "";
 
     const SWRqueryWithoutLimitOffset =
-        `select * from ${table}` + (!!currentQuery ? ` where ${currentQuery}` : "");
+        `select * from ${table}` +
+        (!!currentQuery ? ` where ${currentQuery}` : "") +
+        " ORDER BY created_at";
     const { data, error } = useSWR(
         `/api/rq?query=${encodeURIComponent(
             SWRqueryWithoutLimitOffset + ` limit ${perPage}` + offset
@@ -41,7 +43,9 @@ export default function SupabaseTable({
 
     // useSWR to get the count of rows in the table
     let encodedQuery = encodeURIComponent(
-        `select count(*) from ${table}` + (!!currentQuery ? ` where ${currentQuery}` : "")
+        `select count(*) from ${table}` +
+            (!!currentQuery ? ` where ${currentQuery}` : "") +
+            " ORDER BY created_at"
     );
     const { data: rowCountData, error: rowCountError } = useSWR(
         `/api/rq?query=${encodedQuery}`,

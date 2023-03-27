@@ -65,7 +65,7 @@ export default function CallSessionPage() {
     const { data: peopleResponse } = useSWR(
         session?.saved_lists?.query
             ? `/api/rq?query=${encodeURIComponent(
-                  `select id from people where ${session.saved_lists.query}`
+                  `select id from people where ${session.saved_lists.query} ORDER BY inserted_at`
               )}`
             : null
     );
