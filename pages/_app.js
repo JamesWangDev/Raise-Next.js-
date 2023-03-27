@@ -1,11 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import "styles/globals.css";
-// import "styles/docsearch.css";
-// import "styles/dark.css";
 import Layout from "components/Layout";
 import { ClerkProvider, useAuth } from "@clerk/nextjs";
 import ChatWidgetWrapper from "components/ChatWidgetWrapper";
 import { createSupabaseClient, SupabaseProvider } from "lib/supabaseHooks";
+import { SWRConfig } from "swr";
 
 // pages/_app.js
 import { Inter } from "next/font/google";
@@ -25,11 +24,18 @@ function App({ Component, pageProps }) {
                     font-family: ${inter.style.fontFamily} !important;
                 }
             `}</style>
-            <ClerkProvider {...pageProps}>
-                <SupabaseWrapper>
-                    <Component {...pageProps} />
-                </SupabaseWrapper>
-            </ClerkProvider>
+            <SWRConfig
+                value={{
+                    fetcher: (resource, init) => fetch(resource, init).then((res) => res.json()),
+                    keepPreviousData: true,
+                }}
+            >
+                <ClerkProvider {...pageProps}>
+                    <SupabaseWrapper>
+                        <Component {...pageProps} />
+                    </SupabaseWrapper>
+                </ClerkProvider>
+            </SWRConfig>
         </>
     );
 }

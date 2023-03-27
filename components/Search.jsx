@@ -3,7 +3,7 @@ import { Fragment, useState, useEffect } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { FaceFrownIcon, GlobeAmericasIcon } from "@heroicons/react/24/outline";
 import { Combobox, Dialog, Transition } from "@headlessui/react";
-import { useSupabase } from "lib/supabaseHooks";
+import { useQuery, useSupabase } from "lib/supabaseHooks";
 import { useRouter } from "next/router";
 
 export default function Search() {
@@ -36,24 +36,15 @@ function classNames(...classes) {
 
 function SearchModal({ setOpen, open }) {
     const [query, setQuery] = useState("");
-    const supabase = useSupabase();
     const router = useRouter();
 
-    const [people, setPeople] = useState();
-    useEffect(() => {
-        supabase
-            ?.rpc("search", { query })
-            .limit(25)
-            .then(({ data }) => {
-                const items = data?.map(({ id, first_name, last_name }) => ({
-                    id,
-                    name: first_name + " " + last_name,
-                    category: "People",
-                    url: "/people/" + id,
-                }));
-                setPeople(items);
-            });
-    }, [query, supabase]);
+    const { data } = useQuery(useSupabase()?.rpc("search", { query }).limit(25));
+    const people = data?.map(({ id, first_name, last_name }) => ({
+        id,
+        name: first_name + " " + last_name,
+        category: "People",
+        url: "/people/" + id,
+    }));
 
     const filteredItems = query !== "" && !Array.isArray(people) ? [] : people;
 

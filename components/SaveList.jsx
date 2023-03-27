@@ -4,8 +4,6 @@ import { Fragment } from "react";
 import { Menu, Transition, Button } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
-import { useSupabase } from "lib/supabaseHooks";
-
 export default function SaveList({ listName, saveList }) {
     const [listNameTemp, setListNameTemp] = useState(listName);
     var isSaved = !!listName;

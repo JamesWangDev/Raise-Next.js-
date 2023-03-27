@@ -5,7 +5,7 @@ const className = (...classes) => classes.filter(Boolean).join(" ");
 
 import { QueryBuilderBootstrap } from "@react-querybuilder/bootstrap";
 import { useState, useEffect, useCallback } from "react";
-import { useSupabase } from "lib/supabaseHooks";
+import { useSupabase, useQuery } from "lib/supabaseHooks";
 import SaveList from "./SaveList";
 import SupabaseTable from "./SupabaseTable";
 import { useRouter } from "next/router";
@@ -30,37 +30,15 @@ const initialQuery = {
     rules: [],
 };
 
-export default function QueryBuilderProvider({
-    table,
-    children,
-    listID: initialListID,
-    forceListUpdate,
-}) {
-    const router = useRouter();
+export default function QueryBuilderProvider({ table, children, listID, forceListUpdate }) {
     const supabase = useSupabase();
-    const [list, setList] = useState({});
+    const router = useRouter();
     const [query, setQuery] = useState(initialQuery);
-    const [listID, setListID] = useState(initialListID);
 
-    const fetchList = useCallback(() => {
-        if (listID) {
-            supabase
-                .from("saved_lists")
-                .select()
-                .eq("id", listID)
-                .single()
-                .then(({ data }) => {
-                    console.log({ data });
-                    setQuery(parseSQL(data.query));
-                    setList(data);
-                });
-        }
-    }, [supabase, listID, initialListID]);
-
-    // Load the list id, name, and query if present on page load
-    useEffect(() => {
-        fetchList();
-    }, [fetchList]);
+    const { data: list, mutate: fetchList } = useQuery(
+        useSupabase().from("saved_lists").select().eq("id", listID).single()
+    );
+    if (query == initialQuery && list?.query) parseSQL(list.query);
 
     var formattedQuery = formatQuery(query, {
         format: "sql",
@@ -70,7 +48,7 @@ export default function QueryBuilderProvider({
     // console.log("formattedQuery", formattedQuery);
 
     const { data: rowsForColumns, error } = useSWR(
-        `/api/rq?&query=${encodeURI(`select * from ${table} where (1 = 1) limit 25`)}`,
+        `/api/rq?&query=${encodeURIComponent(`select * from ${table} where (1 = 1) limit 25`)}`,
         fetcher
     );
 
@@ -101,9 +79,10 @@ export default function QueryBuilderProvider({
             .single();
 
         if (error) throw error;
-        setListID(upsertedList.id);
-        fetchList();
+        // setListID(upsertedList.id);
+        // fetchList();
         router.push("/savedlists/" + upsertedList.id);
+        // If we're already on that page, invalidate the list data
         if (forceListUpdate) forceListUpdate();
     };
 

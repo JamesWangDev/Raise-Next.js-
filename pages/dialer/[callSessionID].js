@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import PageTitle from "components/PageTitle";
 import { PhoneIcon } from "@heroicons/react/24/outline";
 import { useState, useEffect, useCallback, useReducer, createContext } from "react";
-import { useSupabase } from "lib/supabaseHooks";
+import { useQuery, useSupabase } from "lib/supabaseHooks";
 import { parseSQL } from "react-querybuilder";
 import Breadcrumbs from "components/Breadcrumbs";
 import PersonProfile from "components/PersonProfile";
@@ -46,16 +46,30 @@ const reducer = (prevState, payload) => {
     return [...prevState, payload.new];
 };
 
-export default function StartCallingSession() {
+export default function CallSessionPage() {
     const router = useRouter();
     const { callSessionID } = router.query;
     const supabase = useSupabase();
 
-    const [session, setSession] = useState([]);
     const [conferenceUpdates, appendConferenceUpdate] = useReducer(reducer, []);
-    const [peopleList, setPeopleList] = useState();
     const [forceFetchValue, forceFetchPersonProfile] = useReducer((old) => old + 1, 0);
     const [dialedInFrom, setDialedInFrom] = useState(null);
+
+    const { data: session, mutate: mutateSession } = useQuery(
+        useSupabase()
+            .from("call_sessions")
+            .select("*, saved_lists (*), call_session_participants (*)")
+            .eq("id", callSessionID)
+            .single()
+    );
+    const { data: peopleResponse } = useSWR(
+        session?.saved_lists?.query
+            ? `/api/rq?query=${encodeURIComponent(
+                  `select id from people where ${session.saved_lists.query}`
+              )}`
+            : null
+    );
+    const peopleList = Array.from(peopleResponse?.map((row) => row.id) ?? []);
 
     const me =
         session?.call_session_participants?.filter(
@@ -68,6 +82,7 @@ export default function StartCallingSession() {
         outbound = false,
         lastOutboundSid = null;
 
+    console.log({ conferenceUpdates });
     if (conferenceUpdates?.length > 0) {
         for (const update of conferenceUpdates) {
             const isItMe = update.call_sid === me?.call_sid;
@@ -89,6 +104,7 @@ export default function StartCallingSession() {
             conferenceSID = update?.conference_sid || conferenceSID;
         }
     }
+    console.log({ dialedIn, outbound });
 
     // Handler for dialing in
     useEffect(() => {
@@ -112,36 +128,14 @@ export default function StartCallingSession() {
             });
     }, [dialedInFrom, supabase, callSessionID]);
 
-    let hasNext = peopleList?.indexOf(session.current_person_id) < peopleList?.length - 1;
+    let hasNext = peopleList?.indexOf(session?.current_person_id) < peopleList?.length - 1;
 
     function leave() {
         router.push("/dialer");
     }
 
-    // On mount, fetch session data
-    const fetchSessionData = useCallback(() => {
-        supabase
-            .from("call_sessions")
-            .select("*, saved_lists (*), call_session_participants (*)")
-            .eq("id", callSessionID)
-            .single()
-            .then(({ data: currentSessionData, error }) => {
-                if (error) {
-                    throw Error("Error fetching call session+list " + JSON.stringify(error));
-                } else setSession(currentSessionData);
-                const urlToFetch = `/api/rq?query=${encodeURI(
-                    `select id from people where ${currentSessionData.saved_lists.query}`
-                )}`;
-                fetcher(urlToFetch).then((currentListsData) => {
-                    let temporaryPeopleList = Array.from(currentListsData.map((row) => row.id));
-                    setPeopleList(temporaryPeopleList);
-                });
-            });
-    }, [callSessionID, supabase]);
-
     // On mount, fetch call_session state and subscribe to table and relational changes
     useEffect(() => {
-        fetchSessionData();
         console.log("call_sessions.subscribe()");
         const sessionChannel = supabase
             .channel("call_sessions")
@@ -155,10 +149,11 @@ export default function StartCallingSession() {
                 // New is a reserved keyword in JS so to destructure we need to rename
                 ({ new: updated }) => {
                     console.log(updated.current_person_id);
-                    setSession((prevState) => ({
+                    mutateSession((prevState) => ({
                         ...prevState,
                         ...updated,
                     }));
+                    // mutateSession();
                 }
             )
             .subscribe();
@@ -176,7 +171,7 @@ export default function StartCallingSession() {
                 },
                 (payload) => {
                     // TODO: clean this up as an update instead of relational refetch
-                    fetchSessionData();
+                    mutateSession();
                 }
             )
             .subscribe();
@@ -185,19 +180,19 @@ export default function StartCallingSession() {
             supabase.removeChannel(sessionChannel);
             supabase.removeChannel(participantsChannel);
         };
-    }, [fetchSessionData, supabase]);
+    }, [mutateSession, supabase]);
 
     // Mutation of current person/page triggers fetch
     const setPersonID = useCallback(
-        (newID) => {
+        async (newID) => {
             console.log("setPersonID");
-            supabase
+            await supabase
                 .from("call_sessions")
                 .update({ current_person_id: newID })
-                .eq("id", callSessionID)
-                .then(fetchSessionData);
+                .eq("id", callSessionID);
+            // .then(mutateSession);
         },
-        [supabase, callSessionID, fetchSessionData]
+        [supabase, callSessionID, mutateSession]
     );
 
     // Find the current person in the list, and move to the next one.

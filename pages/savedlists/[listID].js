@@ -1,30 +1,14 @@
 import QueryBuilderProvider from "components/QueryBuilderProvider";
-import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
 import Breadcrumbs from "components/Breadcrumbs";
 import PageTitle from "components/PageTitle";
-import { useSupabase } from "lib/supabaseHooks";
+import { useSupabase, useQuery } from "lib/supabaseHooks";
 
 export default function SpecificListPage() {
-    const supabase = useSupabase();
-
-    const router = useRouter();
-    const { listID } = router.query;
-
-    const [list, setList] = useState();
-    const fetchList = useCallback(() => {
-        supabase
-            .from("saved_lists")
-            .select()
-            .eq("id", listID)
-            .maybeSingle()
-            .then(({ data, error }) => {
-                setList(data);
-            });
-    }, [supabase, listID]);
-    useEffect(() => {
-        fetchList();
-    }, [fetchList]);
+    const { listID } = useRouter().query;
+    const { data: list, mutate: mutateList } = useQuery(
+        useSupabase().from("saved_lists").select().eq("id", listID).single()
+    );
 
     return (
         <div className="">
@@ -45,7 +29,7 @@ export default function SpecificListPage() {
                 <QueryBuilderProvider
                     table="people_for_user_display"
                     listID={listID}
-                    forceListUpdate={fetchList}
+                    forceListUpdate={mutateList}
                 />
             </div>
         </div>
