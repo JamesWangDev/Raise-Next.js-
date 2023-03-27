@@ -39,6 +39,7 @@ function App({ Component, pageProps }) {
 }
 
 function SupabaseWrapper({ children }) {
+    const { mutate } = useSWRConfig();
     let [supabaseClient, setSupabaseClient] = useState(createSupabaseClient());
     const { getToken, userId, sessionId, orgId } = useAuth();
     useEffect(() => {
@@ -54,7 +55,6 @@ function SupabaseWrapper({ children }) {
             setSupabaseClient(createSupabaseClient(supabaseAccessToken));
 
             // Invalidate all previous SWR cached calls
-            const { mutate } = useSWRConfig();
             mutate(
                 (key) => true, // which cache keys are updated
                 undefined, // update cache data to `undefined`
