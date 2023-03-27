@@ -105,8 +105,6 @@ function PersonTagList({ person, addTag, deleteTag, restoreTag }) {
 export default function PersonProfile({ personID }) {
     const { id: userID } = useUser();
     const supabase = useSupabase();
-    // const [person, setPerson] = useState();
-    // const [FECHistory, setFECHistory] = useState();
     const [bio, setBio] = useState(null);
     const {
         needsLogToAdvance,
@@ -120,11 +118,7 @@ export default function PersonProfile({ personID }) {
         enabled = false,
     } = useContext(CallSessionContext);
 
-    const {
-        data: person,
-        mutate: mutatePerson,
-        isLoading,
-    } = useQuery(
+    const { data: person, mutate: mutatePerson } = useQuery(
         useSupabase()
             .from("people")
             .select(
@@ -134,14 +128,12 @@ export default function PersonProfile({ personID }) {
             .single()
     );
 
-    console.log({ person });
-
     const { data: FECHistory } = useQuery(
         useSupabase()
             .from("alltime_individual_contributions")
             .select("*")
             .eq("name", (person?.last_name + ", " + person?.first_name).toUpperCase())
-            .like("zip_code", person?.zip.toString() + "%")
+            .like("zip_code", person?.zip?.toString() + "%")
     );
 
     const mutations = useMemo(
@@ -188,65 +180,48 @@ export default function PersonProfile({ personID }) {
                     }
                 }
 
-                mutatePerson();
+                // mutatePerson();
             },
-            mutatePerson: (changedPersonObject) =>
-                supabase
-                    .from("people")
-                    .update(changedPersonObject)
-                    .eq("id", personID)
-                    .then(mutatePerson),
-            addPhone: (newPhone) =>
-                supabase
+            mutatePerson: async (changedPersonObject) =>
+                await supabase.from("people").update(changedPersonObject).eq("id", personID),
+            addPhone: async (newPhone) =>
+                await supabase
                     .from("phone_numbers")
-                    .insert({ phone_number: newPhone, person_id: personID })
-                    .then(mutatePerson),
-            addEmail: (newEmail) =>
-                supabase
-                    .from("emails")
-                    .insert({ email: newEmail, person_id: personID })
-                    .then(mutatePerson),
-            deleteEmail: (id) =>
-                supabase
+                    .insert({ phone_number: newPhone, person_id: personID }),
+            addEmail: async (newEmail) =>
+                await supabase.from("emails").insert({ email: newEmail, person_id: personID }),
+            deleteEmail: async (id) =>
+                await supabase
                     .from("emails")
                     .update({ remove_date: new Date().toISOString(), remove_user: userID })
-                    .eq("id", id)
-                    .then(mutatePerson),
-            deletePhone: (id) =>
-                supabase
+                    .eq("id", id),
+            deletePhone: async (id) =>
+                await supabase
                     .from("phone_numbers")
                     .update({ remove_date: new Date().toISOString(), remove_user: userID })
-                    .eq("id", id)
-                    .then(mutatePerson),
-            addTag: (newTag) =>
-                supabase
-                    .from("tags")
-                    .insert({ tag: newTag, person_id: personID })
-                    .then(mutatePerson),
-            restorePhone: (id) =>
-                supabase
+                    .eq("id", id),
+            addTag: async (newTag) =>
+                supabase.from("tags").insert({ tag: newTag, person_id: personID }),
+            restorePhone: async (id) =>
+                await supabase
                     .from("phone_numbers")
                     .update({ remove_date: null, remove_user: null })
-                    .eq("id", id)
-                    .then(mutatePerson),
-            restoreEmail: (id) =>
-                supabase
+                    .eq("id", id),
+            restoreEmail: async (id) =>
+                await supabase
                     .from("emails")
                     .update({ remove_date: null, remove_user: null })
-                    .eq("id", id)
-                    .then(mutatePerson),
-            deleteTag: (id) =>
-                supabase
+                    .eq("id", id),
+            deleteTag: async (id) =>
+                await supabase
                     .from("tags")
                     .update({ remove_date: new Date().toISOString(), remove_user: userID })
-                    .eq("id", id)
-                    .then(mutatePerson),
-            restoreTag: (id) =>
-                supabase
+                    .eq("id", id),
+            restoreTag: async (id) =>
+                await supabase
                     .from("tags")
                     .update({ remove_date: null, remove_user: null })
-                    .eq("id", id)
-                    .then(mutatePerson),
+                    .eq("id", id),
         }),
         [supabase, personID, mutatePerson, userID, callSessionID]
     );
@@ -263,7 +238,9 @@ export default function PersonProfile({ personID }) {
                 table: "people",
                 filter: `id=eq.${personID}`,
             },
-            mutatePerson
+            () => {
+                mutatePerson();
+            }
         );
         const foreignTablesToListen = [
             "interactions",
@@ -282,7 +259,9 @@ export default function PersonProfile({ personID }) {
                     table: table,
                     filter: `person_id=eq.${personID}`,
                 },
-                mutatePerson
+                () => {
+                    mutatePerson();
+                }
             );
         }
         channel = channel.subscribe();
@@ -291,9 +270,8 @@ export default function PersonProfile({ personID }) {
         };
     }, [supabase, personID]);
 
-    if (isLoading) return;
-    if (!person) {
-        return <>No person with that ID exists.</>;
+    if (!person?.first_name) {
+        return <></>;
     }
 
     // let interactions = person.interactions || [];
@@ -303,123 +281,123 @@ export default function PersonProfile({ personID }) {
         ...person?.pledges.map((i) => ({ ...i, type: "pledge" })),
     ];
 
+    // If there's no marked primary phone, use the most recently created
+    // TODO: same for email
     const primaryPhoneNumber =
         person?.phone_numbers?.filter((phone) => !!phone.primary_for)[0]?.phone_number ||
         person?.phone_numbers?.sort((a, b) =>
             new Date(a.created_at) < new Date(b.created_at) ? 1 : -1
         )[0]?.phone_number;
 
-    if (person) {
-        return (
-            <div className="mx-auto max-w-7xl px-2">
-                <div className="shaded-page-header">
-                    <div className="">
-                        <Breadcrumbs
-                            pages={[
-                                { name: "People", href: "/people", current: false },
-                                {
-                                    name: person.first_name + " " + person.last_name,
-                                    href: "/people/" + personID,
-                                    current: true,
-                                },
-                            ]}
-                        />
-                    </div>
-                    <div id="person-header" className="grid grid-cols-12 gap-2">
-                        <div className="col-span-8">
-                            <Tooltip title={"Person ID: " + personID} arrow>
-                                <h1 className="mb-0">
-                                    {person.first_name} {person.last_name}
-                                </h1>
-                            </Tooltip>
-                            <h2 className="text-sm font-normal text-gray-600">
-                                {person.occupation} | {person.employer} | {person.state}
-                            </h2>
-                            <div className="text-sm text-gray-900 font-semibold">
-                                <span className="inline-flex mr-1.5">
-                                    <DonationsSummary person={person} />
-                                </span>
-                                |
-                                <span className="inline-flex mx-1.5">
-                                    <PledgesSummary person={person} />
-                                </span>
-                            </div>
-                            <div className="mt-1 text-sm">
-                                <form
-                                    className="block"
-                                    onSubmit={(event) => {
-                                        event.preventDefault();
-                                        if (bio == null) setBio(person?.bio || "");
-                                        else {
-                                            mutations.mutatePerson({ bio: bio.trim() });
-                                            setBio(null);
-                                        }
-                                    }}
-                                >
-                                    {bio == null && person?.bio && (
-                                        <span className="align-top mr-3">Bio: {person.bio}</span>
-                                    )}
-                                    {bio !== null && (
-                                        <textarea
-                                            value={bio}
-                                            onChange={(event) => {
-                                                setBio(event.target.value);
-                                            }}
-                                            autoFocus
-                                            className="mr-3 inline w-80 rounded-md border-0 py-1.5 pl-3 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                        />
-                                    )}
-                                    <button
-                                        type="submit"
-                                        className={
-                                            "align-top inline button-xs " + (bio && " btn-primary")
-                                        }
-                                    >
-                                        {bio !== null
-                                            ? "Save"
-                                            : person?.bio?.length
-                                            ? "Edit"
-                                            : "Add a bio"}
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                        <div className="text-right col-span-4">
-                            <div className=" flex-row gap-3 inline-flex">
-                                <DialerControls
-                                    enabled={enabled}
-                                    outbound={outbound}
-                                    primaryPhoneNumber={primaryPhoneNumber}
-                                    hasNext={hasNext}
-                                    next={next}
-                                    dial={dial}
-                                    hangup={hangup}
-                                />
-                            </div>
-                        </div>
-                    </div>
+    return (
+        <div className="mx-auto max-w-7xl px-2">
+            <div className="shaded-page-header">
+                <div className="">
+                    <Breadcrumbs
+                        pages={[
+                            { name: "People", href: "/people", current: false },
+                            {
+                                name: person.first_name + " " + person.last_name,
+                                href: "/people/" + personID,
+                                current: true,
+                            },
+                        ]}
+                    />
                 </div>
-                <div className="max-w-7xl  grid grid-flow-col grid-cols-12 gap-x-10 bg-white border-t px-12 py-6 mt-2 -mx-12">
-                    <div className="col-span-3">
-                        <PersonContactInfo person={person} {...mutations} />
-                        <PersonTagList person={person} {...mutations} />
+                <div id="person-header" className="grid grid-cols-12 gap-2">
+                    <div className="col-span-8">
+                        <Tooltip title={"Person ID: " + personID} arrow>
+                            <h1 className="mb-0">
+                                {person.first_name} {person.last_name}
+                            </h1>
+                        </Tooltip>
+                        <h2 className="text-sm font-normal text-gray-600">
+                            {person.occupation} | {person.employer} | {person.state}
+                        </h2>
+                        <div className="text-sm text-gray-900 font-semibold">
+                            <span className="inline-flex mr-1.5">
+                                <DonationsSummary person={person} />
+                            </span>
+                            |
+                            <span className="inline-flex mx-1.5">
+                                <PledgesSummary person={person} />
+                            </span>
+                        </div>
+                        <div className="mt-1 text-sm">
+                            <form
+                                className="block"
+                                onSubmit={(event) => {
+                                    event.preventDefault();
+                                    if (bio == null) setBio(person?.bio || "");
+                                    else {
+                                        mutations.mutatePerson({ bio: bio.trim() });
+                                        setBio(null);
+                                    }
+                                }}
+                            >
+                                {bio == null && person?.bio && (
+                                    <span className="align-top mr-3">Bio: {person.bio}</span>
+                                )}
+                                {bio !== null && (
+                                    <textarea
+                                        value={bio}
+                                        onChange={(event) => {
+                                            setBio(event.target.value);
+                                        }}
+                                        autoFocus
+                                        className="mr-3 inline w-80 rounded-md border-0 py-1.5 pl-3 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    />
+                                )}
+                                <button
+                                    type="submit"
+                                    className={
+                                        "align-top inline button-xs " + (bio && " btn-primary")
+                                    }
+                                >
+                                    {bio !== null
+                                        ? "Save"
+                                        : person?.bio?.length
+                                        ? "Edit"
+                                        : "Add a bio"}
+                                </button>
+                            </form>
+                        </div>
                     </div>
-                    <div className="col-span-6 -ml-10">
-                        <InteractionHistory
-                            person={person}
-                            interactions={interactions}
-                            {...mutations}
-                        />
-                    </div>
-                    <div className="col-span-4">
-                        <PledgeHistory pledges={person?.pledges} {...mutations} />
-                        <DonationHistory donations={person?.donations} {...mutations} />
-                        <FECHistoryList FECHistory={FECHistory} />
+                    <div className="text-right col-span-4">
+                        <div className=" flex-row gap-3 inline-flex">
+                            <DialerControls
+                                enabled={enabled}
+                                outbound={outbound}
+                                primaryPhoneNumber={primaryPhoneNumber}
+                                hasNext={hasNext}
+                                next={next}
+                                dial={dial}
+                                hangup={hangup}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
-        );
-    }
+            <div className="max-w-7xl  grid grid-flow-col grid-cols-12 gap-x-10 bg-white border-t px-12 py-6 mt-2 -mx-12">
+                <div className="col-span-3">
+                    <PersonContactInfo person={person} {...mutations} />
+                    <PersonTagList person={person} {...mutations} />
+                </div>
+                <div className="col-span-6 -ml-10">
+                    <InteractionHistory
+                        person={person}
+                        interactions={interactions}
+                        {...mutations}
+                    />
+                </div>
+                <div className="col-span-4">
+                    <PledgeHistory pledges={person?.pledges} {...mutations} />
+                    <DonationHistory donations={person?.donations} {...mutations} />
+                    <FECHistoryList FECHistory={FECHistory} />
+                </div>
+            </div>
+        </div>
+    );
 }
 
 function DialerControls({ outbound, primaryPhoneNumber, hasNext, next, enabled, dial, hangup }) {
