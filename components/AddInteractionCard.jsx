@@ -1,12 +1,11 @@
 import { useState, useContext, useEffect } from "react";
-// import { useUser } from "@clerk/nextjs";
 import { CallSessionContext } from "pages/dialer/[callSessionID]";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
 
-function DispositionOptions({ currentDisposition, setCurrentDisposition }) {
+function DispositionOptions({ disposition, setDisposition }) {
     const dispositions = [
         "Pledged!",
         "No pledge",
@@ -21,23 +20,23 @@ function DispositionOptions({ currentDisposition, setCurrentDisposition }) {
         <div>
             <div className="hidden sm:block -mt-1">
                 <nav className="" aria-label="Tabs">
-                    <input type="hidden" value={currentDisposition} />
-                    {dispositions.map((disposition) => (
+                    <input type="hidden" value={disposition} />
+                    {dispositions.map((thisDisposition) => (
                         <button
-                            key={disposition}
+                            key={thisDisposition}
                             onClick={(event) => {
                                 console.log({ event });
                                 event.preventDefault();
-                                setCurrentDisposition(event.target.textContent);
+                                setDisposition(event.target.textContent);
                             }}
                             className={classNames(
-                                disposition == currentDisposition
+                                thisDisposition == disposition
                                     ? "bg-blue-400 text-white"
                                     : "bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-800",
                                 "rounded-md px-3 py-2 font-medium mr-1 mb-1 text-xs"
                             )}
                         >
-                            {disposition}
+                            {thisDisposition}
                         </button>
                     ))}
                 </nav>
@@ -51,22 +50,20 @@ export default function AddInteractionCard({ person, appendInteraction }) {
     const [note, setNote] = useState("");
     const [prompt, setPrompt] = useState(false);
     const [pledge, setPledge] = useState(null);
-    const [currentDisposition, setCurrentDisposition] = useState();
-    // const { outbound, needsLogToAdvance, sessionID } = useContext(CallSessionContext);
-    const csCTX = useContext(CallSessionContext);
-    const outbound = csCTX?.outbound;
-    const needsLogToAdvance = csCTX?.needsLogToAdvance;
-    const sessionID = csCTX?.sessionID;
+    const [disposition, setDisposition] = useState();
+    const { outbound, needsLogToAdvance } = useContext(CallSessionContext);
 
     const newNote = () => {
         appendInteraction({
             note,
             resulted_in_pledge: !!pledge,
             pledge,
+            disposition,
         });
         setNote("");
         setPrompt(null);
         setPledge(null);
+        setDisposition();
     };
 
     return (
@@ -83,8 +80,8 @@ export default function AddInteractionCard({ person, appendInteraction }) {
                     <form action="#" className="relative">
                         {(outbound || needsLogToAdvance) && (
                             <DispositionOptions
-                                currentDisposition={currentDisposition}
-                                setCurrentDisposition={setCurrentDisposition}
+                                disposition={disposition}
+                                setDisposition={setDisposition}
                             />
                         )}
                         <div className="overflow-hidden rounded-lg border border-gray-200 shadow-sm focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500">
@@ -156,7 +153,7 @@ export default function AddInteractionCard({ person, appendInteraction }) {
                                     type="button"
                                     className="btn btn-primary"
                                     onClick={newNote}
-                                    disabled={!currentDisposition?.length && needsLogToAdvance}
+                                    disabled={!disposition?.length && needsLogToAdvance}
                                 >
                                     Save interaction
                                     {/* {prompt && " + Pledge"} */}

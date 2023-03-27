@@ -31,15 +31,19 @@ export default function InteractionHistory({ person, interactions, appendInterac
                         interaction.datetime = new Date(interaction.created_at).toString();
                         interaction.href = "";
 
-                        interaction.content = [
-                            capitalize(interaction?.type),
-                            interaction?.contact_type,
-                            interaction?.disposition,
-                            interaction?.note,
-                            interaction?.amount && "$" + interaction?.amount,
-                        ]
-                            .filter((item) => !!item)
-                            .join(", ");
+                        interaction.content =
+                            capitalize(
+                                interaction?.contact_type ||
+                                    (interaction?.note ? "Note" : interaction?.type || "")
+                            ) +
+                            ": " +
+                            [
+                                interaction?.disposition,
+                                interaction?.note,
+                                interaction?.amount && "$" + interaction?.amount,
+                            ]
+                                .filter((item) => !!item)
+                                .join(", ");
 
                         return (
                             <li key={interaction.id}>

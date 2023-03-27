@@ -363,3 +363,11 @@ main {
 .cl-modalContent .cl-navbar {
     @apply block;
 }
+
+.overflow-ellipsis {
+    max-width: 100% !important;
+    min-width: 0;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+}

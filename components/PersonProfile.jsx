@@ -40,32 +40,37 @@ function PersonTagList({ person, addTag, deleteTag, restoreTag }) {
             <div className="sm:col-span-1">
                 {person.tags?.map((tag) => (
                     <dd className="mt-1 text-sm text-gray-900" key={tag.id}>
-                        <span className={tag.remove_date && "line-through"}>
-                            <Link className={!tag.remove_date && "link"} href={"/tags/" + tag.tag}>
-                                {tag.tag}
-                            </Link>
-                        </span>
-                        {!tag.remove_date ? (
-                            <button
-                                type="button"
-                                className="do-not-global-style text-red-600 px-1"
-                                onClick={() => {
-                                    deleteTag(tag.id);
-                                }}
-                            >
-                                x
-                            </button>
-                        ) : (
-                            <button
-                                type="button"
-                                className="do-not-global-style text-green-700 px-1 text-xs underline"
-                                onClick={() => {
-                                    restoreTag(tag.id);
-                                }}
-                            >
-                                Restore
-                            </button>
-                        )}
+                        <div class="overflow-ellipsis">
+                            <span className={tag.remove_date && "line-through"}>
+                                <Link
+                                    className={!tag.remove_date && "link"}
+                                    href={"/tags/" + tag.tag}
+                                >
+                                    {tag.tag}
+                                </Link>
+                            </span>
+                            {!tag.remove_date ? (
+                                <button
+                                    type="button"
+                                    className="do-not-global-style text-red-600 px-1"
+                                    onClick={() => {
+                                        deleteTag(tag.id);
+                                    }}
+                                >
+                                    x
+                                </button>
+                            ) : (
+                                <button
+                                    type="button"
+                                    className="do-not-global-style text-green-700 px-1 text-xs underline"
+                                    onClick={() => {
+                                        restoreTag(tag.id);
+                                    }}
+                                >
+                                    Restore
+                                </button>
+                            )}
+                        </div>
                     </dd>
                 ))}
                 {!person.tags && <span className="text-sm">No tags</span>}
@@ -378,7 +383,7 @@ export default function PersonProfile({ personID }) {
                     </div>
                 </div>
             </div>
-            <div className="max-w-7xl  grid grid-flow-col grid-cols-12 gap-x-10 bg-white border-t px-12 py-6 mt-2 -mx-12">
+            <div className="max-w-7xl grid grid-flow-col grid-cols-12 gap-x-16 bg-white border-t px-12 py-6 mt-2 -mx-12">
                 <div className="col-span-3">
                     <PersonContactInfo person={person} {...mutations} />
                     <PersonTagList person={person} {...mutations} />
@@ -391,16 +396,20 @@ export default function PersonProfile({ personID }) {
                     />
                 </div>
                 <div className="col-span-4">
-                    <PledgeHistory pledges={person?.pledges} {...mutations} />
-                    <DonationHistory donations={person?.donations} {...mutations} />
-                    <FECHistoryList FECHistory={FECHistory} />
+                    <div class="overflow-ellipsis">
+                        <PledgeHistory pledges={person?.pledges} {...mutations} />
+                        <DonationHistory donations={person?.donations} {...mutations} />
+                        <FECHistoryList FECHistory={FECHistory} />
+                    </div>
                 </div>
             </div>
         </div>
     );
 }
 
-function DialerControls({ outbound, primaryPhoneNumber, hasNext, next, enabled, dial, hangup }) {
+function DialerControls({ primaryPhoneNumber }) {
+    const { outbound, needsLogToAdvance, hasNext, next, enabled, dial, hangup } =
+        useContext(CallSessionContext);
     return (
         <>
             {
@@ -426,7 +435,9 @@ function DialerControls({ outbound, primaryPhoneNumber, hasNext, next, enabled, 
                 type="button"
                 className="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
                 onClick={() => next()}
-                {...(enabled && !outbound && hasNext ? {} : { disabled: true })}
+                {...(enabled && !outbound && hasNext && !needsLogToAdvance
+                    ? {}
+                    : { disabled: true })}
             >
                 Skip
             </button>

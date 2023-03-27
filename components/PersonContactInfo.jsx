@@ -60,30 +60,33 @@ export default function PersonContactInfo({
                 <dt className="text-sm font-medium text-gray-500">Phone Numbers</dt>
                 {person.phone_numbers?.map((phone_number) => (
                     <dd className="mt-1 text-sm text-gray-900" key={phone_number.id}>
-                        <span className={phone_number.remove_date && "line-through"}>
-                            {phoneNumberDisplayFormatter(phone_number.phone_number)}
-                        </span>
-                        {!phone_number.remove_date ? (
-                            <button
-                                type="button"
-                                className="do-not-global-style text-red-600 px-1"
-                                onClick={() => {
-                                    deletePhone(phone_number.id);
-                                }}
-                            >
-                                x
-                            </button>
-                        ) : (
-                            <button
-                                type="button"
-                                className="do-not-global-style text-green-700 px-1 text-xs underline"
-                                onClick={() => {
-                                    restorePhone(phone_number.id);
-                                }}
-                            >
-                                Restore
-                            </button>
-                        )}
+                        <div class="overflow-ellipsis">
+                            <span className={phone_number.remove_date && "line-through"}>
+                                {phoneNumberDisplayFormatter(phone_number.phone_number)}
+                            </span>
+
+                            {!phone_number.remove_date ? (
+                                <button
+                                    type="button"
+                                    className="do-not-global-style text-red-600 px-1"
+                                    onClick={() => {
+                                        deletePhone(phone_number.id);
+                                    }}
+                                >
+                                    x
+                                </button>
+                            ) : (
+                                <button
+                                    type="button"
+                                    className="do-not-global-style text-green-700 px-1 text-xs underline"
+                                    onClick={() => {
+                                        restorePhone(phone_number.id);
+                                    }}
+                                >
+                                    Restore
+                                </button>
+                            )}
+                        </div>
                     </dd>
                 ))}
                 <form
@@ -119,30 +122,33 @@ export default function PersonContactInfo({
                 <dt className="text-sm font-medium text-gray-500">Emails</dt>
                 {person.emails?.map((email) => (
                     <dd className="mt-1 text-sm text-gray-900" key={email.id}>
-                        <span className={email.remove_date && "line-through"}>
-                            {emailDisplayFormatter(email.email)}
-                        </span>
-                        {!email.remove_date ? (
-                            <button
-                                type="button"
-                                className="do-not-global-style text-red-600 px-1"
-                                onClick={() => {
-                                    deleteEmail(email.id);
-                                }}
-                            >
-                                x
-                            </button>
-                        ) : (
-                            <button
-                                type="button"
-                                className="do-not-global-style text-green-700 px-1 text-xs underline"
-                                onClick={() => {
-                                    restoreEmail(email.id);
-                                }}
-                            >
-                                Restore
-                            </button>
-                        )}
+                        <div class="overflow-ellipsis">
+                            <span className={email.remove_date && "line-through"}>
+                                {emailDisplayFormatter(email.email)}
+                            </span>
+
+                            {!email.remove_date ? (
+                                <button
+                                    type="button"
+                                    className="do-not-global-style text-red-600 px-1"
+                                    onClick={() => {
+                                        deleteEmail(email.id);
+                                    }}
+                                >
+                                    x
+                                </button>
+                            ) : (
+                                <button
+                                    type="button"
+                                    className="do-not-global-style text-green-700 px-1 text-xs underline"
+                                    onClick={() => {
+                                        restoreEmail(email.id);
+                                    }}
+                                >
+                                    Restore
+                                </button>
+                            )}
+                        </div>
                     </dd>
                 ))}
                 <form
@@ -177,11 +183,13 @@ export default function PersonContactInfo({
             <div className="sm:col-span-1 mt-5">
                 <dt className="text-sm font-medium text-gray-500">Addresses</dt>
                 <dd className="mt-1 text-sm text-gray-900">
-                    {person.addr1}
-                    <br />
-                    {person.addr2}
-                    {person.addr2 ? <br /> : null}
-                    {person.city}, {person.state} {person.zip}
+                    <div class="overflow-ellipsis">
+                        {person.addr1}
+                        <br />
+                        {person.addr2}
+                        {person.addr2 ? <br /> : null}
+                        {person.city}, {person.state} {person.zip}
+                    </div>
                 </dd>
                 {/* <button className="mt-2 button-xs" type="button">
                     Add Address
