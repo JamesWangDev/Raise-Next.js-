@@ -281,24 +281,9 @@ const Layout = ({ children }) => {
                             {isSignedIn ? (
                                 <>
                                     <div className="flex flex-1">
-                                        <form
-                                            className="flex w-full md:ml-0"
-                                            action="#"
-                                            method="GET"
-                                        >
-                                            <div className="mr-5 relative pt-3 w-full text-gray-400 focus-within:text-gray-600">
-                                                {/* Node package size reduction */}
-                                                {/* <DocSearch
-                                                    appId={process.env.ALGOLIA_APPLICATION_ID}
-                                                    indexName="RaiseMoreClientSearch"
-                                                    apiKey={
-                                                        process.env
-                                                            .NEXT_PUBLIC_ALGOLIA_SEARCH_ONLY_API_KEY
-                                                    }
-                                                /> */}
-                                                <Search />
-                                            </div>
-                                        </form>
+                                        <div className="mr-5 relative pt-3 w-full text-gray-400 focus-within:text-gray-600">
+                                            <Search />
+                                        </div>
                                     </div>
                                     <div className="ml-4 flex items-center md:ml-6 gap-5">
                                         <button
@@ -308,83 +293,11 @@ const Layout = ({ children }) => {
                                             <span className="sr-only">View notifications</span>
                                             <BellIcon className="h-6 w-6" aria-hidden="true" />
                                         </button>
-
-                                        {/* Profile dropdown */}
-
-                                        {/* <Menu as="div" className="relative ml-3"> */}
-                                        {/* <div>
-                        <Menu.Button className="flex max-w-xs items-center rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                          <span className="sr-only">Open user menu</span>
-
-                          <Image
-                            src={user.image}
-                            width="25"
-                            height="25"
-                            className="h-8 w-8 rounded-full inline align-text-top"
-                          />
-                        </Menu.Button>
-                      </div> */}
-
-                                        {/* <Menu.Button className="my-1 mx-2 group flex rounded-md bg-gray-100 px-3 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-100">
-                        <span className="flex w-full items-center justify-between">
-                          <span className="flex min-w-0 items-center justify-between space-x-3">
-                            <Image
-                              className="h-8 w-8 flex-shrink-0 rounded-full bg-gray-300"
-                              height="30"
-                              width="30"
-                              src={user.image}
-                              alt=""
-                            />
-
-                            <span className="flex min-w-0 flex-1 flex-col">
-                              <span className="truncate text-sm font-medium text-gray-900">
-                                {user.name}
-                              </span>
-                              <span className="truncate text-sm text-gray-500">
-                                Obama for Congress
-                              </span>
-                            </span>
-                          </span>
-                          <ChevronDownIcon
-                            className="ml-3 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
-                            aria-hidden="true"
-                          />
-                        </span>
-                      </Menu.Button> */}
-                                        {/* <Transition
-                        as={Fragment}
-                        enter="transition ease-out duration-100"
-                        enterFrom="transform opacity-0 scale-95"
-                        enterTo="transform opacity-100 scale-100"
-                        leave="transition ease-in duration-75"
-                        leaveFrom="transform opacity-100 scale-100"
-                        leaveTo="transform opacity-0 scale-95"
-                      >
-                        <Menu.Items className="absolute right-3 z-10 mt-2 w-100 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                          {userNavigation.map((item) => (
-                            <Menu.Item key={item.name}>
-                              {({ active }) => (
-                                <Link
-                                  href={item.href}
-                                  onClick={item.onClick}
-                                  className={classNames(
-                                    active ? "bg-gray-100" : "",
-                                    "block px-4 py-2 text-sm text-gray-700"
-                                  )}
-                                >
-                                  {item.name}
-                                </Link>
-                              )}
-                            </Menu.Item>
-                          ))}
-                        </Menu.Items>
-                      </Transition> */}
                                         <OrganizationSwitcher
                                             hidePersonal={true}
                                             afterSwitchOrganizationUrl="/"
                                         />
                                         <UserButton />
-                                        {/* </Menu> */}
                                     </div>
                                 </>
                             ) : (

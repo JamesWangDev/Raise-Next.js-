@@ -5,12 +5,10 @@ import { ClerkProvider, useAuth } from "@clerk/nextjs";
 import ChatWidgetWrapper from "components/ChatWidgetWrapper";
 import { createSupabaseClient, SupabaseProvider } from "lib/supabaseHooks";
 import { SWRConfig } from "swr";
-
-// pages/_app.js
 import { Inter } from "next/font/google";
 const inter = Inter({ subsets: ["latin"] });
 
-// for some reason vercel analytics breask jest
+// // For some reason, vercel analytics breask jest
 // import { Analytics } from "@vercel/analytics/react";
 
 function App({ Component, pageProps }) {
@@ -41,7 +39,7 @@ function App({ Component, pageProps }) {
 }
 
 function SupabaseWrapper({ children }) {
-    let [supabaseClient, setSupabaseClient] = useState();
+    let [supabaseClient, setSupabaseClient] = useState(createSupabaseClient());
     const { getToken, userId, sessionId, orgId } = useAuth();
     useEffect(() => {
         let now = async () => {
@@ -61,7 +59,7 @@ function SupabaseWrapper({ children }) {
 
     return (
         <SupabaseProvider value={supabaseClient}>
-            <Layout>{supabaseClient ? children : null}</Layout>
+            <Layout>{children}</Layout>
             <ChatWidgetWrapper />
             {/* <Analytics /> */}
         </SupabaseProvider>

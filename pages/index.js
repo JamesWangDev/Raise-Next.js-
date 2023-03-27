@@ -3,7 +3,7 @@ import { useSupabase, useQuery } from "lib/supabaseHooks";
 import Breadcrumbs from "components/Breadcrumbs";
 import PageTitle from "components/PageTitle";
 import CallingSessionsGrid from "components/CallingSessionsGrid";
-import { useUser } from "@clerk/nextjs";
+import { clerkClient, getAuth, buildClerkProps } from "@clerk/nextjs/server";
 import { CurrencyDollarIcon, HandRaisedIcon, PhoneIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 
@@ -70,7 +70,8 @@ export function StatCard({ query, table, item }) {
     );
 }
 
-export default function Home() {
+export default function Home(props) {
+    // return <pre>{JSON.stringify(props, 0, 2)}</pre>;
     return (
         <div className="">
             <div className="mx-auto max-w-7xl px-2">
@@ -102,3 +103,15 @@ export default function Home() {
         </div>
     );
 }
+
+// export const getServerSideProps = async ({ req }) => {
+//     // const { getToken, userId, sessionId, orgId } = getAuth(req);
+//     // const user = userId ? await clerkClient.users.getUser(userId) : undefined;
+//     const token = clerkClient.getToken({
+//         template:
+//             process.env.NEXT_PUBLIC_ENVIRONMENT != "development"
+//                 ? "supabase"
+//                 : "supabase-local-development",
+//     });
+//     return { props: { ...buildClerkProps(req, { token }) } };
+// };
