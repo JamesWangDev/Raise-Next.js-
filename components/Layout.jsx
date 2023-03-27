@@ -325,16 +325,10 @@ const Layout = ({ children }) => {
                                     <div className="sm:mx-auto sm:w-full sm:max-w-md">
                                         <SignUp
                                             appearance={{
-                                                layout: {
-                                                    // socialButtonsVariant:
-                                                    // "blockButton",
-                                                    // socialButtonsPlacement: "bottom",
-                                                },
                                                 variables: {
                                                     colorPrimary: "#388bff",
                                                 },
                                             }}
-                                            // signInUrl=
                                         />
                                     </div>
                                 </div>
