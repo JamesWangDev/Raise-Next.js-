@@ -40,7 +40,7 @@ function App({ Component, pageProps }) {
 
 function SupabaseWrapper({ children }) {
     const { mutate } = useSWRConfig();
-    let [supabaseClient, setSupabaseClient] = useState(createSupabaseClient());
+    let [supabaseClient, setSupabaseClient] = useState();
     const { getToken, userId, sessionId, orgId } = useAuth();
     useEffect(() => {
         let now = async () => {
@@ -67,7 +67,7 @@ function SupabaseWrapper({ children }) {
 
     return (
         <SupabaseProvider value={supabaseClient}>
-            <Layout>{children}</Layout>
+            {supabaseClient ? <Layout>{children}</Layout> : null}
             <ChatWidgetWrapper />
             {/* <Analytics /> */}
         </SupabaseProvider>
