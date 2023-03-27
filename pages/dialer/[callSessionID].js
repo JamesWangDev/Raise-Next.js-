@@ -145,15 +145,14 @@ export default function CallSessionPage() {
                     event: "*",
                     schema: "public",
                     table: "call_sessions",
+                    filter: "id=eq." + callSessionID,
                 },
                 // New is a reserved keyword in JS so to destructure we need to rename
                 ({ new: updated }) => {
-                    console.log(updated.current_person_id);
                     mutateSession((prevState) => ({
                         ...prevState,
                         ...updated,
                     }));
-                    // mutateSession();
                 }
             )
             .subscribe();
@@ -180,7 +179,7 @@ export default function CallSessionPage() {
             supabase.removeChannel(sessionChannel);
             supabase.removeChannel(participantsChannel);
         };
-    }, [mutateSession, supabase]);
+    }, [mutateSession, supabase, callSessionID]);
 
     // Mutation of current person/page triggers fetch
     const setPersonID = useCallback(
@@ -190,9 +189,8 @@ export default function CallSessionPage() {
                 .from("call_sessions")
                 .update({ current_person_id: newID })
                 .eq("id", callSessionID);
-            // .then(mutateSession);
         },
-        [supabase, callSessionID, mutateSession]
+        [supabase, callSessionID]
     );
 
     // Find the current person in the list, and move to the next one.
@@ -201,12 +199,14 @@ export default function CallSessionPage() {
         let nextIndex = currentIndex + 1;
         if (nextIndex >= peopleList.length) return false;
         setPersonID(peopleList[nextIndex]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [setPersonID, peopleList?.length, session?.current_person_id]);
 
     useEffect(() => {
         if (!session?.current_person_id && peopleList?.length) {
             setPersonID(peopleList[0]);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [setPersonID, peopleList?.length, session?.current_person_id]);
 
     // On mount, bulk select and setup subscription for conference updates

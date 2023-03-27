@@ -223,7 +223,7 @@ export default function PersonProfile({ personID }) {
                     .update({ remove_date: null, remove_user: null })
                     .eq("id", id),
         }),
-        [supabase, personID, mutatePerson, userID, callSessionID]
+        [supabase, personID, userID, callSessionID, needsLogToAdvance]
     );
 
     // Placing a realtime listener on changes other folks make
@@ -268,7 +268,7 @@ export default function PersonProfile({ personID }) {
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [supabase, personID]);
+    }, [supabase, personID, mutatePerson]);
 
     if (!person?.first_name) {
         return <></>;
