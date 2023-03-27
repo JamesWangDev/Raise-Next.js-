@@ -356,3 +356,10 @@ main {
 .Breadcrumbs {
     @apply mb-8;
 }
+
+.cl-navbar {
+    @apply hidden;
+}
+.cl-modalContent .cl-navbar {
+    @apply block;
+}

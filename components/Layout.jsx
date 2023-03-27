@@ -7,6 +7,7 @@ import {
     CreateOrganization,
     OrganizationSwitcher,
     SignedOut,
+    SignedIn,
 } from "@clerk/nextjs";
 
 import { Fragment, useState } from "react";
@@ -308,22 +309,17 @@ const Layout = ({ children }) => {
 
                     <main className="flex-1">
                         <div className="py-6">
-                            {isSignedIn ? (
-                                hasOrg ? (
+                            <SignedIn>
+                                {hasOrg ? (
                                     children
                                 ) : (
-                                    <>
-                                        <div className="block min-h-full flex-col justify-center sm:px-6 lg:px-8">
-                                            <div className="sm:mx-auto w-75">
-                                                <CreateOrganization />
-                                            </div>
+                                    <div className="block min-h-full flex-col justify-center sm:px-6 lg:px-8">
+                                        <div className="sm:mx-auto w-75">
+                                            <CreateOrganization />
                                         </div>
-                                    </>
-                                )
-                            ) : (
-                                ""
-                            )}
-
+                                    </div>
+                                )}
+                            </SignedIn>
                             <SignedOut>
                                 <div className="flex min-h-full flex-col justify-center  sm:px-6 lg:px-8">
                                     <div className="sm:mx-auto sm:w-full sm:max-w-md">

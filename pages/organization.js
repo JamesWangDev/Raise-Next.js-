@@ -2,15 +2,7 @@ import { OrganizationProfile } from "@clerk/nextjs";
 
 const OrganizationProfilePage = () => {
     return (
-        <div
-            style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "2rem",
-                justifyContent: "center",
-                alignItems: "center",
-            }}
-        >
+        <div className="mt-4 -ml-6">
             <OrganizationProfile hidePersonal={true} />
         </div>
     );
